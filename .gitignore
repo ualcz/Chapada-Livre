@@ -1,0 +1,43 @@
+/node_modules/
+/public/build/
+/public/hot/
+/public/storage/
+/vendor/
+.phpunit.result.cache
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Storage (keep folders but ignore contents)
+/storage/*.key
+/storage/app/public/*
+!/storage/app/public/.gitignore
+/storage/framework/cache/data/*
+!/storage/framework/cache/data/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/testing/*
+!/storage/framework/testing/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/storage/logs/*
+!/storage/logs/.gitignore
+
+# Database Volume (Docker)
+/mysql_data/
+
+# LaraClassified specific
+/public/webcron.php
+
+# Package manager files
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+
+# IDE & OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,6 @@
+# Ignore all generated cache files
+*
+# Keep .gitignore
+!.gitignore
+# Keep all subdirectories (but not their files)
+!*/
