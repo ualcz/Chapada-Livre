@@ -17,6 +17,11 @@ RUN apt-get update && apt-get install -y \
     curl \
     libonig-dev \
     libxml2-dev \
+    libicu-dev \
+    libwebp-dev \
+    libavif-dev \
+    libmagickwand-dev \
+    libxpm-dev \
     libzip-dev \
     libcurl4-openssl-dev \
     pkg-config \
@@ -27,8 +32,9 @@ RUN apt-get update && apt-get install -y \
 # ============================================
 # Extensões PHP
 # ============================================
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip curl ftp fileinfo
-RUN pecl install redis && docker-php-ext-enable redis
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif --with-xpm
+RUN docker-php-ext-configure intl && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip curl ftp fileinfo intl
+RUN pecl install redis imagick && docker-php-ext-enable redis imagick
 
 # ============================================
 # Composer
