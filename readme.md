@@ -41,18 +41,11 @@ docker-compose up -d --build
 
 O projeto utiliza 4 containers Docker:
 
-```
-flowchart LR
-    subgraph Docker Network
-        Nginx["Nginx\n:8000 → 80"]
-        App["PHP-FPM (App)"]
-        MySQL["MySQL\n:3306"]
-        Redis["Redis\n:6379"]
-
-        Nginx --> App
-        App --> MySQL
-        App --> Redis
-    end
+```mermaid
+graph TD;
+    Nginx-->App;
+    App-->MySQL;
+    App-->Redis;
 ```
 
 | Container | Imagem | Função | Porta |
