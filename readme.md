@@ -42,18 +42,17 @@ docker-compose up -d --build
 O projeto utiliza 4 containers Docker:
 
 ```
-┌─────────────────────────────────────────────────┐
-│                  Docker Network                  │
-│                                                  │
-│  ┌──────────┐    ┌──────────┐    ┌──────────┐   │
-│  │  Nginx   │───▶│  PHP-FPM │───▶│  MySQL   │   │
-│  │ :8000→80 │    │  (app)   │    │  :3306   │   │
-│  └──────────┘    └────┬─────┘    └──────────┘   │
-│                       │          ┌──────────┐   │
-│                       └─────────▶│  Redis   │   │
-│                                  │  :6379   │   │
-│                                  └──────────┘   │
-└─────────────────────────────────────────────────┘
+flowchart LR
+    subgraph Docker Network
+        Nginx["Nginx\n:8000 → 80"]
+        App["PHP-FPM (App)"]
+        MySQL["MySQL\n:3306"]
+        Redis["Redis\n:6379"]
+
+        Nginx --> App
+        App --> MySQL
+        App --> Redis
+    end
 ```
 
 | Container | Imagem | Função | Porta |
@@ -164,6 +163,12 @@ docker-compose logs -f
 docker-compose logs -f app
 docker-compose logs -f nginx
 docker-compose logs -f mysql
+
+# Executar migrations e seeders
+docker-compose exec app php artisan migrate --force
+docker-compose exec app php artisan db:seed --class=ChapadaDiamantinaCitiesSeeder --force
+docker-compose exec app php artisan cache:clear
+docker-compose exec app php artisan view:clear
 ```
 
 ### Comandos Laravel (Artisan)
