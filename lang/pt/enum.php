@@ -18,8 +18,8 @@ return [
     'north_america' => 'América do Norte',
     'oceania' => 'Oceânia',
     'south_america' => 'América do Sul',
-    'theme_light' => 'Light',
-    'theme_dark' => 'Dark',
-    'theme_system' => 'System',
-    'theme_auto' => 'Auto',
+    'theme_light' => 'Claro',
+    'theme_dark' => 'Escuro',
+    'theme_system' => 'Sistema',
+    'theme_auto' => 'Automático',
 ];

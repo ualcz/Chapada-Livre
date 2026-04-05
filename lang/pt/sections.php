@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'section' => 'Section',
-    'search_form' => 'Search Form Area',
-    'locations' => 'Locations & SVG Map',
-    'premium_listings' => 'Premium Listings',
-    'categories' => 'Categories',
-    'latest_listings' => 'Latest Listings',
-    'stats' => 'Mini Stats',
-    'top_ad' => 'Advertising #1',
-    'bottom_ad' => 'Advertising #2',
-    'companies' => 'Companies',
+    'section' => 'Seção',
+    'search_form' => 'Área do Formulário de Busca',
+    'locations' => 'Localizações e Mapa SVG',
+    'premium_listings' => 'Anúncios Premium',
+    'categories' => 'Categorias',
+    'latest_listings' => 'Anúncios Recentes',
+    'stats' => 'Mini Estatísticas',
+    'top_ad' => 'Publicidade nº 1',
+    'bottom_ad' => 'Publicidade nº 2',
+    'companies' => 'Empresas',
 ];

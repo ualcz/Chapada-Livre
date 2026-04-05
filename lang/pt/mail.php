@@ -9,9 +9,9 @@ em seu navegador da Web:',
     'All rights reserved.' => 'Todos os direitos reservados.',
     'footer_salutation' => 'Saudações,<br>:appName',
     'mail_footer_content' => 'Venda e compre perto de você. Simples, rápido e eficiente.',
-    'email_example_title' => ':appName Mail Set Up Successfully',
-    'email_example_content_1' => 'Mail Set Up Successfully!',
-    'email_example_content_2' => 'This email was sent out to test your new mail credentials for :appName. Since you have received this email, your website mail sending configuration has been set-up properly. Please ignore this email and don\'t reply it.',
+    'email_example_title' => 'Configuração de E-mail de :appName Concluída com Sucesso',
+    'email_example_content_1' => 'Configuração de E-mail Concluída com Sucesso!',
+    'email_example_content_2' => 'Este e-mail foi enviado para testar suas novas credenciais de e-mail para o :appName. Como você recebeu este e-mail, a configuração de envio de e-mail do seu site foi definida corretamente. Por favor, ignore este e-mail e não o responda.',
     'email_verification_title' => 'Verifique seu endereço de e-mail.',
     'email_verification_action' => 'Verificar endereço de e-mail',
     'email_verification_content_1' => 'Olá :userName !',
@@ -26,10 +26,10 @@ em seu navegador da Web:',
     'post_reviewed_content_1' => 'Olá,',
     'post_reviewed_content_2' => 'O seu anúncio <a href=":postUrl">:title</a> está agora.',
     'post_reviewed_content_3' => 'YVocê está recebendo este e-mail porque criou recentemente um novo anúncio no :appName. Se não foi você, ignore este e-mail. ',
-    'post_republished_title' => 'Your listing has been re-published',
-    'post_republished_content_1' => 'Hello,',
-    'post_republished_content_2' => 'Your listing <a href=":postUrl">:title</a> has been re-published successfully.',
-    'post_republished_content_3' => 'You\'re receiving this email because you recently created a new listing on :appName. If this wasn\'t you, please ignore this email.',
+    'post_republished_title' => 'Seu anúncio foi republicado',
+    'post_republished_content_1' => 'Olá,',
+    'post_republished_content_2' => 'Seu anúncio <a href=":postUrl">:title</a> foi republicado com sucesso.',
+    'post_republished_content_3' => 'Você está recebendo este e-mail porque republicou recentemente um anúncio no :appName. Se não foi você, ignore este e-mail.',
     'post_deleted_title' => 'Seu anúncio foi excluído',
     'post_deleted_content_1' => 'Olá,',
     'post_deleted_content_2' => 'O seu anúncio  ":title" foi excluído do <a href=":appUrl">:appName</a> em :now.',
@@ -66,7 +66,7 @@ em seu navegador da Web:',
     'reset_password_content_3' => 'Se você não solicitou uma reinicialização da password, nenhuma ação adicional é necessária.',
     'contact_form_title' => 'Nova mensagem - :appName',
     'post_report_sent_title' => 'Novo relatório de abuso',
-    'Listing URL' => 'Listing URL',
+    'Listing URL' => 'URL do Anúncio',
     'post_archived_title' => 'Seu anúncio foi arquivado',
     'post_archived_content_1' => 'Olá,',
     'post_archived_content_2' => 'O seu anúncio ":title" foi arquivado no :appName em :now.',
@@ -100,44 +100,44 @@ em seu navegador da Web:',
 <br><strong>Motivo do pagamento:</strong> Anúncio #:postId - :packageName
 <br><strong>Valor:</strong> :amount :currency
 <br><strong>Método de pagamento::</strong> :paymentMethodName',
-    'payment_approved_title' => 'Your payment has been approved!',
-    'payment_approved_content_1' => 'Hello,',
-    'payment_approved_content_2' => 'Your payment for the listing "<a href=":postUrl">:title</a>" has been approved.',
-    'payment_approved_content_3' => 'Thank you!',
-    'payment_approved_content_4' => 'THE PAYMENT DETAILS
-<br><strong>Reason of the payment:</strong> Listing #:postId - :packageName
-<br><strong>Amount:</strong> :amount :currency
-<br><strong>Payment Method:</strong> :paymentMethodName',
+    'payment_approved_title' => 'Seu pagamento foi aprovado!',
+    'payment_approved_content_1' => 'Olá,',
+    'payment_approved_content_2' => 'Seu pagamento para o anúncio "<a href=":postUrl">:title</a>" foi aprovado.',
+    'payment_approved_content_3' => 'Obrigado!',
+    'payment_approved_content_4' => 'DETALHES DO PAGAMENTO
+<br><strong>Motivo do pagamento:</strong> Anúncio #:postId - :packageName
+<br><strong>Valor:</strong> :amount :currency
+<br><strong>Método de Pagamento:</strong> :paymentMethodName',
     'reply_form_title' => 'RE: :postTitle',
     'reply_form_content_1' => 'Olá,',
     'reply_form_content_2' => '<strong>Você recebeu uma resposta de :senderName. Veja a resposta abaixo:</strong>',
-    'generated_password_title' => 'Your password',
-    'generated_password_content_1' => 'Hello :userName!',
-    'generated_password_content_2' => 'Your account has been created.',
-    'generated_password_verify_content_3' => 'Click the button below to verify your email address.',
-    'generated_password_verify_action' => 'Verify email address',
-    'generated_password_content_4' => 'Your password is: <strong>:randomPassword</strong>',
-    'generated_password_login_action' => 'Login Now!',
-    'generated_password_content_6' => 'You\'re receiving this email because you recently created a new :appName account or added a new email address. If this wasn\'t you, please ignore this email.',
-    'subscription_purchased_title' => 'Thanks for your subscription!',
-    'subscription_purchased_content_1' => 'Hello,',
-    'subscription_purchased_content_2' => 'We have received your payment for the ":packageName" subscription.',
-    'subscription_purchased_content_3' => 'Thank you!',
-    'subscription_notification_title' => 'New subscription has been purchased',
-    'subscription_notification_content_1' => 'Hello Admin,',
-    'subscription_notification_content_2' => 'The user :userName has just paid the ":packageName" subscription.',
-    'subscription_notification_content_3' => 'THE PAYMENT DETAILS
-<br><strong>Reason of the payment:</strong> Subscription for ":packageName"
-<br><strong>User\'s account:</strong> :userName - ID: #:userId
-<br><strong>Amount:</strong> :amount :currency
-<br><strong>Payment Method:</strong> :paymentMethodName',
-    'subscription_approved_title' => 'Your subscription has been approved!',
-    'subscription_approved_content_1' => 'Hello,',
-    'subscription_approved_content_2' => 'Your ":packageName" subscription has been approved.',
-    'subscription_approved_content_3' => 'Thank you!',
-    'subscription_approved_content_4' => 'THE PAYMENT DETAILS
-<br><strong>Reason of the payment:</strong> Subscription for ":packageName"
-<br><strong>User\'s account:</strong> :userName - ID: #:userId
-<br><strong>Amount:</strong> :amount :currency
-<br><strong>Payment Method:</strong> :paymentMethodName',
+    'generated_password_title' => 'Sua senha',
+    'generated_password_content_1' => 'Olá :userName!',
+    'generated_password_content_2' => 'Sua conta foi criada.',
+    'generated_password_verify_content_3' => 'Clique no botão abaixo para verificar seu endereço de e-mail.',
+    'generated_password_verify_action' => 'Verificar endereço de e-mail',
+    'generated_password_content_4' => 'Sua senha é: <strong>:randomPassword</strong>',
+    'generated_password_login_action' => 'Entrar agora!',
+    'generated_password_content_6' => 'Você está recebendo este e-mail porque criou recentemente uma nova conta no :appName ou adicionou um novo endereço de e-mail. Se não foi você, ignore este e-mail.',
+    'subscription_purchased_title' => 'Obrigado pela sua assinatura!',
+    'subscription_purchased_content_1' => 'Olá,',
+    'subscription_purchased_content_2' => 'Recebemos seu pagamento pela assinatura ":packageName".',
+    'subscription_purchased_content_3' => 'Obrigado!',
+    'subscription_notification_title' => 'Uma nova assinatura foi adquirida',
+    'subscription_notification_content_1' => 'Olá Admin,',
+    'subscription_notification_content_2' => 'O usuário :userName acabou de pagar a assinatura ":packageName".',
+    'subscription_notification_content_3' => 'DETALHES DO PAGAMENTO
+<br><strong>Motivo do pagamento:</strong> Assinatura de ":packageName"
+<br><strong>Conta do usuário:</strong> :userName - ID: #:userId
+<br><strong>Valor:</strong> :amount :currency
+<br><strong>Método de Pagamento:</strong> :paymentMethodName',
+    'subscription_approved_title' => 'Sua assinatura foi aprovada!',
+    'subscription_approved_content_1' => 'Olá,',
+    'subscription_approved_content_2' => 'Sua assinatura ":packageName" foi aprovada.',
+    'subscription_approved_content_3' => 'Obrigado!',
+    'subscription_approved_content_4' => 'DETALHES DO PAGAMENTO
+<br><strong>Motivo do pagamento:</strong> Assinatura de ":packageName"
+<br><strong>Conta do usuário:</strong> :userName - ID: #:userId
+<br><strong>Valor:</strong> :amount :currency
+<br><strong>Método de Pagamento:</strong> :paymentMethodName',
 ];
