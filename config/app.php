@@ -85,11 +85,11 @@ return [
     |
     */
 	
-    'locale' => function_exists('env') ? env('APP_LOCALE', 'en') : 'en',
+    'locale' => function_exists('env') ? env('APP_LOCALE', 'pt') : 'pt',
 	
-    'fallback_locale' => function_exists('env') ? env('APP_FALLBACK_LOCALE', 'en') : 'en',
+    'fallback_locale' => function_exists('env') ? env('APP_FALLBACK_LOCALE', 'pt') : 'pt',
 	
-	'faker_locale' => function_exists('env') ? env('APP_FAKER_LOCALE', 'en_US') : 'en_US',
+	'faker_locale' => function_exists('env') ? env('APP_FAKER_LOCALE', 'pt_BR') : 'pt_BR',
 	
     /*
     |--------------------------------------------------------------------------
