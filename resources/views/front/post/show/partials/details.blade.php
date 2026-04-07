@@ -1,25 +1,19 @@
 @php
 	$authUser = auth()->check() ? auth()->user() : null;
 	$authUserId = !empty($authUser) ? $authUser->getAuthIdentifier() : 0;
-	
+
 	$post ??= [];
 @endphp
 <div class="items-details">
 	<div class="row">
 		<div class="col-12">
 			{{-- Tab navs --}}
-			<ul class="nav nav-tabs" id="itemsDetailsTabs" role="tablist">
+			<ul class="nav nav-pills custom-nav-pills gap-2 px-1 mb-3" id="itemsDetailsTabs" role="tablist">
 				<li class="nav-item" role="presentation">
-					<button class="nav-link active"
-							id="item-details-tab"
-							data-bs-toggle="tab"
-							data-bs-target="#item-details"
-							type="button"
-							role="tab"
-							aria-controls="item-details"
-							aria-selected="true"
-					>
-						<span class="fs-5 fw-bold">{{ trans('global.listing_details') }}</span>
+					<button class="nav-link active rounded-pill px-4" id="item-details-tab" data-bs-toggle="tab"
+						data-bs-target="#item-details" type="button" role="tab" aria-controls="item-details"
+						aria-selected="true">
+						<span class="fw-bold">{{ trans('global.listing_details') }}</span>
 					</button>
 				</li>
 				@if (config('addons.reviews.installed'))
@@ -27,195 +21,144 @@
 						$reviewLabel = config('addons.reviews.name');
 					@endphp
 					<li class="nav-item" role="presentation">
-						<button class="nav-link"
-								id="item-{{ $reviewLabel }}-tab"
-								data-bs-toggle="tab"
-								data-bs-target="#item-{{ $reviewLabel }}"
-								type="button"
-								role="tab"
-								aria-controls="item-{{ $reviewLabel }}"
-								aria-selected="false"
-						>
-							<span class="fs-5 fw-bold">
+						<button class="nav-link rounded-pill px-4" id="item-{{ $reviewLabel }}-tab" data-bs-toggle="tab"
+							data-bs-target="#item-{{ $reviewLabel }}" type="button" role="tab"
+							aria-controls="item-{{ $reviewLabel }}" aria-selected="false">
+							<span class="fw-bold">
 								{{ trans('reviews::messages.Reviews') }} ({{ data_get($post, 'rating_count', 0) }})
 							</span>
 						</button>
 					</li>
 				@endif
 			</ul>
-			
+
 			{{-- Tab panes --}}
-			<div class="tab-content border border-top-0 rounded-bottom bg-body p-3 mb-3" id="itemsDetailsTabsContent">
-				<div class="tab-pane show active" id="item-details" role="tabpanel" aria-labelledby="item-details-tab" tabindex="0">
+			<div class="tab-content border-0 rounded-4 bg-body p-0 mb-4" id="itemsDetailsTabsContent">
+				<div class="tab-pane show active" id="item-details" role="tabpanel" aria-labelledby="item-details-tab"
+					tabindex="0">
 					<div class="row pb-3">
-						<div class="items-details-info col-md-12 col-sm-12 col-12 text-wrap from-wysiwyg">
-							
-							<div class="row border-bottom pb-2 mb-3">
-								{{-- Location --}}
-								<div class="col-md-6 col-sm-6 col-6">
-									<h4 class="p-0 fs-5 fw-normal">
-										<span class="fw-bold"><i class="bi bi-geo-alt"></i> {{ trans('global.location') }}: </span>
-										<span>
-											<a href="{!! urlGen()->city(data_get($post, 'city')) !!}" class="{{ linkClass() }}">
-												{{ data_get($post, 'city.name') }}
-											</a>
-										</span>
-									</h4>
-								</div>
-								
-								{{-- Price / Salary --}}
-								<div class="col-md-6 col-sm-6 col-6 text-end">
-									<h4 class="p-0 fs-5 fw-normal">
-										<span class="fw-bold">
-											{{ data_get($post, 'price_label') }}
-										</span>
-										<span>
-											{!! data_get($post, 'price_formatted') !!}
-											@if (data_get($post, 'negotiable') == 1)
-												<small class="badge rounded-pill text-bg-info"> {{ trans('global.negotiable') }}</small>
-											@endif
-										</span>
-									</h4>
+						<div class="items-details-info col-12 text-wrap from-wysiwyg">
+
+							<div class="px-4 py-3 border rounded-4 bg-white mb-4 shadow-sm border-light-subtle">
+								<div class="row align-items-center">
+									{{-- Location --}}
+									<div class="col-md-7 mb-3 mb-md-0">
+										<div class="d-flex align-items-center">
+											<div class="flex-shrink-0 bg-primary-subtle rounded-circle p-2 me-3 text-primary d-flex align-items-center justify-content-center"
+												style="width: 40px; height: 40px;">
+												<i class="bi bi-geo-alt fs-5"></i>
+											</div>
+											<div>
+												<small class="text-muted d-block text-uppercase fw-bold mb-0"
+													style="font-size: 0.65rem; letter-spacing: 0.5px;">{{ trans('global.location') }}</small>
+												<a href="{!! urlGen()->city(data_get($post, 'city')) !!}"
+													class="fw-bold text-dark text-decoration-none fs-5 hover-primary">
+													{{ data_get($post, 'city.name') }}
+												</a>
+											</div>
+										</div>
+									</div>
+
+									{{-- Price / Salary --}}
+									<div class="col-md-5 text-md-end">
+										<div class="d-inline-block text-md-end">
+											<small class="text-muted d-block text-uppercase fw-bold mb-0"
+												style="font-size: 0.65rem; letter-spacing: 0.5px;">{{ data_get($post, 'price_label') }}</small>
+											<div class="d-flex align-items-center justify-content-md-end">
+												<span class="fw-bolder fs-2 text-primary">
+													{!! data_get($post, 'price_formatted') !!}
+												</span>
+												@if (data_get($post, 'negotiable') == 1)
+													<span class="badge rounded-pill text-bg-info ms-2 px-3 py-2"
+														style="font-size: 0.65rem;">
+														{{ trans('global.negotiable') }}</span>
+												@endif
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
-							
+
 							{{-- Description --}}
-							<div class="row">
-								<div class="col-12 detail-line-content">
-									{!! data_get($post, 'description') !!}
+							<div class="row mb-4">
+								<div class="col-12 detail-line-content lh-base fs-6 px-3">
+									<h5 class="fw-bold mb-3 border-start border-4 border-primary ps-3">
+										{{ trans('global.Description') }}</h5>
+									<div class="text-muted">
+										{!! data_get($post, 'description') !!}
+									</div>
 								</div>
 							</div>
-							
+
 							{{-- Custom Fields --}}
-							@include('front.post.show.partials.details.fields-values')
-							
+							<div class="mt-5 px-3">
+								@include('front.post.show.partials.details.fields-values')
+							</div>
+
 							{{-- Tags --}}
 							@if (!empty(data_get($post, 'tags')))
-								<div class="row mt-3">
+								<div class="row mt-5 px-3">
 									<div class="col-12">
-										<h4 class="p-0 my-3 fs-5"><i class="bi bi-tags"></i> {{ trans('global.Tags') }}:</h4>
-										@foreach(data_get($post, 'tags') as $iTag)
-											<span class="d-inline-block border border-inverse bg-body-tertiary rounded-1 py-1 px-2 my-1 me-1">
-												<a href="{{ urlGen()->tag($iTag) }}" class="{{ linkClass() }}">
-													{{ $iTag }}
+										<h6 class="fw-bold mb-3 text-muted text-uppercase small"
+											style="letter-spacing: 1px;">
+											<i class="bi bi-tags-fill me-2 text-primary"></i>{{ trans('global.Tags') }}
+										</h6>
+										<div class="d-flex flex-wrap gap-2">
+											@foreach(data_get($post, 'tags') as $iTag)
+												<a href="{{ urlGen()->tag($iTag) }}"
+													class="btn btn-sm btn-light border-0 rounded-pill px-3 py-2 text-secondary text-decoration-none shadow-sm hover-elevate">
+													#{{ $iTag }}
 												</a>
-											</span>
-										@endforeach
+											@endforeach
+										</div>
 									</div>
 								</div>
 							@endif
-							
-							{{-- Actions --}}
+
+							{{-- Actions Section Bar --}}
 							@if (empty($authUserId) || $authUserId != data_get($post, 'user_id'))
-								<div class="row mt-4 fs-1 text-center">
-									<div class="col-4">
-										@if (!empty($authUser))
-											@if ($authUserId == data_get($post, 'user_id'))
-												<a href="{{ urlGen()->editPost($post) }}" class="{{ linkClass() }}">
-													<i class="fa-regular fa-pen-to-square" data-bs-toggle="tooltip" title="{{ trans('global.Edit') }}"></i>
-												</a>
-											@else
-												{!! genEmailContactBtn($post, false, true) !!}
+								<div class="mt-5 pt-5 border-top">
+									<div class="d-grid d-sm-flex justify-content-center gap-3">
+										@if (empty($authUser) || $authUserId != data_get($post, 'user_id'))
+											@if (empty($authUser))
+												<div class="action-btn-wrapper">
+													{!! genEmailContactBtn($post, false, true) !!}
+												</div>
 											@endif
-										@else
-											{!! genEmailContactBtn($post, false, true) !!}
 										@endif
-									</div>
-									@if (isVerifiedPost($post))
-										<div class="col-4">
+
+										@if (isVerifiedPost($post))
 											@php
 												$postId = data_get($post, 'id');
-												$savedByLoggedUser = (bool)data_get($post, 'p_saved_by_logged_user');
+												$savedByLoggedUser = (bool) data_get($post, 'p_saved_by_logged_user');
 											@endphp
-											<a class="make-favorite {{ linkClass() }}" id="{{ $postId }}" href="javascript:void(0)">
+											<button
+												class="btn btn-outline-primary rounded-pill px-4 py-2 make-favorite d-flex align-items-center justify-content-center"
+												id="{{ $postId }}">
 												@if ($savedByLoggedUser)
-													<i class="bi bi-heart-fill" data-bs-toggle="tooltip" title="{{ trans('global.Remove favorite') }}"></i>
+													<i class="bi bi-heart-fill me-2"></i> {{ trans('global.Remove favorite') }}
 												@else
-													<i class="bi bi-heart" data-bs-toggle="tooltip" title="{{ trans('global.Save listing') }}"></i>
+													<i class="bi bi-heart me-2"></i> {{ trans('global.Save listing') }}
 												@endif
+											</button>
+
+											<a href="{{ urlGen()->reportPost($post) }}"
+												class="btn btn-outline-danger rounded-pill px-4 py-2 d-flex align-items-center justify-content-center">
+												<i class="bi bi-flag-fill me-2"></i> {{ trans('global.Report abuse') }}
 											</a>
-										</div>
-										<div class="col-4">
-											<a href="{{ urlGen()->reportPost($post) }}" class="{{ linkClass() }}">
-												<i class="fa-regular fa-flag" data-bs-toggle="tooltip" title="{{ trans('global.Report abuse') }}"></i>
-											</a>
-										</div>
-									@endif
+										@endif
+									</div>
 								</div>
 							@endif
 						</div>
-					
+
 					</div>
 				</div>
-				
+
 				@if (config('addons.reviews.installed'))
 					@if (view()->exists('reviews::comments'))
 						@include('reviews::comments')
 					@endif
-				@endif
-			</div>
-		</div>
-		
-		<div class="col-12">
-			<div class="hstack gap-3 text-start">
-				@if (!empty($authUser))
-					@if ($authUserId == data_get($post, 'user_id'))
-						<a class="btn btn-outline-primary" href="{{ urlGen()->editPost($post) }}">
-							<i class="fa-regular fa-pen-to-square"></i> {{ trans('global.Edit') }}
-						</a>
-					@else
-						@php
-							$phone = data_get($post, 'phone');
-							$isPhoneHidden = (data_get($post, 'phone_hidden') == 1);
-						@endphp
-						@if (!empty($phone) && !$isPhoneHidden)
-							@php
-								$phoneDigits = keepOnlyNumericChars($phone);
-								$sellerName = data_get($post, 'contact_name');
-								$userName = (!empty($authUser)) ? $authUser->name : 'um interessado';
-								$price = data_get($post, 'price_formatted');
-								$waMessage = trans('global.whatsapp_pre_filled_message', [
-									'sellerName' => $sellerName,
-									'userName'   => $userName,
-									'title'      => data_get($post, 'title'),
-									'price'      => $price,
-									'appName'    => config('app.name'),
-									'url'        => urlGen()->post($post)
-								]);
-								$waUrl = "https://wa.me/" . $phoneDigits . "?text=" . urlencode($waMessage);
-							@endphp
-							<a href="{{ $waUrl }}" target="_blank" class="btn btn-success">
-								<i class="fa-brands fa-whatsapp"></i> WhatsApp
-							</a>
-						@endif
-						
-					@endif
-				@else
-					@php
-						$phone = data_get($post, 'phone');
-						$isPhoneHidden = (data_get($post, 'phone_hidden') == 1);
-					@endphp
-					@if (!empty($phone) && !$isPhoneHidden)
-						@php
-							$phoneDigits = keepOnlyNumericChars($phone);
-							$sellerName = data_get($post, 'contact_name');
-							$userName = (!empty($authUser)) ? $authUser->name : 'um interessado';
-							$price = data_get($post, 'price_formatted');
-							$waMessage = trans('global.whatsapp_pre_filled_message', [
-								'sellerName' => $sellerName,
-								'userName'   => $userName,
-								'title'      => data_get($post, 'title'),
-								'price'      => $price,
-								'appName'    => config('app.name'),
-								'url'        => urlGen()->post($post)
-							]);
-							$waUrl = "https://wa.me/" . $phoneDigits . "?text=" . urlencode($waMessage);
-						@endphp
-						<a href="{{ $waUrl }}" target="_blank" class="btn btn-success">
-							<i class="fa-brands fa-whatsapp"></i> WhatsApp
-						</a>
-					@endif
-					
 				@endif
 			</div>
 		</div>

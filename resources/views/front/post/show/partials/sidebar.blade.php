@@ -30,107 +30,98 @@
 
 	$linkClass = linkClass();
 @endphp
-<aside class="vstack gap-md-4 gap-3">
-	<div class="card">
+<aside class="vstack gap-4">
+	{{-- Author Info Card --}}
+	<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
 		@if ($isPostOwner)
-			<div class="card-header fw-bold">
-				{{ trans('global.Manage Listing') }}
+			<div class="card-header bg-primary bg-opacity-10 border-0 fw-bold text-primary py-3">
+				<i class="bi bi-gear-fill me-2"></i>{{ trans('global.Manage Listing') }}
 			</div>
 		@endif
-		<div class="card-body">
+		<div class="card-body p-4">
 			{{-- Author Info (for Guests & Non-Owner Users) --}}
 			@if (!$isPostOwner)
-				<div class="container p-0 border-bottom pb-3 mb-3">
-					<div class="row">
-						<div class="col-md-8 vstack gap-1">
-							<small class="text-secondary">{{ trans('global.Posted by') }}</small>
-							<span class="fs-6 fw-bold">
-								@if (!empty($user))
-									<a href="{{ urlGen()->user($user) }}" class="{{ $linkClass }}">
-										{{ data_get($post, 'contact_name') }}
-									</a>
-								@else
-									{{ data_get($post, 'contact_name') }}
-								@endif
-							</span>
-
-							@if (config('addons.reviews.installed'))
-								@if (view()->exists('reviews::ratings-user'))
-									@include('reviews::ratings-user')
-								@endif
-							@endif
+				<div class="text-center mb-4">
+					<div class="d-inline-block position-relative mb-3">
+						<div class="bg-light rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+							style="width: 80px; height: 80px;">
+							<i class="bi bi-person fs-1 text-secondary"></i>
 						</div>
 					</div>
-				</div>
-			@endif
-
-			{{-- Author Additional Info (for Guests & Non-Owner Users) --}}
-			@php
-				$evActionClass = 'border-top-0';
-			@endphp
-			@if (!$isPostOwner)
-				<div class="container p-0 mb-3 text-secondary small">
-					<div class="row my-2">
-						<div class="col-6 text-start">
-							<i class="bi bi-geo-alt"></i> {{ trans('global.location') }}
-						</div>
-						<div class="col-6 text-end">
-							<a href="{!! urlGen()->city(data_get($post, 'city')) !!}" class="{{ $linkClass }}">
-								{{ data_get($post, 'city.name') }}
+					<h5 class="fw-bold mb-1">
+						@if (!empty($user))
+							<a href="{{ urlGen()->user($user) }}" class="text-dark text-decoration-none hover-primary">
+								{{ data_get($post, 'contact_name') }}
 							</a>
-						</div>
-					</div>
-					@if (!config('settings.listing_page.hide_date'))
-						@if (!empty($user) && !empty(data_get($user, 'created_at_formatted')))
-							<div class="row my-2">
-								<div class="col-6 text-start">
-									<i class="bi bi-person-check"></i> {{ trans('global.Joined') }}
-								</div>
-								<div class="col-6 text-end">
-									<span>{!! data_get($user, 'created_at_formatted') !!}</span>
-								</div>
+						@else
+							{{ data_get($post, 'contact_name') }}
+						@endif
+					</h5>
+					<small class="text-muted">{{ trans('global.Posted by') }}</small>
+
+					@if (config('addons.reviews.installed'))
+						@if (view()->exists('reviews::ratings-user'))
+							<div class="mt-2">
+								@include('reviews::ratings-user')
 							</div>
 						@endif
 					@endif
 				</div>
-				@php
-					$evActionClass = 'border-top pt-3';
-				@endphp
+
+				<div class="bg-light rounded-3 p-3 mb-4 small text-secondary">
+					<div class="d-flex justify-content-between mb-2 pb-2 border-bottom border-white">
+						<span><i class="bi bi-geo-alt me-2 text-primary"></i>{{ trans('global.location') }}</span>
+						<a href="{!! urlGen()->city(data_get($post, 'city')) !!}"
+							class="text-dark fw-bold text-decoration-none">
+							{{ data_get($post, 'city.name') }}
+						</a>
+					</div>
+					@if (!config('settings.listing_page.hide_date'))
+						@if (!empty($user) && !empty(data_get($user, 'created_at_formatted')))
+							<div class="d-flex justify-content-between">
+								<span><i class="bi bi-calendar3 me-2 text-primary"></i>{{ trans('global.Joined') }}</span>
+								<span class="text-dark fw-bold">{!! data_get($user, 'created_at_formatted') !!}</span>
+							</div>
+						@endif
+					@endif
+				</div>
 			@endif
 
 			{{-- Actions Buttons --}}
-			<div class="container p-0 {{ $evActionClass }} d-grid gap-2">
+			<div class="d-grid gap-2">
 				{{-- Actions Buttons (for Logged-in Users) --}}
 				@if (!empty($authUser))
 					@if ($isPostOwner)
 						{{-- Actions Buttons (for Owner Author) --}}
-						<a href="{{ urlGen()->editPost($post) }}" class="btn btn-primary">
-							<i class="fa-regular fa-pen-to-square"></i> {{ trans('global.Update the details') }}
+						<a href="{{ urlGen()->editPost($post) }}" class="btn btn-primary rounded-pill py-2 fw-bold shadow-sm">
+							<i class="fa-regular fa-pen-to-square me-2"></i> {{ trans('global.Update the details') }}
 						</a>
 						@if (isMultipleStepsFormEnabled())
-							<a href="{{ url('posts/' . data_get($post, 'id') . '/photos') }}" class="btn btn-secondary">
-								<i class="fa-solid fa-camera"></i> {{ trans('global.Update Photos') }}
+							<a href="{{ url('posts/' . data_get($post, 'id') . '/photos') }}"
+								class="btn btn-outline-secondary rounded-pill py-2 fw-bold">
+								<i class="fa-solid fa-camera me-2"></i> {{ trans('global.Update Photos') }}
 							</a>
 							@if ($countPackages > 0 && $countPaymentMethods > 0)
-								<a href="{{ url('posts/' . data_get($post, 'id') . '/payment') }}" class="btn btn-success">
-									<i class="fa-regular fa-circle-check"></i> {{ trans('global.Make It Premium') }}
+								<a href="{{ url('posts/' . data_get($post, 'id') . '/payment') }}"
+									class="btn btn-success rounded-pill py-2 fw-bold shadow-sm text-white">
+									<i class="fa-regular fa-circle-check me-2"></i> {{ trans('global.Make It Premium') }}
 								</a>
 							@endif
 						@endif
 						@if (empty(data_get($post, 'archived_at')) && isVerifiedPost($post))
 							<a href="{{ url(urlGen()->getAccountBasePath() . '/posts/list/' . data_get($post, 'id') . '/offline') }}"
-								class="btn btn-warning confirm-simple-action">
-								<i class="fa-solid fa-eye-slash"></i> {{ trans('global.put_it_offline') }}
+								class="btn btn-warning rounded-pill py-2 fw-bold confirm-simple-action">
+								<i class="fa-solid fa-eye-slash me-2"></i> {{ trans('global.put_it_offline') }}
 							</a>
 						@endif
 						@if (!empty(data_get($post, 'archived_at')))
 							<a href="{{ url(urlGen()->getAccountBasePath() . '/posts/archived/' . data_get($post, 'id') . '/repost') }}"
-								class="btn btn-info confirm-simple-action">
-								<i class="fa-solid fa-recycle"></i> {{ trans('global.re_post_it') }}
+								class="btn btn-info rounded-pill py-2 fw-bold text-white confirm-simple-action">
+								<i class="fa-solid fa-recycle me-2"></i> {{ trans('global.re_post_it') }}
 							</a>
 						@endif
 					@else
-						{{-- Actions Buttons (for Non-Owner Users) --}}
+						{{-- WhatsApp Button (for Non-Owner Users) --}}
 						@php
 							$phone = data_get($post, 'phone');
 							$isPhoneHidden = (data_get($post, 'phone_hidden') == 1);
@@ -151,14 +142,20 @@
 								]);
 								$waUrl = "https://wa.me/" . $phoneDigits . "?text=" . urlencode($waMessage);
 							@endphp
-							<a href="{{ $waUrl }}" target="_blank" class="btn btn-success btn-block">
-								<i class="fa-brands fa-whatsapp"></i> WhatsApp
+							<a href="{{ $waUrl }}" target="_blank"
+								class="btn btn-success rounded-pill py-2 py-md-2 fw-bold shadow-sm text-white border-0 hover-lift mb-2"
+								style="background-color: #25D366;">
+								<i class="fa-brands fa-whatsapp fs-5 me-2"></i> Chamar no WhatsApp
 							</a>
 						@endif
 
+						<button type="button" class="btn btn-outline-primary rounded-pill py-2 py-md-2 fw-bold shadow-sm mb-2"
+							data-bs-toggle="modal" data-bs-target="#contactUser">
+							<i class="bi bi-envelope me-2"></i> {{ trans('global.contact_advertiser') }}
+						</button>
 					@endif
 
-					{{-- Actions Buttons (for Admin Users Only) --}}
+					{{-- Admin Ban User --}}
 					@php
 						try {
 							if (doesUserHavePermission($authUser, \App\Models\Permission::getStaffPermissions())) {
@@ -169,35 +166,15 @@
 								$btnUrl = $btnUrl . $btnQs;
 
 								if (!isDemoDomain($btnUrl)) {
-									$btnText = trans('admin.ban_the_user');
-									$btnHint = $btnText;
-									if (!empty(data_get($post, 'email')) && !empty(data_get($post, 'phone'))) {
-										$btnHint = trans('admin.ban_the_user_email_and_phone', [
-											'email' => data_get($post, 'email'),
-											'phone' => data_get($post, 'phone'),
-										]);
-									} else {
-										if (!empty(data_get($post, 'email'))) {
-											$btnHint = trans('admin.ban_the_user_email', ['email' => data_get($post, 'email')]);
-										}
-										if (!empty(data_get($post, 'phone'))) {
-											$btnHint = trans('admin.ban_the_user_phone', ['phone' => data_get($post, 'phone')]);
-										}
-									}
-									$tooltip = ' data-bs-toggle="tooltip" data-bs-placement="bottom" title="' . $btnHint . '"';
-
-									$btnOut = '<a href="' . $btnUrl . '" class="btn btn-outline-danger confirm-simple-action"' . $tooltip . '>';
-									$btnOut .= $btnText;
-									$btnOut .= '</a>';
-
-									echo $btnOut;
+									echo '<a href="' . $btnUrl . '" class="btn btn-link text-danger text-decoration-none fw-bold small mt-2 confirm-simple-action">
+										<i class="bi bi-shield-slash me-1"></i>' . trans('admin.ban_the_user') . '</a>';
 								}
 							}
 						} catch (\Throwable $e) {
 						}
 					@endphp
 				@else
-					{{-- Actions Buttons (for Guests) --}}
+					{{-- Guest Buttons --}}
 					@php
 						$phone = data_get($post, 'phone');
 						$isPhoneHidden = (data_get($post, 'phone_hidden') == 1);
@@ -206,11 +183,10 @@
 						@php
 							$phoneDigits = keepOnlyNumericChars($phone);
 							$sellerName = data_get($post, 'contact_name');
-							$userName = (!empty($authUser)) ? $authUser->name : 'um interessado';
 							$price = data_get($post, 'price_formatted');
 							$waMessage = trans('global.whatsapp_pre_filled_message', [
 								'sellerName' => $sellerName,
-								'userName' => $userName,
+								'userName' => 'um interessado',
 								'title' => data_get($post, 'title'),
 								'price' => $price,
 								'appName' => config('app.name'),
@@ -218,24 +194,30 @@
 							]);
 							$waUrl = "https://wa.me/" . $phoneDigits . "?text=" . urlencode($waMessage);
 						@endphp
-						<a href="{{ $waUrl }}" target="_blank" class="btn btn-success btn-block">
-							<i class="fa-brands fa-whatsapp"></i> WhatsApp
+						<a href="{{ $waUrl }}" target="_blank"
+							class="btn btn-success rounded-pill py-2 py-md-2 fw-bold shadow-sm text-white border-0 hover-lift mb-2"
+							style="background-color: #25D366;">
+							<i class="fa-brands fa-whatsapp fs-5 me-2"></i> Chamar no WhatsApp
 						</a>
 					@endif
 
+					<a href="{{ url('login') }}"
+						class="btn btn-outline-primary rounded-pill py-2 py-md-2 fw-bold shadow-sm mb-2">
+						<i class="bi bi-envelope me-2"></i> {{ trans('global.contact_advertiser') }}
+					</a>
 				@endif
 			</div>
 		</div>
 	</div>
 
-	{{-- Google Maps --}}
+	{{-- Google Maps Card --}}
 	@if ($isMapEnabled)
-		<div class="card">
-			<div class="card-header fw-bold">
-				{{ trans('global.location_map') }}
+		<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+			<div class="card-header bg-white border-0 fw-bold py-3">
+				<i class="bi bi-geo-alt-fill me-2 text-primary"></i>{{ trans('global.location_map') }}
 			</div>
-			<div class="card-body text-start p-0">
-				<div class="posts-googlemaps">
+			<div class="card-body p-0">
+				<div class="posts-googlemaps rounded-bottom">
 					@if ($useGeocodingApi)
 						<div id="googleMaps" style="width: 100%; height: {{ $mapHeight }}px;"></div>
 					@else
@@ -247,12 +229,17 @@
 		</div>
 	@endif
 
-	{{-- Social Media Sharing --}}
+	{{-- Social Media Sharing
 	@if (isVerifiedPost($post))
+	<div class="card border-0 shadow-sm rounded-4 text-center p-3">
+		<small class="text-muted text-uppercase fw-bold mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">{{
+			trans('global.Share') }}</small>
 		@include('front.layouts.partials.social.horizontal')
+	</div>
 	@endif
+	--}}
 
-	{{-- Safety Tips --}}
+	{{-- Safety Tips Card --}}
 	@php
 		$tips = [
 			trans('global.Meet seller at a public place'),
@@ -260,28 +247,32 @@
 			trans('global.Pay only after collecting the item'),
 		];
 	@endphp
-	<div class="card">
-		<div class="card-header fw-bold">
-			{{ trans('global.Safety Tips for Buyers') }}
-		</div>
-		<div class="card-body text-start">
-			<ul class="list-unstyled">
+	<div class="card border-0 shadow-sm rounded-4 bg-warning bg-opacity-10 border-start border-4 border-warning">
+		<div class="card-body p-4">
+			<h6 class="fw-bold text-warning-emphasis mb-3">
+				<i class="bi bi-shield-check me-2"></i>{{ trans('global.Safety Tips for Buyers') }}
+			</h6>
+			<ul class="list-unstyled mb-0 small text-warning-emphasis fw-medium">
 				@foreach($tips as $tip)
-					<li><i class="bi bi-check-lg"></i> {{ $tip }}</li>
+					<li class="mb-2 d-flex align-items-start">
+						<i class="bi bi-check-circle-fill me-2 mt-1"></i>
+						<span>{{ $tip }}</span>
+					</li>
 				@endforeach
 			</ul>
 			@php
 				$tipsLinkAttributes = getUrlPageByType('tips');
 			@endphp
 			@if (!str_contains($tipsLinkAttributes, 'href="#"') && !str_contains($tipsLinkAttributes, 'href=""'))
-				<p>
-					<a class="float-end {{ $linkClass }}" {!! $tipsLinkAttributes !!}>
-						{{ trans('global.Know more') }} <i class="fa-solid fa-angles-right"></i>
+				<div class="mt-3 pt-2 border-top border-warning border-opacity-25 text-end">
+					<a class="text-warning-emphasis text-decoration-none small fw-bold" {!! $tipsLinkAttributes !!}>
+						{{ trans('global.Know more') }} <i class="bi bi-arrow-right ms-1"></i>
 					</a>
-				</p>
+				</div>
 			@endif
 		</div>
 	</div>
+</aside>
 </aside>
 
 @section('after_scripts')
