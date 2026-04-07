@@ -42,9 +42,6 @@
 			@if (!$isPostOwner)
 				<div class="container p-0 border-bottom pb-3 mb-3">
 					<div class="row">
-						<div class="col-md-4">
-							<img src="{{ data_get($post, 'user_photo_url') }}" class="img-fluid rounded" alt="{{ data_get($post, 'contact_name') }}">
-						</div>
 						<div class="col-md-8 vstack gap-1">
 							<small class="text-secondary">{{ trans('global.Posted by') }}</small>
 							<span class="fs-6 fw-bold">
@@ -136,7 +133,30 @@
 						@endif
 					@else
 						{{-- Actions Buttons (for Non-Owner Users) --}}
-						{!! genPhoneNumberBtn($post, true) !!}
+						@php
+							$phone = data_get($post, 'phone');
+							$isPhoneHidden = (data_get($post, 'phone_hidden') == 1);
+						@endphp
+						@if (!empty($phone) && !$isPhoneHidden)
+							@php
+								$phoneDigits = keepOnlyNumericChars($phone);
+								$sellerName = data_get($post, 'contact_name');
+								$userName = (!empty($authUser)) ? $authUser->name : 'um interessado';
+								$price = data_get($post, 'price_formatted');
+								$waMessage = trans('global.whatsapp_pre_filled_message', [
+									'sellerName' => $sellerName,
+									'userName'   => $userName,
+									'title'      => data_get($post, 'title'),
+									'price'      => $price,
+									'appName'    => config('app.name'),
+									'url'        => urlGen()->post($post)
+								]);
+								$waUrl = "https://wa.me/" . $phoneDigits . "?text=" . urlencode($waMessage);
+							@endphp
+							<a href="{{ $waUrl }}" target="_blank" class="btn btn-success btn-block">
+								<i class="fa-brands fa-whatsapp"></i> WhatsApp
+							</a>
+						@endif
 						{!! genEmailContactBtn($post, true) !!}
 					@endif
 					
@@ -179,7 +199,30 @@
 					@endphp
 				@else
 					{{-- Actions Buttons (for Guests) --}}
-					{!! genPhoneNumberBtn($post, true) !!}
+					@php
+						$phone = data_get($post, 'phone');
+						$isPhoneHidden = (data_get($post, 'phone_hidden') == 1);
+					@endphp
+					@if (!empty($phone) && !$isPhoneHidden)
+						@php
+							$phoneDigits = keepOnlyNumericChars($phone);
+							$sellerName = data_get($post, 'contact_name');
+							$userName = (!empty($authUser)) ? $authUser->name : 'um interessado';
+							$price = data_get($post, 'price_formatted');
+							$waMessage = trans('global.whatsapp_pre_filled_message', [
+								'sellerName' => $sellerName,
+								'userName'   => $userName,
+								'title'      => data_get($post, 'title'),
+								'price'      => $price,
+								'appName'    => config('app.name'),
+								'url'        => urlGen()->post($post)
+							]);
+							$waUrl = "https://wa.me/" . $phoneDigits . "?text=" . urlencode($waMessage);
+						@endphp
+						<a href="{{ $waUrl }}" target="_blank" class="btn btn-success btn-block">
+							<i class="fa-brands fa-whatsapp"></i> WhatsApp
+						</a>
+					@endif
 					{!! genEmailContactBtn($post, true) !!}
 				@endif
 			</div>

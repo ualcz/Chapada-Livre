@@ -846,7 +846,7 @@ return [
 	'call' => 'Call',
 	'call_now' => 'Call Now!',
 	'chat_on_whatsapp' => 'Chat with the author on WhatsApp',
-	'whatsapp_pre_filled_message' => 'I\'m interested in your listing ":title" posted on :appName',
+	'whatsapp_pre_filled_message' => 'Hello :sellerName, I\'m interested in your listing ":title" (:price) posted on :appName. My name is :userName. :url',
 	'go_to_parent_categories' => 'Go to parent categories',
 	'Root' => 'Root',
 	'post_type_hint' => 'This will be displayed on the listing details page to inform other users.',
