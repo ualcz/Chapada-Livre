@@ -73,6 +73,27 @@ class PortugueseLanguageSeeder extends Seeder
         } catch (\Exception $e) {
             $this->command->warn('Erro ao atualizar itens de menu: ' . $e->getMessage());
         }
+        $this->command->info('Corrigindo a tradução das categorias...');
+        try {
+            $categories = \DB::table('categories')->get();
+            foreach ($categories as $category) {
+                $name = json_decode($category->name, true);
+                if (!is_array($name)) continue;
+
+                if (!isset($name['pt']) || empty($name['pt'])) {
+                    // Use English as fallback for placeholders like {user.name}
+                    // or other fields that might be empty in PT
+                    if (isset($name['en'])) {
+                        $name['pt'] = $name['en'];
+                        \DB::table('categories')->where('id', $category->id)->update([
+                            'name' => json_encode($name)
+                        ]);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            $this->command->warn('Erro ao atualizar categorias: ' . $e->getMessage());
+        }
         $this->command->info('Traduções concluídas.');
     }
 }

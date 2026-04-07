@@ -1,14 +1,14 @@
 @php
 	$authUser = auth()->check() ? auth()->user() : null;
 	$authUserId = !empty($authUser) ? $authUser->getAuthIdentifier() : 0;
-	
+
 	$post ??= [];
 	$user ??= [];
 	$countPackages ??= 0;
 	$countPaymentMethods ??= 0;
-	
+
 	$isPostOwner = (!empty($authUserId) && $authUserId == data_get($post, 'user_id'));
-	
+
 	// Google Maps
 	$isMapEnabled = (config('settings.listing_page.show_listing_on_googlemap') == '1');
 	$useGeocodingApi = (config('settings.other.google_maps_integration_type') == 'geocoding');
@@ -16,18 +16,18 @@
 	$mapsEmbedApiKey = config('services.google_maps_platform.maps_embed_api_key');
 	$geocodingApiKey = config('services.google_maps_platform.geocoding_api_key');
 	$useAsyncGeocoding = (config('settings.other.use_async_geocoding') == '1');
-	
+
 	$mapsEmbedApiKey ??= $mapsJavascriptApiKey;
 	$geocodingApiKey ??= $mapsJavascriptApiKey;
 	$geocodingApiKey = $useAsyncGeocoding ? $geocodingApiKey : $mapsJavascriptApiKey;
-	
+
 	$mapHeight = 250;
 	$city = data_get($post, 'city', []);
 	$geoMapAddress = getItemAddressForMap($city);
-	
+
 	$mapsEmbedApiUrl = getGoogleMapsEmbedApiUrl($mapsEmbedApiKey, $geoMapAddress);
 	$geocodingApiUrl = getGoogleMapsApiUrl($geocodingApiKey, $useAsyncGeocoding);
-	
+
 	$linkClass = linkClass();
 @endphp
 <aside class="vstack gap-md-4 gap-3">
@@ -45,15 +45,15 @@
 						<div class="col-md-8 vstack gap-1">
 							<small class="text-secondary">{{ trans('global.Posted by') }}</small>
 							<span class="fs-6 fw-bold">
-							@if (!empty($user))
-								<a href="{{ urlGen()->user($user) }}" class="{{ $linkClass }}">
-									{{ data_get($post, 'contact_name') }}
-								</a>
+								@if (!empty($user))
+									<a href="{{ urlGen()->user($user) }}" class="{{ $linkClass }}">
+										{{ data_get($post, 'contact_name') }}
+									</a>
 								@else
 									{{ data_get($post, 'contact_name') }}
 								@endif
 							</span>
-							
+
 							@if (config('addons.reviews.installed'))
 								@if (view()->exists('reviews::ratings-user'))
 									@include('reviews::ratings-user')
@@ -63,7 +63,7 @@
 					</div>
 				</div>
 			@endif
-			
+
 			{{-- Author Additional Info (for Guests & Non-Owner Users) --}}
 			@php
 				$evActionClass = 'border-top-0';
@@ -97,7 +97,7 @@
 					$evActionClass = 'border-top pt-3';
 				@endphp
 			@endif
-			
+
 			{{-- Actions Buttons --}}
 			<div class="container p-0 {{ $evActionClass }} d-grid gap-2">
 				{{-- Actions Buttons (for Logged-in Users) --}}
@@ -119,15 +119,13 @@
 						@endif
 						@if (empty(data_get($post, 'archived_at')) && isVerifiedPost($post))
 							<a href="{{ url(urlGen()->getAccountBasePath() . '/posts/list/' . data_get($post, 'id') . '/offline') }}"
-							   class="btn btn-warning confirm-simple-action"
-							>
+								class="btn btn-warning confirm-simple-action">
 								<i class="fa-solid fa-eye-slash"></i> {{ trans('global.put_it_offline') }}
 							</a>
 						@endif
 						@if (!empty(data_get($post, 'archived_at')))
 							<a href="{{ url(urlGen()->getAccountBasePath() . '/posts/archived/' . data_get($post, 'id') . '/repost') }}"
-							   class="btn btn-info confirm-simple-action"
-							>
+								class="btn btn-info confirm-simple-action">
 								<i class="fa-solid fa-recycle"></i> {{ trans('global.re_post_it') }}
 							</a>
 						@endif
@@ -145,11 +143,11 @@
 								$price = data_get($post, 'price_formatted');
 								$waMessage = trans('global.whatsapp_pre_filled_message', [
 									'sellerName' => $sellerName,
-									'userName'   => $userName,
-									'title'      => data_get($post, 'title'),
-									'price'      => $price,
-									'appName'    => config('app.name'),
-									'url'        => urlGen()->post($post)
+									'userName' => $userName,
+									'title' => data_get($post, 'title'),
+									'price' => $price,
+									'appName' => config('app.name'),
+									'url' => urlGen()->post($post)
 								]);
 								$waUrl = "https://wa.me/" . $phoneDigits . "?text=" . urlencode($waMessage);
 							@endphp
@@ -157,9 +155,9 @@
 								<i class="fa-brands fa-whatsapp"></i> WhatsApp
 							</a>
 						@endif
-						{!! genEmailContactBtn($post, true) !!}
+
 					@endif
-					
+
 					{{-- Actions Buttons (for Admin Users Only) --}}
 					@php
 						try {
@@ -169,7 +167,7 @@
 								$btnQs = (!empty($btnQs)) ? $btnQs . '&' : $btnQs;
 								$btnQs = (!empty(data_get($post, 'phone'))) ? $btnQs . 'phone=' . data_get($post, 'phone') : $btnQs;
 								$btnUrl = $btnUrl . $btnQs;
-								
+
 								if (!isDemoDomain($btnUrl)) {
 									$btnText = trans('admin.ban_the_user');
 									$btnHint = $btnText;
@@ -187,15 +185,16 @@
 										}
 									}
 									$tooltip = ' data-bs-toggle="tooltip" data-bs-placement="bottom" title="' . $btnHint . '"';
-									
-									$btnOut = '<a href="'. $btnUrl .'" class="btn btn-outline-danger confirm-simple-action"'. $tooltip .'>';
+
+									$btnOut = '<a href="' . $btnUrl . '" class="btn btn-outline-danger confirm-simple-action"' . $tooltip . '>';
 									$btnOut .= $btnText;
 									$btnOut .= '</a>';
-									
+
 									echo $btnOut;
 								}
 							}
-						} catch (\Throwable $e) {}
+						} catch (\Throwable $e) {
+						}
 					@endphp
 				@else
 					{{-- Actions Buttons (for Guests) --}}
@@ -211,11 +210,11 @@
 							$price = data_get($post, 'price_formatted');
 							$waMessage = trans('global.whatsapp_pre_filled_message', [
 								'sellerName' => $sellerName,
-								'userName'   => $userName,
-								'title'      => data_get($post, 'title'),
-								'price'      => $price,
-								'appName'    => config('app.name'),
-								'url'        => urlGen()->post($post)
+								'userName' => $userName,
+								'title' => data_get($post, 'title'),
+								'price' => $price,
+								'appName' => config('app.name'),
+								'url' => urlGen()->post($post)
 							]);
 							$waUrl = "https://wa.me/" . $phoneDigits . "?text=" . urlencode($waMessage);
 						@endphp
@@ -223,12 +222,12 @@
 							<i class="fa-brands fa-whatsapp"></i> WhatsApp
 						</a>
 					@endif
-					{!! genEmailContactBtn($post, true) !!}
+
 				@endif
 			</div>
 		</div>
 	</div>
-	
+
 	{{-- Google Maps --}}
 	@if ($isMapEnabled)
 		<div class="card">
@@ -240,25 +239,19 @@
 					@if ($useGeocodingApi)
 						<div id="googleMaps" style="width: 100%; height: {{ $mapHeight }}px;"></div>
 					@else
-						<iframe id="googleMaps"
-						        width="100%"
-						        height="{{ $mapHeight }}"
-						        src="{{ $mapsEmbedApiUrl }}"
-						        loading="lazy"
-						        style="border:0;"
-						        allowfullscreen
-						></iframe>
+						<iframe id="googleMaps" width="100%" height="{{ $mapHeight }}" src="{{ $mapsEmbedApiUrl }}"
+							loading="lazy" style="border:0;" allowfullscreen></iframe>
 					@endif
 				</div>
 			</div>
 		</div>
 	@endif
-	
+
 	{{-- Social Media Sharing --}}
 	@if (isVerifiedPost($post))
 		@include('front.layouts.partials.social.horizontal')
 	@endif
-	
+
 	{{-- Safety Tips --}}
 	@php
 		$tips = [
@@ -299,7 +292,7 @@
 			@if (!empty($geocodingApiUrl))
 				<script async defer src="{{ $geocodingApiUrl }}"></script>
 			@endif
-			
+
 			{{-- JS code to append the map --}}
 			<script>
 				var geocodingApiKey = '{{ $geocodingApiKey }}';

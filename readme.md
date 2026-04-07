@@ -160,6 +160,7 @@ docker-compose logs -f mysql
 # Executar migrations e seeders
 docker-compose exec app php artisan migrate --force
 docker-compose exec app php artisan db:seed --class=ChapadaDiamantinaCitiesSeeder --force
+docker-compose exec app php artisan db:seed --class=PortugueseLanguageSeeder --force
 docker-compose exec app php artisan cache:clear
 docker-compose exec app php artisan view:clear
 ```

@@ -188,7 +188,7 @@
 								<i class="fa-brands fa-whatsapp"></i> WhatsApp
 							</a>
 						@endif
-						{!! genEmailContactBtn($post) !!}
+						
 					@endif
 				@else
 					@php
@@ -215,7 +215,7 @@
 							<i class="fa-brands fa-whatsapp"></i> WhatsApp
 						</a>
 					@endif
-					{!! genEmailContactBtn($post) !!}
+					
 				@endif
 			</div>
 		</div>
