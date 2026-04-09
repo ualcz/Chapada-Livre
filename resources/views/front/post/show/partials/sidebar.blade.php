@@ -132,7 +132,9 @@
 								$sellerName = data_get($post, 'contact_name');
 								$userName = (!empty($authUser)) ? $authUser->name : 'um interessado';
 								$price = data_get($post, 'price_formatted');
-								$waMessage = trans('global.whatsapp_pre_filled_message', [
+								$hasPrice = (data_get($post, 'price') > 0);
+								$tranKey = $hasPrice ? 'global.whatsapp_pre_filled_message' : 'global.whatsapp_pre_filled_message_no_price';
+								$waMessage = trans($tranKey, [
 									'sellerName' => $sellerName,
 									'userName' => $userName,
 									'title' => data_get($post, 'title'),
@@ -167,7 +169,7 @@
 
 								if (!isDemoDomain($btnUrl)) {
 									echo '<a href="' . $btnUrl . '" class="btn btn-link text-danger text-decoration-none fw-bold small mt-2 confirm-simple-action">
-										<i class="bi bi-shield-slash me-1"></i>' . trans('admin.ban_the_user') . '</a>';
+																				<i class="bi bi-shield-slash me-1"></i>' . trans('admin.ban_the_user') . '</a>';
 								}
 							}
 						} catch (\Throwable $e) {
@@ -184,7 +186,9 @@
 							$phoneDigits = keepOnlyNumericChars($phone);
 							$sellerName = data_get($post, 'contact_name');
 							$price = data_get($post, 'price_formatted');
-							$waMessage = trans('global.whatsapp_pre_filled_message', [
+							$hasPrice = (data_get($post, 'price') > 0);
+							$tranKey = $hasPrice ? 'global.whatsapp_pre_filled_message' : 'global.whatsapp_pre_filled_message_no_price';
+							$waMessage = trans($tranKey, [
 								'sellerName' => $sellerName,
 								'userName' => 'um interessado',
 								'title' => data_get($post, 'title'),

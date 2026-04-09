@@ -1,3 +1,66 @@
+<style>
+	.location-card .card {
+		border: none;
+		box-shadow: none;
+		background: transparent !important;
+	}
+	.section-title-underline {
+		position: relative;
+		padding-bottom: 10px;
+		margin-bottom: 25px;
+		display: inline-block;
+	}
+	.section-title-underline::after {
+		content: "";
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 40px;
+		height: 4px;
+		background: var(--bs-primary);
+		border-radius: 2px;
+	}
+	.city-chips-container {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.city-chip {
+		display: inline-flex;
+		align-items: center;
+		background: #fff;
+		border: 1px solid rgba(0,0,0,0.06);
+		padding: 8px 14px;
+		border-radius: 20px;
+		color: #2d3748;
+		transition: all 0.25s ease;
+		text-decoration: none;
+		font-size: 0.88rem;
+		box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+	}
+	.city-chip:hover {
+		background: #fff;
+		border-color: var(--bs-primary);
+		color: var(--bs-primary);
+		box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+		transform: translateY(-2px);
+	}
+	.city-chip i {
+		margin-right: 5px;
+		font-size: 0.95rem;
+		color: #a0aec0;
+	}
+	@media (max-width: 575px) {
+		.city-chips-container { gap: 6px; }
+		.city-chip {
+			font-size: 0.8rem;
+			padding: 6px 12px;
+			border-radius: 16px;
+		}
+		.city-chip i { font-size: 0.85rem; }
+	}
+</style>
+
 @php
 	$sectionOptions = $locationsOptions ?? [];
 	
@@ -26,21 +89,22 @@
 	$cities = (array)($sectionData['cities'] ?? []);
 @endphp
 @if ($locCanBeShown || $mapCanBeShown)
-	<div class="container{{ $cssClasses }} location-card" style="{!! $style !!}">
-		<div class="card bg-body-tertiary"{!! $htmlAttr !!}>
-			<div class="card-body rounded p-4 p-lg-3 pb-lg-4 p-md-2">
+	<div class="container{{ $cssClasses }} pt-2 pb-4 location-card" style="{!! $style !!}">
+		<div class="card border-0 bg-transparent"{!! $htmlAttr !!}>
+			<div class="card-body p-0">
 				
 				<div class="row">
 					@if (!$mapCanBeShown)
-						<div class="row">
-							<div class="col-xl-12 col-sm-12">
-								<h4 class="pb-3 px-0 fw-bold text-nowrap">
-									<i class="bi bi-geo-alt"></i>&nbsp;{{ trans('global.Choose a city') }}
-								</h4>
+						<div class="d-flex justify-content-between align-items-end mb-4">
+							<div>
+								<h2 class="mb-0 fw-black text-dark" style="letter-spacing: -0.5px; font-size: clamp(1.2rem, 3vw, 1.7rem);">
+									<i class="bi bi-geo-alt text-primary me-2"></i>{{ trans('global.Choose a city') }}
+								</h2>
+								<div class="bg-primary rounded-pill mt-2" style="width: 48px; height: 4px;"></div>
 							</div>
 						</div>
 					@endif
-					
+
 					@php
 						$leftClassCol = '';
 						$rightClassCol = '';
@@ -77,33 +141,38 @@
 						<div class="{{ $leftClassCol }} m-0 p-0">
 							@if (!empty($cities))
 								@if ($mapCanBeShown)
-									<h4 class="pt-1 pb-3 px-3 fw-bold text-nowrap">
-										<i class="bi bi-geo-alt"></i>&nbsp;{{ trans('global.Choose a city or region') }}
-									</h4>
+									<div class="d-flex justify-content-between align-items-end mb-4 pt-2">
+										<div>
+											<h2 class="mb-0 fw-black text-dark" style="letter-spacing: -0.5px; font-size: clamp(1.2rem, 3vw, 1.7rem);">
+												<i class="bi bi-geo-alt text-primary me-2"></i>{{ trans('global.Choose a city or region') }}
+											</h2>
+											<div class="bg-primary rounded-pill mt-2" style="width: 48px; height: 4px;"></div>
+										</div>
+									</div>
 								@endif
-								<div class="row px-4">
+								<div class="row">
 									<div class="col-xl-12">
-										<div id="cityList" class="row {{ $rowCol }}">
+										<div id="cityList" class="city-chips-container align-items-center">
 											@foreach ($cities as $key => $city)
-												<div class="col mb-2">
-													@if (data_get($city, 'id') == 0)
-														<a href="#browseLocations"
-														   class="{{ linkClass('body-emphasis') }}"
-														   data-bs-toggle="modal"
-														   data-admin-code="0"
-														   data-city-id="0"
-														>
-															{!! data_get($city, 'name') !!}
-														</a>
-													@else
-														<a href="{{ urlGen()->city($city) }}" class="{{ linkClass('body-emphasis') }}">
-															{{ data_get($city, 'name') }}
-														</a>
+												@if (data_get($city, 'id') == 0)
+													<a href="#browseLocations"
+													   class="btn btn-outline-primary rounded-pill fw-semibold d-flex align-items-center gap-2"
+													   style="padding: 6px 14px; font-size: 0.88rem;"
+													   data-bs-toggle="modal"
+													   data-admin-code="0"
+													   data-city-id="0"
+													>
+														{!! data_get($city, 'name') !!} <i class="fa-solid fa-arrow-right"></i>
+													</a>
+												@else
+													<a href="{{ urlGen()->city($city) }}" class="city-chip">
+														<i class="bi bi-geo-alt"></i>
+														{{ data_get($city, 'name') }}
 														@if ($locCountListingsPerCity)
-															&nbsp;({{ data_get($city, 'posts_count') ?? 0 }})
+															<span class="ms-1 opacity-50">({{ data_get($city, 'posts_count') ?? 0 }})</span>
 														@endif
-													@endif
-												</div>
+													</a>
+												@endif
 											@endforeach
 										</div>
 									</div>
@@ -113,10 +182,10 @@
 											[$createListingLinkUrl, $createListingLinkAttr] = getCreateListingLinkInfo();
 										@endphp
 										<div class="col-xl-12 text-center pt-5">
-											<a class="btn btn-outline-primary px-3"
+											<a class="btn btn-primary rounded-pill px-4 py-2 fw-bold"
 											   href="{{ $createListingLinkUrl }}"{!! $createListingLinkAttr !!}
 											>
-												<i class="fa-regular fa-pen-to-square"></i> {{ trans('global.create_listing') }}
+												<i class="fa-regular fa-pen-to-square me-2"></i> {{ trans('global.create_listing') }}
 											</a>
 										</div>
 									@endif

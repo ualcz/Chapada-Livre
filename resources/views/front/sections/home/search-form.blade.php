@@ -1,3 +1,21 @@
+<style>
+	.hero-wrap h1 {
+		font-size: 3.5rem !important;
+		text-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+		letter-spacing: -1px;
+	}
+	.hero-wrap h5 {
+		text-shadow: 0 2px 15px rgba(0,0,0,0.4) !important;
+		font-weight: 400 !important;
+		opacity: 0.95;
+	}
+	@media (max-width: 768px) {
+		.hero-wrap h1 {
+			font-size: 2.2rem !important;
+		}
+	}
+</style>
+
 @php
 	$sectionOptions = $searchFormOptions ?? [];
 	

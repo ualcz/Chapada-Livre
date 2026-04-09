@@ -1,3 +1,4 @@
+name: chapada-livre-dev
 services:
   # ============================================
   # PHP-FPM (Aplicação Laravel)
@@ -6,7 +7,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: laravel_app
+    container_name: cl_app
     restart: unless-stopped
     working_dir: /var/www
     volumes:
@@ -18,14 +19,14 @@ services:
       redis:
         condition: service_started
     networks:
-      - laravel
+      - cl_laravel
 
   # ============================================
   # Nginx (Servidor Web)
   # ============================================
   nginx:
     image: nginx:alpine
-    container_name: laravel_nginx
+    container_name: cl_nginx
     restart: unless-stopped
     ports:
       - "8000:80"
@@ -35,14 +36,14 @@ services:
     depends_on:
       - app
     networks:
-      - laravel
+      - cl_laravel
 
   # ============================================
   # MySQL 8.0 (Banco de Dados)
   # ============================================
   mysql:
     image: mysql:8.0
-    container_name: laravel_mysql
+    container_name: cl_mysql
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: laravel
@@ -61,22 +62,23 @@ services:
       retries: 10
       start_period: 30s
     networks:
-      - laravel
+      - cl_laravel
 
   # ============================================
   # Redis (Cache)
   # ============================================
   redis:
     image: redis:alpine
-    container_name: laravel_redis
+    container_name: cl_redis
     restart: unless-stopped
     networks:
-      - laravel
+      - cl_laravel
 
 volumes:
   mysql_data:
-    driver: local
+    name: "chapada-livre_mysql_data"
+    external: true
 
 networks:
-  laravel:
+  cl_laravel:
     driver: bridge

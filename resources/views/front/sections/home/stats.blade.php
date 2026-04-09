@@ -1,3 +1,50 @@
+<style>
+    .stats-container {
+        padding: 40px 0;
+    }
+    .stat-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 30px;
+        transition: all 0.3s ease;
+        border: 1px solid #f3f3f3;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+    }
+    .stat-icon-box {
+        width: 70px;
+        height: 70px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+    }
+    .stat-icon-box i {
+        font-size: 2rem;
+    }
+    .stat-value {
+        font-size: 2.2rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 5px;
+        color: #333;
+    }
+    .stat-label {
+        font-size: 1rem;
+        color: #777;
+        font-weight: 500;
+    }
+    .stat-item-listings .stat-icon-box { background: rgba(var(--bs-primary-rgb), 0.12); color: var(--bs-primary); }
+    .stat-item-users .stat-icon-box { background: rgba(25, 135, 84, 0.1); color: #198754; }
+    .stat-item-locations .stat-icon-box { background: rgba(253, 126, 20, 0.1); color: #fd7e14; }
+</style>
+
 @php
 	$sectionOptions = $statsOptions ?? [];
 	
@@ -53,10 +100,10 @@
 @endphp
 
 <div class="container{{ $cssClasses }}" style="{!! $style !!}">
-	<div class="card border-0 bg-body-tertiary"{!! $htmlAttr !!}>
-		<div class="card-body text-secondary">
+	<div class="card border-0 bg-transparent"{!! $htmlAttr !!}>
+		<div class="card-body p-0">
 			
-			<div class="row">
+			<div class="row g-4 stats-container">
 				@foreach($statItems as $key => $item)
 					@php
 						$icon = $item['icon'];
@@ -65,18 +112,18 @@
 						$suffix = $item['suffix'];
 						$label = $item['label'];
 					@endphp
-					<div class="col-sm-4 col-12">
-						<div class="d-flex align-items-center justify-content-md-center justify-content-sm-start">
-							<div class="text-end">
-								<i class="{{ $icon }} fs-1"></i>
+					<div class="col-lg-4 col-md-6 col-12">
+						<div class="stat-card stat-item-{{ $key }}">
+							<div class="stat-icon-box">
+								<i class="{{ $icon }}"></i>
 							</div>
-							<div class="ms-3 text-start">
-								<h5 class="fs-1 fw-bold m-0">
+							<div class="stat-content">
+								<div class="stat-value">
 									@if (!empty($prefix))<span>{{ $prefix }}</span>@endif
 									<span class="counter">{{ $count }}</span>
 									@if (!empty($suffix))<span>{{ $suffix }}</span>@endif
-								</h5>
-								<div class="fs-5">{{ $label }}</div>
+								</div>
+								<div class="stat-label">{{ $label }}</div>
 							</div>
 						</div>
 					</div>

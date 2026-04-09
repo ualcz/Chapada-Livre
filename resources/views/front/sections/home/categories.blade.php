@@ -21,20 +21,18 @@
 	$countPostsPerCat = collect($countPostsPerCat)->keyBy('id')->toArray();
 @endphp
 
-<div class="container{{ $cssClasses }} d-flex align-items-center" style="{!! $style !!}">
-	<div class="card"{!! $htmlAttr !!}>
+<div class="container{{ $cssClasses }} d-flex align-items-center carousel-categories-container" style="{!! $style !!}">
+	<div class="card w-100 border-0 shadow-none bg-transparent"{!! $htmlAttr !!}>
 		
-		<div class="card-header border-bottom-0">
-			<h4 class="mb-0 float-start fw-lighter">
-				{{ trans('global.Browse by') }} <span class="fw-bold">{{ trans('global.category') }}</span>
+		<div class="card-header border-bottom-0 bg-transparent px-0 d-flex justify-content-between align-items-center">
+			<h4 class="mb-0 fw-bold text-dark">
+				{{ trans('global.Browse by') }} <span class="text-primary">{{ trans('global.category') }}</span>
 			</h4>
-			<h5 class="mb-0 float-end mt-1 fs-6 fw-lighter text-uppercase">
-				<a href="{{ urlGen()->sitemap() }}" class="{{ linkClass() }}">
-					{{ trans('global.View more') }} <i class="fa-solid fa-bars"></i>
-				</a>
-			</h5>
+			<a href="{{ urlGen()->sitemap() }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+				{{ trans('global.View more') }} <i class="fa-solid fa-arrow-right ms-1"></i>
+			</a>
 		</div>
-		<div class="card-body rounded py-0">
+		<div class="card-body p-0 mt-3">
 			@if ($catDisplayType == 'c_picture_list')
 				
 				@include('front.sections.home.categories.c-picture-list')
@@ -62,6 +60,48 @@
 	</div>
 </div>
 
+@section('after_styles')
+	@parent
+	<link href="{{ url('assets/plugins/swiper/7.4.1/swiper-bundle.min.css') }}" rel="stylesheet"/>
+	<style>
+		.category-card {
+			transition: all 0.3s ease;
+			border: 1px solid rgba(var(--bs-primary-rgb), 0.1);
+			background: #fff;
+			height: 150px;
+			width: 100%;
+		}
+		.category-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 10px 20px rgba(var(--bs-primary-rgb), 0.1);
+			border-color: var(--bs-primary);
+		}
+		.category-icon-wrapper {
+			width: 60px;
+			height: 60px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgba(var(--bs-primary-rgb), 0.1);
+			border-radius: 12px;
+			margin: 0 auto 12px;
+			color: var(--bs-primary);
+			transition: all 0.3s ease;
+		}
+		.category-card:hover .category-icon-wrapper {
+			background: var(--bs-primary);
+			color: #fff;
+		}
+		.category-name {
+			font-size: 0.85rem;
+			line-height: 1.2;
+			margin-bottom: 0px !important;
+			display: block;
+			width: 100%;
+		}
+	</style>
+@endsection
+
 @section('before_scripts')
 	@parent
 	@if ($maxSubCats >= 0)
@@ -72,23 +112,32 @@
 @endsection
 @section('after_scripts')
 	@parent
+	<script src="{{ url('assets/plugins/swiper/7.4.1/swiper-bundle.min.js') }}"></script>
 	<script>
 		onDocumentReady((event) => {
-			{{-- Category Title Animation --}}
-			{{-- https://animate.style --}}
-			const elements = document.querySelectorAll('.big-icon-category-list a h6, .picture-category-list a h6');
-			if (elements.length) {
-				const animation = 'animate__pulse';
-				
-				elements.forEach((element) => {
-					element.addEventListener('mouseover', (event) => {
-						event.target.classList.add('animate__animated', animation);
-					});
-					element.addEventListener("mouseout", (event) => {
-						event.target.classList.remove('animate__animated', animation);
-					});
-				})
-			}
+			const categorySwiper = new Swiper('.category-swiper', {
+				slidesPerView: 2.5,
+				spaceBetween: 10,
+				loop: false,
+				breakpoints: {
+					480: {
+						slidesPerView: 3.5,
+						spaceBetween: 15
+					},
+					768: {
+						slidesPerView: 5.2,
+						spaceBetween: 20
+					},
+					992: {
+						slidesPerView: 7.2,
+						spaceBetween: 20
+					},
+					1200: {
+						slidesPerView: 8.5,
+						spaceBetween: 20
+					}
+				}
+			});
 		});
 	</script>
 @endsection

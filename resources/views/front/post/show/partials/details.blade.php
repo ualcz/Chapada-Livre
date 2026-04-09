@@ -132,15 +132,15 @@
 												$postId = data_get($post, 'id');
 												$savedByLoggedUser = (bool) data_get($post, 'p_saved_by_logged_user');
 											@endphp
-											<button
-												class="btn btn-outline-primary rounded-pill px-4 py-2 make-favorite d-flex align-items-center justify-content-center"
-												id="{{ $postId }}">
-												@if ($savedByLoggedUser)
-													<i class="bi bi-heart-fill me-2"></i> {{ trans('global.Remove favorite') }}
-												@else
-													<i class="bi bi-heart me-2"></i> {{ trans('global.Save listing') }}
-												@endif
-											</button>
+											@if ($savedByLoggedUser)
+												<a class="btn btn-success rounded-pill px-4 py-2 make-favorite d-flex align-items-center justify-content-center" id="{{ $postId }}">
+													<i class="bi bi-heart-fill me-2"></i> <span>{{ trans('global.Saved') }}</span>
+												</a>
+											@else
+												<a class="btn btn-outline-secondary rounded-pill px-4 py-2 make-favorite d-flex align-items-center justify-content-center" id="{{ $postId }}">
+													<i class="bi bi-heart me-2"></i> <span>{{ trans('global.Save') }}</span>
+												</a>
+											@endif
 
 											<a href="{{ urlGen()->reportPost($post) }}"
 												class="btn btn-outline-danger rounded-pill px-4 py-2 d-flex align-items-center justify-content-center">
