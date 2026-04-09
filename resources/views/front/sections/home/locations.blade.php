@@ -28,6 +28,8 @@
 	.city-chip {
 		display: inline-flex;
 		align-items: center;
+		justify-content: center;
+		flex-grow: 1;
 		background: #fff;
 		border: 1px solid rgba(0,0,0,0.06);
 		padding: 8px 14px;
@@ -156,7 +158,7 @@
 											@foreach ($cities as $key => $city)
 												@if (data_get($city, 'id') == 0)
 													<a href="#browseLocations"
-													   class="btn btn-outline-primary rounded-pill fw-semibold d-flex align-items-center gap-2"
+													   class="btn btn-outline-primary rounded-pill fw-semibold d-flex align-items-center justify-content-center gap-2 flex-grow-1"
 													   style="padding: 6px 14px; font-size: 0.88rem;"
 													   data-bs-toggle="modal"
 													   data-admin-code="0"
