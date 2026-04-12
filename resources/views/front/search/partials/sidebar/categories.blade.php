@@ -29,8 +29,8 @@
 		@if (!empty($categoryChildren))
 			
 			<div class="container p-0 vstack gap-2">
-				<h5 class="border-bottom pb-2 d-flex justify-content-between mb-0">
-					<span class="fw-bold">
+				<h5 class="border-bottom border-success border-opacity-50 pb-2 d-flex justify-content-between align-items-center mb-0 mt-3 mt-md-0">
+					<span class="fw-bold text-success text-uppercase fs-6 mb-0">
 						@if (!empty($categoryParent))
 							<a href="{{ urlGen()->category($categoryParent, null, $city ?? null) }}"
 							   class="{{ $linkClass }}"
@@ -57,24 +57,24 @@
 								&nbsp;<span class="fw-normal">({{ $countPostsPerCat[data_get($cat, 'id')]['total'] ?? 0 }})</span>
 							@endif
 						</div>
-						<ul class="mb-0 ps-2 list-unstyled long-list">
+						<div class="list-group list-group-flush mb-0 ps-2">
 							@foreach ($categoryChildren as $iSubCat)
-								<li class="py-1">
-									<a href="{{ urlGen()->category($iSubCat, null, $city ?? null) }}"
-									   class="{{ $linkClass }}"
-									   title="{{ data_get($iSubCat, 'name') }}"
-									>
+								<a href="{{ urlGen()->category($iSubCat, null, $city ?? null) }}"
+								   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-0"
+								   title="{{ data_get($iSubCat, 'name') }}"
+								>
+									<span>
 										@if (in_array(config('settings.listings_list.show_category_icon'), [4, 5, 6, 8]))
-											<i class="{{ data_get($iSubCat, 'icon_class') ?? 'bi bi-folder-fill' }}"></i>
+											<i class="{{ data_get($iSubCat, 'icon_class') ?? 'bi bi-folder-fill' }} me-2 text-secondary"></i>
 										@endif
 										{{ str(data_get($iSubCat, 'name'))->limit(100) }}
-										@if (config('settings.listings_list.count_categories_listings'))
-											&nbsp;<span class="fw-normal">({{ $countPostsPerCat[data_get($iSubCat, 'id')]['total'] ?? 0 }})</span>
-										@endif
-									</a>
-								</li>
+									</span>
+									@if (config('settings.listings_list.count_categories_listings'))
+										<span class="badge bg-secondary rounded-pill">{{ $countPostsPerCat[data_get($iSubCat, 'id')]['total'] ?? 0 }}</span>
+									@endif
+								</a>
 							@endforeach
-						</ul>
+						</div>
 					</li>
 				</ul>
 			</div>
@@ -83,8 +83,8 @@
 			
 			@if (!empty($categoryParentChildren))
 				<div class="container p-0 vstack gap-2">
-					<h5 class="border-bottom pb-2 d-flex justify-content-between">
-						<span class="fw-bold">
+					<h5 class="border-bottom border-success border-opacity-50 pb-2 d-flex justify-content-between align-items-center mt-3 mt-md-0">
+						<span class="fw-bold text-success text-uppercase fs-6 mb-0">
 							@if (!empty($categoryParentOfParent))
 								<a href="{{ urlGen()->category($categoryParentOfParent, null, $city ?? null) }}"
 								   class="{{ $linkClass }}"
@@ -104,36 +104,38 @@
 							@endif
 						</span> {!! $clearFilterBtn !!}
 					</h5>
-					<ul class="mb-0 list-unstyled">
+					<div class="list-group list-group-flush mb-0">
 						@foreach ($categoryParentChildren as $iSubCat)
-							<li class="py-1">
 								@if (data_get($iSubCat, 'id') == data_get($cat, 'id'))
-									<span class="fw-bold">
-										@if (in_array(config('settings.listings_list.show_category_icon'), [4, 5, 6, 8]))
-											<i class="{{ data_get($iSubCat, 'icon_class') ?? 'bi bi-folder-fill' }}"></i>
-										@endif
-										{{ str(data_get($iSubCat, 'name'))->limit(100) }}
+									<span class="list-group-item list-group-item-success fw-bold d-flex justify-content-between align-items-center">
+										<span>
+											@if (in_array(config('settings.listings_list.show_category_icon'), [4, 5, 6, 8]))
+												<i class="{{ data_get($iSubCat, 'icon_class') ?? 'bi bi-folder-fill' }} me-2"></i>
+											@endif
+											{{ str(data_get($iSubCat, 'name'))->limit(100) }}
+										</span>
 										@if (config('settings.listings_list.count_categories_listings'))
-											&nbsp;<span class="fw-normal">({{ $countPostsPerCat[data_get($iSubCat, 'id')]['total'] ?? 0 }})</span>
+											<span class="badge bg-success rounded-pill">{{ $countPostsPerCat[data_get($iSubCat, 'id')]['total'] ?? 0 }}</span>
 										@endif
 									</span>
 								@else
 									<a href="{{ urlGen()->category($iSubCat, null, $city ?? null) }}"
-									   class="{{ $linkClass }}"
+									   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
 									   title="{{ data_get($iSubCat, 'name') }}"
 									>
-										@if (in_array(config('settings.listings_list.show_category_icon'), [4, 5, 6, 8]))
-											<i class="{{ data_get($iSubCat, 'icon_class') ?? 'bi bi-folder-fill' }}"></i>
-										@endif
-										{{ str(data_get($iSubCat, 'name'))->limit(100) }}
+										<span>
+											@if (in_array(config('settings.listings_list.show_category_icon'), [4, 5, 6, 8]))
+												<i class="{{ data_get($iSubCat, 'icon_class') ?? 'bi bi-folder-fill' }} me-2 text-secondary"></i>
+											@endif
+											{{ str(data_get($iSubCat, 'name'))->limit(100) }}
+										</span>
 										@if (config('settings.listings_list.count_categories_listings'))
-											&nbsp;<span class="fw-normal">({{ $countPostsPerCat[data_get($iSubCat, 'id')]['total'] ?? 0 }})</span>
+											<span class="badge bg-secondary rounded-pill">{{ $countPostsPerCat[data_get($iSubCat, 'id')]['total'] ?? 0 }}</span>
 										@endif
 									</a>
 								@endif
-							</li>
 						@endforeach
-					</ul>
+					</div>
 				</div>
 			@else
 				

@@ -119,13 +119,6 @@
 							@if (empty($authUserId) || $authUserId != data_get($post, 'user_id'))
 								<div class="mt-5 pt-5 border-top">
 									<div class="d-grid d-sm-flex justify-content-center gap-3">
-										@if (empty($authUser) || $authUserId != data_get($post, 'user_id'))
-											@if (empty($authUser))
-												<div class="action-btn-wrapper">
-													{!! genEmailContactBtn($post, false, true) !!}
-												</div>
-											@endif
-										@endif
 
 										@if (isVerifiedPost($post))
 											@php

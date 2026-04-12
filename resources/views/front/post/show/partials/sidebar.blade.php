@@ -30,7 +30,7 @@
 
 	$linkClass = linkClass();
 @endphp
-<aside class="vstack gap-4">
+<aside class="vstack gap-3 gap-md-4">
 	{{-- Author Info Card --}}
 	<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
 		@if ($isPostOwner)
@@ -38,7 +38,7 @@
 				<i class="bi bi-gear-fill me-2"></i>{{ trans('global.Manage Listing') }}
 			</div>
 		@endif
-		<div class="card-body p-4">
+		<div class="card-body p-3 p-md-4">
 			{{-- Author Info (for Guests & Non-Owner Users) --}}
 			@if (!$isPostOwner)
 				<div class="text-center mb-4">
@@ -49,6 +49,7 @@
 						</div>
 					</div>
 					<h5 class="fw-bold mb-1">
+						<small class="text-muted d-block">{{ trans('global.Posted by') }}</small>
 						@if (!empty($user))
 							<a href="{{ urlGen()->user($user) }}" class="text-dark text-decoration-none hover-primary">
 								{{ data_get($post, 'contact_name') }}
@@ -57,7 +58,6 @@
 							{{ data_get($post, 'contact_name') }}
 						@endif
 					</h5>
-					<small class="text-muted">{{ trans('global.Posted by') }}</small>
 
 					@if (config('addons.reviews.installed'))
 						@if (view()->exists('reviews::ratings-user'))
@@ -145,13 +145,13 @@
 								$waUrl = "https://wa.me/" . $phoneDigits . "?text=" . urlencode($waMessage);
 							@endphp
 							<a href="{{ $waUrl }}" target="_blank"
-								class="btn btn-success rounded-pill py-2 py-md-2 fw-bold shadow-sm text-white border-0 hover-lift mb-2"
+								class="btn btn-success rounded-pill py-2 py-md-2 fw-bold shadow-sm text-white border-0 hover-lift"
 								style="background-color: #25D366;">
 								<i class="fa-brands fa-whatsapp fs-5 me-2"></i> Chamar no WhatsApp
 							</a>
 						@endif
 
-						<button type="button" class="btn btn-outline-primary rounded-pill py-2 py-md-2 fw-bold shadow-sm mb-2"
+						<button type="button" class="btn btn-outline-primary rounded-pill py-2 py-md-2 fw-bold shadow-sm"
 							data-bs-toggle="modal" data-bs-target="#contactUser">
 							<i class="bi bi-envelope me-2"></i> {{ trans('global.contact_advertiser') }}
 						</button>
@@ -169,7 +169,7 @@
 
 								if (!isDemoDomain($btnUrl)) {
 									echo '<a href="' . $btnUrl . '" class="btn btn-link text-danger text-decoration-none fw-bold small mt-2 confirm-simple-action">
-																				<i class="bi bi-shield-slash me-1"></i>' . trans('admin.ban_the_user') . '</a>';
+																														<i class="bi bi-shield-slash me-1"></i>' . trans('admin.ban_the_user') . '</a>';
 								}
 							}
 						} catch (\Throwable $e) {
@@ -199,14 +199,13 @@
 							$waUrl = "https://wa.me/" . $phoneDigits . "?text=" . urlencode($waMessage);
 						@endphp
 						<a href="{{ $waUrl }}" target="_blank"
-							class="btn btn-success rounded-pill py-2 py-md-2 fw-bold shadow-sm text-white border-0 hover-lift mb-2"
+							class="btn btn-success rounded-pill py-2 fw-bold shadow-sm text-white border-0 hover-lift"
 							style="background-color: #25D366;">
 							<i class="fa-brands fa-whatsapp fs-5 me-2"></i> Chamar no WhatsApp
 						</a>
 					@endif
 
-					<a href="{{ url('login') }}"
-						class="btn btn-outline-primary rounded-pill py-2 py-md-2 fw-bold shadow-sm mb-2">
+					<a href="{{ url('login') }}" class="btn btn-outline-primary rounded-pill py-2 fw-bold shadow-sm">
 						<i class="bi bi-envelope me-2"></i> {{ trans('global.contact_advertiser') }}
 					</a>
 				@endif
@@ -252,7 +251,7 @@
 		];
 	@endphp
 	<div class="card border-0 shadow-sm rounded-4 bg-warning bg-opacity-10 border-start border-4 border-warning">
-		<div class="card-body p-4">
+		<div class="card-body p-3 p-md-4">
 			<h6 class="fw-bold text-warning-emphasis mb-3">
 				<i class="bi bi-shield-check me-2"></i>{{ trans('global.Safety Tips for Buyers') }}
 			</h6>
@@ -276,7 +275,6 @@
 			@endif
 		</div>
 	</div>
-</aside>
 </aside>
 
 @section('after_scripts')

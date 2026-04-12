@@ -41,8 +41,8 @@
 					
 					{{-- text --}}
 					<div class="container p-0 vstack gap-2">
-						<h5 class="border-bottom pb-2 d-flex justify-content-between">
-							<span class="fw-bold">{{ data_get($field, 'name') }}</span> {!! $clearFilterBtn !!}
+						<h5 class="border-bottom border-success border-opacity-50 pb-2 d-flex justify-content-between align-items-center">
+							<span class="fw-bold text-success text-uppercase fs-6 mb-0">{{ data_get($field, 'name') }}</span> {!! $clearFilterBtn !!}
 						</h5>
 						<div class="row px-0 gx-1 gy-1">
 							@if (data_get($field, 'type') == 'number')
@@ -77,8 +77,8 @@
 					
 					{{-- checkbox --}}
 					<div class="container p-0 vstack gap-2">
-						<h5 class="border-bottom pb-2 d-flex justify-content-between">
-							<span class="fw-bold">{{ data_get($field, 'name') }}</span> {!! $clearFilterBtn !!}
+						<h5 class="border-bottom border-success border-opacity-50 pb-2 d-flex justify-content-between align-items-center">
+							<span class="fw-bold text-success text-uppercase fs-6 mb-0">{{ data_get($field, 'name') }}</span> {!! $clearFilterBtn !!}
 						</h5>
 						<div>
 							@include('helpers.forms.fields.checkbox', [
@@ -204,8 +204,8 @@
 				
 					{{-- select --}}
 					<div class="container p-0 vstack gap-2">
-						<h5 class="border-bottom pb-2 d-flex justify-content-between">
-							<span class="fw-bold">{{ data_get($field, 'name') }}</span> {!! $clearFilterBtn !!}
+						<h5 class="border-bottom border-success border-opacity-50 pb-2 d-flex justify-content-between align-items-center">
+							<span class="fw-bold text-success text-uppercase fs-6 mb-0">{{ data_get($field, 'name') }}</span> {!! $clearFilterBtn !!}
 						</h5>
 						<div>
 							@include('helpers.forms.fields.select2', [

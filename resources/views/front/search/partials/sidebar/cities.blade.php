@@ -16,14 +16,13 @@
 @endphp
 {{-- City --}}
 <div class="container p-0 vstack gap-2">
-	<h5 class="border-bottom pb-2 d-flex justify-content-between">
-		<span class="fw-bold">{{ trans('global.locations') }}</span> {!! $clearFilterBtn !!}
+	<h5 class="border-bottom border-success border-opacity-50 pb-2 d-flex justify-content-between align-items-center">
+		<span class="fw-bold text-success text-uppercase fs-6 mb-0">{{ trans('global.locations') }}</span> {!! $clearFilterBtn !!}
 	</h5>
 	<div>
-		<ul class="mb-0 list-unstyled long-list">
+		<div class="list-group list-group-flush mb-0 long-list">
 			@if (!empty($cities))
 				@foreach ($cities as $iCity)
-					<li class="py-1">
 						@if (
 							(
 								isset($city)
@@ -31,26 +30,25 @@
 							)
 							|| request()->input('l') == data_get($iCity, 'id')
 							)
-							<span class="fw-bold">
-								{{ data_get($iCity, 'name') }}
+							<span class="list-group-item list-group-item-success fw-bold d-flex justify-content-between align-items-center">
+								<span><i class="fa-solid fa-location-dot me-2"></i> {{ data_get($iCity, 'name') }}</span>
 								@if (config('settings.listings_list.count_cities_listings'))
-									&nbsp;<span class="fw-normal">({{ data_get($iCity, 'posts_count') ?? 0 }})</span>
+									<span class="badge bg-success rounded-pill">{{ data_get($iCity, 'posts_count') ?? 0 }}</span>
 								@endif
 							</span>
 						@else
 							<a href="{!! urlGen()->city($iCity, null, $cat ?? null) !!}"
-							   class="{{ $linkClass }}"
+							   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-0"
 							   title="{{ data_get($iCity, 'name') }}"
 							>
-								{{ data_get($iCity, 'name') }}
+								<span><i class="fa-solid fa-location-dot me-2 text-secondary"></i> {{ data_get($iCity, 'name') }}</span>
 								@if (config('settings.listings_list.count_cities_listings'))
-									&nbsp;<span class="fw-normal">({{ data_get($iCity, 'posts_count') ?? 0 }})</span>
+									<span class="badge bg-secondary rounded-pill">{{ data_get($iCity, 'posts_count') ?? 0 }}</span>
 								@endif
 							</a>
 						@endif
-					</li>
 				@endforeach
 			@endif
-		</ul>
+		</div>
 	</div>
 </div>

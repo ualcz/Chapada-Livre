@@ -43,6 +43,31 @@
     .stat-item-listings .stat-icon-box { background: rgba(var(--bs-primary-rgb), 0.12); color: var(--bs-primary); }
     .stat-item-users .stat-icon-box { background: rgba(25, 135, 84, 0.1); color: #198754; }
     .stat-item-locations .stat-icon-box { background: rgba(253, 126, 20, 0.1); color: #fd7e14; }
+
+    @media (max-width: 767.98px) {
+        .stat-card {
+            padding: 15px 5px;
+            flex-direction: column;
+            text-align: center;
+            justify-content: center;
+        }
+        .stat-icon-box {
+            width: 45px;
+            height: 45px;
+            margin-right: 0;
+            margin-bottom: 8px;
+        }
+        .stat-icon-box i {
+            font-size: 1.3rem;
+        }
+        .stat-value {
+            font-size: 1.1rem;
+        }
+        .stat-label {
+            font-size: 0.65rem;
+            line-height: 1.2;
+        }
+    }
 </style>
 
 @php
@@ -112,7 +137,7 @@
 						$suffix = $item['suffix'];
 						$label = $item['label'];
 					@endphp
-					<div class="col-lg-4 col-md-6 col-12">
+					<div class="col-lg-4 col-md-4 col-4">
 						<div class="stat-card stat-item-{{ $key }}">
 							<div class="stat-icon-box">
 								<i class="{{ $icon }}"></i>

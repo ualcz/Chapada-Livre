@@ -117,6 +117,14 @@
 		{!! printCss(config('settings.style.custom_css')) . "\n" !!}
     @endif
 	
+	<style>
+		html, body {
+			overflow-x: hidden;
+			width: 100%;
+			position: relative;
+		}
+	</style>
+	
 	@if (config('settings.other.js_code'))
 		{!! printJs(config('settings.other.js_code')) . "\n" !!}
 	@endif

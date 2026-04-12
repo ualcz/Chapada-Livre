@@ -7,8 +7,8 @@
 @if ($isPriceFilterCanBeDisplayed)
 	{{-- Price --}}
 	<div class="container p-0 vstack gap-2">
-		<h5 class="border-bottom pb-2 d-flex justify-content-between">
-			<span class="fw-bold">
+		<h5 class="border-bottom border-success border-opacity-50 pb-2 d-flex justify-content-between align-items-center">
+			<span class="fw-bold text-success text-uppercase fs-6 mb-0">
 				{{ (!in_array(data_get($cat, 'type'), ['job-offer', 'job-search'])) ? trans('global.price_range') : trans('global.salary_range') }}
 			</span> {!! $clearFilterBtn !!}
 		</h5>
@@ -53,7 +53,7 @@
 						>
 					</div>
 					<div class="col-lg-4 col-md-12 col-sm-12 d-grid">
-						<button class="btn btn-secondary" type="submit">{{ trans('global.go') }}</button>
+						<button class="btn btn-success" type="submit">{{ trans('global.go') }}</button>
 					</div>
 				</div>
 			</form>

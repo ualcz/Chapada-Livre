@@ -7,6 +7,28 @@
 	$city ??= null;
 	$cat ??= null;
 @endphp
+
+@section('after_styles')
+	@parent
+	<style>
+		.listing-card-compact {
+			transition: all 0.2s ease;
+			border: 1px solid rgba(0,0,0,0.05) !important;
+			border-radius: 0.75rem !important;
+			background: #fff;
+			padding: 0.75rem 1.25rem;
+		}
+		.listing-card-compact:hover {
+			border-color: rgba(var(--bs-primary-rgb), 0.3) !important;
+			background: rgba(var(--bs-primary-rgb), 0.01);
+		}
+		.price-tag-compact {
+			color: var(--bs-primary);
+			font-weight: 700;
+			font-size: 1.2rem;
+		}
+	</style>
+@endsection
 @if (!empty($posts) && $totalPosts > 0)
 	<div class="container px-0 pt-3 compact-view">
 		@foreach($posts as $key => $post)

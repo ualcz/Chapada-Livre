@@ -19,34 +19,33 @@
 @endphp
 @if ($totalPosts > 0)
 	<div class="container{{ $cssClasses }}" style="{!! $style !!}">
-		<div class="card"{!! $htmlAttr !!}>
-			<div class="card-header border-bottom-0">
-				<h4 class="mb-0 float-start fw-lighter">
+		<div class="card border-0 bg-transparent shadow-none"{!! $htmlAttr !!}>
+			<div class="card-header border-bottom-0 bg-transparent px-0">
+				<h4 class="mb-0 float-start fw-bold">
 					{!! data_get($widget, 'title') !!}
 				</h4>
-				<h5 class="mb-0 float-end mt-1 fs-6 fw-lighter text-uppercase">
-					<a href="{{ data_get($widget, 'link') }}" class="{{ linkClass() }}">
-						{{ trans('global.View more') }} <i class="fa-solid fa-bars"></i>
-					</a>
-				</h5>
+				@if (data_get($sectionOptions, 'show_view_more_btn') == '1')
+					<h5 class="mb-0 float-end mt-1 fs-6">
+						<a href="{{ urlGen()->searchWithoutQuery() }}" class="btn btn-primary rounded-pill px-3 shadow-sm py-1">
+							<i class="bi bi-plus-circle me-1"></i> {{ trans('global.View more') }}
+						</a>
+					</h5>
+				@else
+					<h5 class="mb-0 float-end mt-1 fs-6 fw-lighter text-uppercase">
+						<a href="{{ data_get($widget, 'link') }}" class="{{ linkClass() }}">
+							{{ trans('global.View more') }} <i class="fa-solid fa-bars"></i>
+						</a>
+					</h5>
+				@endif
 			</div>
 			
-			<div class="card-body rounded py-0">
+			<div class="card-body rounded py-0 px-0">
 				@if (config('settings.listings_list.display_mode') == 'make-list')
 					@include('front.search.partials.posts.template.list')
 				@elseif (config('settings.listings_list.display_mode') == 'make-compact')
 					@include('front.search.partials.posts.template.compact')
 				@else
 					@include('front.search.partials.posts.template.grid')
-				@endif
-				@if (data_get($sectionOptions, 'show_view_more_btn') == '1')
-					<div class="row border-top pt-3 mt-0 mb-3">
-						<div class="col-12 text-center">
-							<a href="{{ urlGen()->searchWithoutQuery() }}" class="btn btn-primary">
-								<i class="bi bi-box-arrow-in-right"></i> {{ trans('global.View more') }}
-							</a>
-						</div>
-					</div>
 				@endif
 			</div>
 		</div>

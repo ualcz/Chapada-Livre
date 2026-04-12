@@ -58,14 +58,14 @@
 @endphp
 @if ($totalPosts > 0)
 	<div class="container{{ $cssClasses }}" style="{!! $style !!}">
-		<div class="card"{!! $htmlAttr !!}>
-			<div class="card-header border-bottom-0">
-				<h4 class="mb-0 float-start fw-lighter">
+		<div class="card border-0 bg-transparent shadow-none"{!! $htmlAttr !!}>
+			<div class="card-header border-bottom-0 bg-transparent px-0">
+				<h4 class="mb-0 float-start fw-bold">
 					{!! data_get($widget, 'title') !!}
 				</h4>
-				<h5 class="mb-0 float-end mt-1 fs-6 fw-lighter text-uppercase">
-					<a href="{{ data_get($widget, 'link') }}" class="{{ linkClass() }}">
-						{{ trans('global.View more') }} <i class="fa-solid fa-bars"></i>
+				<h5 class="mb-0 float-end mt-1 fs-6">
+					<a href="{{ data_get($widget, 'link') }}" class="btn btn-primary rounded-pill px-3 shadow-sm py-1">
+						<i class="bi bi-plus-circle me-1"></i> {{ trans('global.View more') }}
 					</a>
 				</h5>
 			</div>

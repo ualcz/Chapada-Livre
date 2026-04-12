@@ -19,19 +19,133 @@
 	$countries ??= [];
 @endphp
 
+@section('after_styles')
+	@parent
+	<style>
+		.create-listing-hero {
+			background: linear-gradient(135deg, var(--bs-primary) 0%, color-mix(in srgb, var(--bs-primary) 60%, #000) 100%);
+			padding: 3rem 0 2.5rem;
+			margin-bottom: 0;
+			position: relative;
+			overflow: hidden;
+		}
+		.create-listing-hero::before {
+			content: '';
+			position: absolute;
+			top: -60px;
+			right: -60px;
+			width: 280px;
+			height: 280px;
+			border-radius: 50%;
+			background: rgba(255,255,255,0.06);
+			pointer-events: none;
+		}
+		.create-listing-hero::after {
+			content: '';
+			position: absolute;
+			bottom: -80px;
+			left: -40px;
+			width: 200px;
+			height: 200px;
+			border-radius: 50%;
+			background: rgba(255,255,255,0.04);
+			pointer-events: none;
+		}
+		.create-listing-hero h1 {
+			font-size: 2rem;
+			font-weight: 700;
+			color: #fff;
+			margin-bottom: 0.4rem;
+			letter-spacing: -0.5px;
+		}
+		.create-listing-hero p {
+			color: rgba(255,255,255,0.85);
+			font-size: 1rem;
+			margin-bottom: 0;
+		}
+		.create-listing-hero .hero-icon {
+			width: 56px;
+			height: 56px;
+			background: rgba(255,255,255,0.15);
+			border-radius: 16px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 1.6rem;
+			color: #fff;
+			flex-shrink: 0;
+		}
+		.form-card {
+			background: var(--bs-body-bg);
+			border: 1px solid rgba(var(--bs-primary-rgb), 0.12);
+			border-radius: 1rem;
+			box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+			padding: 2rem;
+		}
+		.section-divider {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			margin: 2rem 0 1.5rem;
+			padding-bottom: 0.75rem;
+			border-bottom: 2px solid rgba(var(--bs-primary-rgb), 0.12);
+		}
+		.section-divider .divider-icon {
+			width: 36px;
+			height: 36px;
+			background: rgba(var(--bs-primary-rgb), 0.1);
+			border-radius: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--bs-primary);
+			font-size: 0.95rem;
+			flex-shrink: 0;
+		}
+		.section-divider h5 {
+			margin: 0;
+			font-size: 1rem;
+			font-weight: 700;
+			color: var(--bs-body-color);
+		}
+		@media (max-width: 768px) {
+			.create-listing-hero {
+				padding: 2rem 0 1.5rem;
+			}
+			.create-listing-hero h1 {
+				font-size: 1.5rem;
+			}
+			.form-card {
+				padding: 1.25rem;
+			}
+		}
+	</style>
+@endsection
+
 @section('content')
-	@include('front.common.spacer')
-	<div class="main-container">
+	{{-- Hero Section --}}
+	<div class="create-listing-hero">
+		<div class="container">
+			<div class="d-flex align-items-center gap-3">
+				<div class="hero-icon">
+					<i class="fa-regular fa-pen-to-square"></i>
+				</div>
+				<div>
+					<h1>{{ trans('global.create_new_listing') }}</h1>
+					<p>{{ trans('global.do_you_have_something_text', ['appName' => config('app.name')]) }}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="main-container py-4">
 		<div class="container">
 			<div class="row">
 				
 				@include('front.post.partials.notification')
 				
 				<div class="col-md-9">
-					<div class="container border rounded bg-body-tertiary p-4 p-lg-3 p-md-2 mb-sm-3">
-						<h3 class="fw-bold border-bottom pb-3 mb-4">
-							<i class="fa-regular fa-pen-to-square"></i> {{ trans('global.create_new_listing') }}
-						</h3>
+					<div class="form-card mb-4">
 						
 						<div class="row d-flex justify-content-center">
 							<div class="col-md-10 col-sm-12 col-xs-12">
@@ -318,10 +432,11 @@
 										@endif
 										
 										
-										<div class="my-4 col-md-12">
-											<h5 class="w-100 mb-0 fw-bold fs-5 border rounded p-2">
-												<i class="bi bi-person-circle"></i> {{ trans('global.seller_information') }}
-											</h5>
+										<div class="col-md-12">
+											<div class="section-divider">
+												<div class="divider-icon"><i class="bi bi-person-circle"></i></div>
+												<h5>{{ trans('global.seller_information') }}</h5>
+											</div>
 										</div>
 										
 										
@@ -472,13 +587,13 @@
 										<div class="col-12 mb-3 mt-5">
 											<div class="row">
 												<div class="col-md-6 mb-md-0 mb-2 text-start d-grid">
-													<a href="{{ url()->previous() }}" class="btn btn-secondary btn-lg">
-														{{ trans('global.Cancel') }}
+													<a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-lg rounded-pill">
+														<i class="fa-solid fa-arrow-left me-1"></i> {{ trans('global.Cancel') }}
 													</a>
 												</div>
 												<div class="col-md-6 mb-md-0 mb-2 text-end d-grid">
-													<button id="payableFormSubmitButton" class="btn btn-primary btn-lg">
-														{{ trans('global.submit') }}
+													<button id="payableFormSubmitButton" class="btn btn-primary btn-lg rounded-pill">
+														<i class="fa-regular fa-paper-plane me-1"></i> {{ trans('global.submit') }}
 													</button>
 												</div>
 											</div>
