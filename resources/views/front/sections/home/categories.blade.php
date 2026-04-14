@@ -68,7 +68,7 @@
 			transition: all 0.3s ease;
 			border: 1px solid rgba(var(--bs-primary-rgb), 0.1);
 			background: #fff;
-			height: 150px;
+			height: 110px;
 			width: 100%;
 		}
 		.category-card:hover {
@@ -77,14 +77,14 @@
 			border-color: var(--bs-primary);
 		}
 		.category-icon-wrapper {
-			width: 60px;
-			height: 60px;
+			width: 44px;
+			height: 44px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			background: rgba(var(--bs-primary-rgb), 0.1);
-			border-radius: 12px;
-			margin: 0 auto 12px;
+			border-radius: 10px;
+			margin: 0 auto 8px;
 			color: var(--bs-primary);
 			transition: all 0.3s ease;
 		}

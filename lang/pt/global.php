@@ -1107,4 +1107,5 @@ return [
     'unpin' => 'Desafixar',
     'auto_close_in' => 'Fechando em :delayInSeconds segundos...',
     'scroll_down' => 'Rolar para baixo',
+    'footer_slogan' => 'O maior e mais confiável portal de classificados da Chapada Diamantina. Conectando pessoas e ótimos negócios desde sempre.',
 ];

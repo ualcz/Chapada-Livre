@@ -137,7 +137,10 @@
 				
 				<div class="col-sm-3 col-12 text-end text-nowrap d-flex flex-column justify-content-between">
 					<h5 class="fs-5 fw-bold">
-						{!! data_get($post, 'price_formatted') !!}
+						@php
+							$rawPrice = (float)data_get($post, 'price');
+							echo ($rawPrice > 0) ? 'R$ ' . number_format($rawPrice, 0, ',', '.') : data_get($post, 'price_formatted');
+						@endphp
 					</h5>
 					<div>
 						@if (!empty(data_get($post, 'payment.package')))

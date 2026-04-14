@@ -82,8 +82,11 @@
 
 							{{-- Price & Action --}}
 							<div class="d-flex justify-content-between align-items-center mb-1">
-								<span class="fs-3 fw-bold text-primary lh-1">
-									{!! data_get($post, 'price_formatted') !!}
+								<span class="fs-4 fw-bold text-primary lh-1">
+									@php
+										$rawPrice = (float)data_get($post, 'price');
+										echo ($rawPrice > 0) ? 'R$ ' . number_format($rawPrice, 0, ',', '.') : data_get($post, 'price_formatted');
+									@endphp
 								</span>
 								<div class="flex-shrink-0 ms-2">
 									@php

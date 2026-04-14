@@ -7,77 +7,102 @@
 <div class="items-details">
 	<div class="row">
 		<div class="col-12">
-			{{-- Tab navs --}}
-			<ul class="nav nav-pills custom-nav-pills gap-2 px-1 mb-3" id="itemsDetailsTabs" role="tablist">
-				<li class="nav-item" role="presentation">
-					<button class="nav-link active rounded-pill px-4" id="item-details-tab" data-bs-toggle="tab"
-						data-bs-target="#item-details" type="button" role="tab" aria-controls="item-details"
-						aria-selected="true">
-						<span class="fw-bold">{{ trans('global.listing_details') }}</span>
-					</button>
-				</li>
-				@if (config('addons.reviews.installed'))
-					@php
-						$reviewLabel = config('addons.reviews.name');
-					@endphp
-					<li class="nav-item" role="presentation">
-						<button class="nav-link rounded-pill px-4" id="item-{{ $reviewLabel }}-tab" data-bs-toggle="tab"
-							data-bs-target="#item-{{ $reviewLabel }}" type="button" role="tab"
-							aria-controls="item-{{ $reviewLabel }}" aria-selected="false">
-							<span class="fw-bold">
-								{{ trans('reviews::messages.Reviews') }} ({{ data_get($post, 'rating_count', 0) }})
-							</span>
-						</button>
-					</li>
-				@endif
-			</ul>
+			{{-- Conteúdo Direto (Abas removidas) --}}
+			<div class="row pb-3">
+				<div class="items-details-info col-12 text-wrap from-wysiwyg">
 
-			{{-- Tab panes --}}
-			<div class="tab-content border-0 rounded-4 bg-body p-0 mb-4" id="itemsDetailsTabsContent">
-				<div class="tab-pane show active" id="item-details" role="tabpanel" aria-labelledby="item-details-tab"
-					tabindex="0">
-					<div class="row pb-3">
-						<div class="items-details-info col-12 text-wrap from-wysiwyg">
-
-							<div class="px-4 py-3 border rounded-4 bg-white mb-4 shadow-sm border-light-subtle">
-								<div class="row align-items-center">
-									{{-- Location --}}
-									<div class="col-md-7 mb-3 mb-md-0">
-										<div class="d-flex align-items-center">
-											<div class="flex-shrink-0 bg-primary-subtle rounded-circle p-2 me-3 text-primary d-flex align-items-center justify-content-center"
-												style="width: 40px; height: 40px;">
-												<i class="bi bi-geo-alt fs-5"></i>
-											</div>
-											<div>
-												<small class="text-muted d-block text-uppercase fw-bold mb-0"
-													style="font-size: 0.65rem; letter-spacing: 0.5px;">{{ trans('global.location') }}</small>
-												<a href="{!! urlGen()->city(data_get($post, 'city')) !!}"
-													class="fw-bold text-dark text-decoration-none fs-5 hover-primary">
-													{{ data_get($post, 'city.name') }}
-												</a>
-											</div>
-										</div>
-									</div>
-
-									{{-- Price / Salary --}}
-									<div class="col-md-5 text-md-end">
-										<div class="d-inline-block text-md-end">
-											<small class="text-muted d-block text-uppercase fw-bold mb-0"
-												style="font-size: 0.65rem; letter-spacing: 0.5px;">{{ data_get($post, 'price_label') }}</small>
-											<div class="d-flex align-items-center justify-content-md-end">
-												<span class="fw-bolder fs-2 text-primary">
-													{!! data_get($post, 'price_formatted') !!}
-												</span>
-												@if (data_get($post, 'negotiable') == 1)
-													<span class="badge rounded-pill text-bg-info ms-2 px-3 py-2"
-														style="font-size: 0.65rem;">
-														{{ trans('global.negotiable') }}</span>
-												@endif
-											</div>
-										</div>
-									</div>
-								</div>
+			
+				<div class="border rounded-4 bg-white mb-4 shadow-sm border-light-subtle overflow-hidden">
+					{{-- Localização + Preço em linha --}}
+					<div class="d-flex align-items-center justify-content-between px-4 py-3 flex-wrap gap-2">
+						{{-- Location --}}
+						<div class="d-flex align-items-center gap-2">
+							<div class="bg-primary-subtle rounded-circle text-primary d-flex align-items-center justify-content-center flex-shrink-0"
+								style="width: 38px; height: 38px;">
+								<i class="bi bi-geo-alt fs-5"></i>
 							</div>
+							<div>
+								<small class="text-muted d-block text-uppercase fw-bold"
+									style="font-size: 0.65rem; letter-spacing: 0.5px;">{{ trans('global.location') }}</small>
+								<a href="{!! urlGen()->city(data_get($post, 'city')) !!}"
+									class="fw-bold text-dark text-decoration-none fs-6 hover-primary">
+									{{ data_get($post, 'city.name') }}
+								</a>
+							</div>
+						</div>
+
+						{{-- Price --}}
+						<div class="text-end">
+							<small class="text-muted d-block text-uppercase fw-bold"
+								style="font-size: 0.65rem; letter-spacing: 0.5px;">{{ data_get($post, 'price_label') }}</small>
+							<div class="d-flex align-items-center justify-content-end gap-2">
+								<span class="fw-bolder fs-3 text-primary lh-1">
+									@php
+										$rawPrice = (float)data_get($post, 'price');
+										echo ($rawPrice > 0) ? 'R$ ' . number_format($rawPrice, 2, ',', '.') : data_get($post, 'price_formatted');
+									@endphp
+								</span>
+								@if (data_get($post, 'negotiable') == 1)
+									<span class="badge rounded-pill text-bg-info px-2 py-1" style="font-size: 0.65rem;">
+										{{ trans('global.negotiable') }}
+									</span>
+								@endif
+							</div>
+						</div>
+					</div>
+
+					{{-- Botões mobile — visíveis apenas em telas < lg --}}
+					@php
+						$mobilePhone = data_get($post, 'phone');
+						$mobilePhoneHidden = (data_get($post, 'phone_hidden') == 1);
+						$isMobileOwner = (!empty($authUserId) && $authUserId == data_get($post, 'user_id'));
+					@endphp
+					@if (!$isMobileOwner)
+						<div class="d-flex d-lg-none gap-2 px-4 pb-3">
+							{{-- WhatsApp --}}
+							@if (!empty($mobilePhone) && !$mobilePhoneHidden)
+								@php
+									$mobilePhoneDigits = keepOnlyNumericChars($mobilePhone);
+									$mobileSellerName  = data_get($post, 'contact_name');
+									$mobileUserName    = auth()->check() ? auth()->user()->name : 'um interessado';
+									$mobilePrice       = data_get($post, 'price_formatted');
+									$mobileHasPrice    = (data_get($post, 'price') > 0);
+									$mobileTranKey     = $mobileHasPrice ? 'global.whatsapp_pre_filled_message' : 'global.whatsapp_pre_filled_message_no_price';
+									$mobileWaMessage   = trans($mobileTranKey, [
+										'sellerName' => $mobileSellerName,
+										'userName'   => $mobileUserName,
+										'title'      => data_get($post, 'title'),
+										'price'      => $mobilePrice,
+										'appName'    => config('app.name'),
+										'url'        => urlGen()->post($post),
+									]);
+									$mobileWaUrl = 'https://wa.me/' . $mobilePhoneDigits . '?text=' . urlencode($mobileWaMessage);
+								@endphp
+								<a href="{{ $mobileWaUrl }}" target="_blank"
+									class="btn btn-success rounded-pill py-2 fw-bold text-white border-0 flex-fill d-flex align-items-center justify-content-center"
+									style="background-color: #25D366; font-size: 0.88rem;">
+									<i class="fa-brands fa-whatsapp me-1"></i> WhatsApp
+								</a>
+							@endif
+
+							{{-- Contatar anunciante --}}
+							@if (auth()->check())
+								<button type="button"
+									class="btn btn-outline-primary rounded-pill py-2 fw-bold flex-fill d-flex align-items-center justify-content-center"
+									data-bs-toggle="modal" data-bs-target="#contactUser"
+									style="font-size: 0.88rem;">
+									<i class="bi bi-envelope me-1"></i> Contatar
+								</button>
+							@else
+								<a href="{{ url('login') }}"
+									class="btn btn-outline-primary rounded-pill py-2 fw-bold flex-fill d-flex align-items-center justify-content-center"
+									style="font-size: 0.88rem;">
+									<i class="bi bi-envelope me-1"></i> Contatar
+								</a>
+							@endif
+						</div>
+					@endif
+				</div>
 
 							{{-- Description --}}
 							<div class="row mb-4">
@@ -146,14 +171,14 @@
 						</div>
 
 					</div>
-				</div>
 
 				@if (config('addons.reviews.installed'))
 					@if (view()->exists('reviews::comments'))
-						@include('reviews::comments')
+						<div class="mt-4">
+							@include('reviews::comments')
+						</div>
 					@endif
 				@endif
-			</div>
 		</div>
 	</div>
 </div>

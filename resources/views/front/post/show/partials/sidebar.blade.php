@@ -131,21 +131,25 @@
 								$phoneDigits = keepOnlyNumericChars($phone);
 								$sellerName = data_get($post, 'contact_name');
 								$userName = (!empty($authUser)) ? $authUser->name : 'um interessado';
-								$price = data_get($post, 'price_formatted');
+								
+								// Preço no formato brasileiro: R$ 1.234,56
+								$rawPrice = (float)data_get($post, 'price');
+								$priceFormatted = ($rawPrice > 0) ? 'R$ ' . number_format($rawPrice, 2, ',', '.') : data_get($post, 'price_formatted');
+								
 								$hasPrice = (data_get($post, 'price') > 0);
 								$tranKey = $hasPrice ? 'global.whatsapp_pre_filled_message' : 'global.whatsapp_pre_filled_message_no_price';
 								$waMessage = trans($tranKey, [
 									'sellerName' => $sellerName,
 									'userName' => $userName,
 									'title' => data_get($post, 'title'),
-									'price' => $price,
+									'price' => $priceFormatted,
 									'appName' => config('app.name'),
 									'url' => urlGen()->post($post)
 								]);
 								$waUrl = "https://wa.me/" . $phoneDigits . "?text=" . urlencode($waMessage);
 							@endphp
 							<a href="{{ $waUrl }}" target="_blank"
-								class="btn btn-success rounded-pill py-2 py-md-2 fw-bold shadow-sm text-white border-0 hover-lift"
+								class="btn btn-success rounded-pill py-2 py-md-2 fw-bold shadow-sm text-white border-0 hover-lift d-none d-lg-block"
 								style="background-color: #25D366;">
 								<i class="fa-brands fa-whatsapp fs-5 me-2"></i> Chamar no WhatsApp
 							</a>
@@ -185,21 +189,25 @@
 						@php
 							$phoneDigits = keepOnlyNumericChars($phone);
 							$sellerName = data_get($post, 'contact_name');
-							$price = data_get($post, 'price_formatted');
+							
+							// Preço no formato brasileiro: R$ 1.234,56
+							$rawPrice = (float)data_get($post, 'price');
+							$priceFormatted = ($rawPrice > 0) ? 'R$ ' . number_format($rawPrice, 2, ',', '.') : data_get($post, 'price_formatted');
+							
 							$hasPrice = (data_get($post, 'price') > 0);
 							$tranKey = $hasPrice ? 'global.whatsapp_pre_filled_message' : 'global.whatsapp_pre_filled_message_no_price';
 							$waMessage = trans($tranKey, [
 								'sellerName' => $sellerName,
 								'userName' => 'um interessado',
 								'title' => data_get($post, 'title'),
-								'price' => $price,
+								'price' => $priceFormatted,
 								'appName' => config('app.name'),
 								'url' => urlGen()->post($post)
 							]);
 							$waUrl = "https://wa.me/" . $phoneDigits . "?text=" . urlencode($waMessage);
 						@endphp
 						<a href="{{ $waUrl }}" target="_blank"
-							class="btn btn-success rounded-pill py-2 fw-bold shadow-sm text-white border-0 hover-lift"
+							class="btn btn-success rounded-pill py-2 fw-bold shadow-sm text-white border-0 hover-lift d-none d-lg-block"
 							style="background-color: #25D366;">
 							<i class="fa-brands fa-whatsapp fs-5 me-2"></i> Chamar no WhatsApp
 						</a>

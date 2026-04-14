@@ -2,7 +2,9 @@
 	$post ??= [];
 	$titleSlug = str(data_get($post, 'title'))->slug();
 	
-	$price = data_get($post, 'price_formatted');
+	// Formatação brasileira: R$ 32.109
+	$rawPrice = (float)data_get($post, 'price');
+	$price = ($rawPrice > 0) ? 'R$ ' . number_format($rawPrice, 0, ',', '.') : data_get($post, 'price_formatted');
 	
 	$picturesSliderPath = 'front.post.show.partials.pictures-slider.';
 	$defaultPicturesSlider = 'swiper-horizontal';

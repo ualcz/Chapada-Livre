@@ -11,7 +11,7 @@
 				@php
 					$catId = data_get($cat, 'id', 0);
 					$catIconClass = $isShowingCategoryIconEnabled ? data_get($cat, 'icon_class', 'bi bi-folder-fill') : '';
-					$catIcon = !empty($catIconClass) ? '<i class="' . $catIconClass . '" style="font-size: 1.8rem;"></i>' : '';
+					$catIcon = !empty($catIconClass) ? '<i class="' . $catIconClass . '" style="font-size: 1.2rem;"></i>' : '';
 					$catName = data_get($cat, 'name', '--');
 					
 					$catCountPosts = $isCountPostsEnabled
