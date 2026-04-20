@@ -54,6 +54,191 @@
 
 @section('content')
 	@include('front.common.spacer')
+    
+    <style>
+        .posts-container {
+            background: #fff;
+            border: none !important;
+            border-radius: 1.25rem !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem !important;
+        }
+
+        @media (max-width: 768px) {
+            .posts-container {
+                padding: 1rem !important;
+                border-radius: 1rem !important;
+            }
+        }
+
+        [data-bs-theme="dark"] .posts-container {
+            background: #1e1e1e !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .posts-container h3 {
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+            color: #1a1a1a;
+        }
+
+        [data-bs-theme="dark"] .posts-container h3 {
+            color: #fff;
+        }
+        
+        .table-action {
+            background: rgba(var(--bs-primary-rgb), 0.03) !important;
+            border: 1px solid rgba(var(--bs-primary-rgb), 0.1);
+            border-radius: 1rem !important;
+        }
+
+        @media (max-width: 768px) {
+            .table-action {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                padding: 1rem !important;
+                gap: 0.75rem !important;
+            }
+            .table-search {
+                width: 100% !important;
+            }
+            .dropup-mobile .dropdown-menu {
+                top: auto !important;
+                bottom: 100% !important;
+                transform: none !important;
+                margin-bottom: 5px !important;
+            }
+        }
+        
+        #addManageTable {
+            border-collapse: separate;
+            border-spacing: 0 12px;
+            width: 100%;
+        }
+        
+        #addManageTable thead th {
+            border: none;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #6c757d;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            #addManageTable thead {
+                display: none;
+            }
+            #addManageTable, #addManageTable tbody, #addManageTable tr, #addManageTable td {
+                display: block;
+                width: 100% !important;
+            }
+            #addManageTable tr {
+                background: #fff;
+                margin-bottom: 1.5rem;
+                border-radius: 1.25rem;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                padding: 1rem;
+                border: 1px solid rgba(0,0,0,0.05);
+                position: relative;
+            }
+            #addManageTable td {
+                padding: 0 !important;
+                margin-bottom: 0.75rem;
+            }
+            #addManageTable td:last-child {
+                margin-bottom: 0;
+            }
+            
+            .add-img-td {
+                float: left;
+                width: 80px !important;
+                margin-right: 15px;
+                margin-bottom: 0 !important;
+            }
+            .items-details-td {
+                overflow: hidden;
+                margin-bottom: 10px !important;
+            }
+            .price-td-mobile {
+                display: block !important;
+                font-weight: 700;
+                color: var(--bs-primary);
+                font-size: 1.1rem;
+                margin-top: 5px;
+            }
+            .action-td {
+                border-top: 1px solid rgba(0,0,0,0.05);
+                padding-top: 10px !important;
+                display: flex !important;
+                justify-content: flex-end;
+            }
+        }
+        
+        #addManageTable tbody tr {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            border-radius: 1rem;
+            transition: all 0.2s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        #addManageTable tbody tr:hover,
+        #addManageTable tbody tr:has(.dropdown-toggle.show) {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transform: scale(1.002);
+            background: rgba(var(--bs-primary-rgb), 0.01);
+            z-index: 10;
+        }
+        
+        #addManageTable td {
+            border: none;
+            padding: 1.25rem 1rem;
+            vertical-align: middle;
+        }
+
+        .img-thumbnail {
+            border-radius: 0.75rem;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-outline-primary {
+            border-radius: 0.75rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .btn-outline-primary {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+        
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 0.75rem;
+            padding: 0.5rem;
+        }
+        
+        .dropdown-item {
+            border-radius: 0.5rem;
+            padding: 0.6rem 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dropdown-item i {
+            opacity: 0.7;
+        }
+    </style>
+
 	<div class="main-container">
 		<div class="container">
 			<div class="row">
@@ -62,57 +247,55 @@
 				</div>
 
 				<div class="col-md-9">
-					<div class="container border rounded bg-body-tertiary p-4 p-lg-3 p-md-2">
-						<h3 class="fw-bold border-bottom pb-3 mb-4">
-							<i class="{{ $pageIcon }}"></i> {{ $pageTitle }}
+					<div class="posts-container">
+						<h3 class="fw-bold border-bottom pb-3 mb-4 d-flex align-items-center gap-3">
+							<i class="{{ $pageIcon }} text-primary"></i> {{ $pageTitle }}
 						</h3>
 						
 						<div class="table-responsive">
 							<form name="listForm" action="{{ url($basePath . '/delete') }}" method="POST">
 								@csrf
 								
-								<div class="d-flex justify-content-between bg-body rounded p-3 mb-3 table-action">
-									<div class="text-nowrap d-flex align-items-center">
+								<div class="d-flex justify-content-between rounded p-3 mb-4 table-action align-items-center gap-3">
+									<div class="text-nowrap d-flex align-items-center gap-2">
 										<div class="btn-group" role="group">
-											<button type="button" class="btn btn-sm btn btn-outline-primary pb-0">
+											<button type="button" class="btn btn-sm btn btn-outline-primary px-3">
 												<input type="checkbox" id="checkAll" class="from-check-all">
 											</button>
-											<button type="button" class="btn btn-sm btn btn-primary from-check-all">
-												{{ trans('global.Select') }}: {{ trans('global.All') }}
+											<button type="button" class="btn btn-sm btn btn-primary from-check-all px-3">
+												{{ trans('global.All') }}
 											</button>
 										</div>
 										
-										<button type="submit" class="btn btn-sm btn btn-danger ms-1 confirm-simple-action">
+										<button type="submit" class="btn btn-sm btn btn-danger confirm-simple-action px-3">
 											<i class="fa-regular fa-trash-can"></i> {{ trans('global.Delete') }}
 										</button>
 									</div>
 									
 									<div class="w-100 table-search">
-										<div class="row">
-											<label class="col-5 my-0 form-label text-end">{{ trans('global.search') }} <br>
-												<a title="clear filter" class="clear-filter {{ linkClass() }}" href="#clear">
-													[{{ trans('global.clear') }}]
-												</a>
-											</label>
-											<div class="col-7 my-0">
-												<input type="text" class="form-control" id="filter">
+										<div class="row align-items-center">
+											<div class="col-md-12">
+												<div class="input-group">
+                                                    <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="bi bi-search"></i></span>
+												    <input type="text" class="form-control border-start-0 ps-0" id="filter" placeholder="{{ trans('global.search') }}...">
+                                                </div>
 											</div>
 										</div>
 									</div>
 								</div>
 								
 								<table id="addManageTable"
-									   class="table mb-0 table-striped"
+									   class="table mb-0"
 									   data-filter="#filter"
 									   data-filter-text-only="true"
 								>
 									<thead>
 									<tr>
-										<th scope="col" data-type="numeric" data-sort-initial="true"></th>
-										<th scope="col">{{ trans('global.Photo') }}</th>
-										<th scope="col" data-sort-ignore="true">{{ trans('global.listing_details') }}</th>
-										<th scope="col" data-type="numeric" class="d-md-table-cell d-sm-none d-none">--</th>
-										<th scope="col">{{ trans('global.action') }}</th>
+										<th scope="col" data-type="numeric" data-sort-initial="true" class="d-md-table-cell d-none" style="width: 5%"></th>
+										<th scope="col" style="width: 15%">{{ trans('global.Photo') }}</th>
+										<th scope="col" data-sort-ignore="true" style="width: 50%">{{ trans('global.listing_details') }}</th>
+										<th scope="col" data-type="numeric" class="d-md-table-cell d-sm-none d-none" style="width: 15%">{{ trans('global.price') }}</th>
+										<th scope="col" style="width: 15%">{{ trans('global.action') }}</th>
 									</tr>
 									</thead>
 									<tbody>
@@ -159,9 +342,15 @@
 												$planPaymentUrl = url('posts/' . data_get($post, 'id') . '/payment');
 												$archivingUrl = url($basePath . '/' . data_get($post, 'id') . '/offline');
 												$repostingUrl = url($basePath . '/' . data_get($post, 'id') . '/repost');
+
+												$price = data_get($post, 'price');
+												$priceFormatted = data_get($post, 'price_formatted');
+												if (is_numeric($price) && $price > 0) {
+													$priceFormatted = 'R$ ' . number_format($price, 0, ',', '.');
+												}
 											@endphp
 											<tr>
-												<td style="width:2%" class="add-img-selector">
+												<td class="add-img-selector d-md-table-cell d-none" style="width:2%">
 													<div class="checkbox">
 														<label><input type="checkbox" name="entries[]" value="{{ data_get($post, 'id') }}"></label>
 													</div>
@@ -173,12 +362,12 @@
 												</td>
 												<td style="width:52%" class="items-details-td">
 													<div>
-														<p>
+														<div class="mb-2">
 															<a href="{{ $postUrl }}"
-															   class="{{ linkClass() }} fw-bold"
+															   class="{{ linkClass() }} fw-bold fs-6"
 															   title="{{ data_get($post, 'title') }}"
 															>
-																{{ str(data_get($post, 'title'))->limit(40) }}
+																{{ str(data_get($post, 'title'))->limit(50) }}
 															</a>
 															@if (in_array($pagePath, ['list', 'archived', 'pending-approval']))
 																@if (
@@ -195,7 +384,7 @@
 																			$packageInfo = ' (' . trans('global.expired') . ')';
 																		}
 																	@endphp
-																	<span class="badge rounded-pill {{ $ribbonColorClass }}"
+																	<span class="badge rounded-pill {{ $ribbonColorClass }} ms-1"
 																	      data-bs-toggle="tooltip"
 																	      data-bs-placement="bottom"
 																	      title="{{ $packageShortName . $packageInfo }}"
@@ -204,49 +393,50 @@
 																	</span>
 																@endif
 															@endif
-														</p>
-														@php
-															$listingDates = getListingDates($post, $pagePath);
-														@endphp
-														@if (!empty($listingDates))
-															@foreach($listingDates as $label => $labeledDate)
-																<p class="mb-1">
-																	<i class="fa-regular fa-clock"
-																	   data-bs-toggle="tooltip"
-																	   data-bs-placement="bottom"
-																	   title="{{ $label }}"
-																	></i>&nbsp;{!! $labeledDate !!}
-																</p>
-															@endforeach
-														@endif
-														<p class="mb-1">
-															<i class="fa-regular fa-eye"
-															   data-bs-toggle="tooltip"
-															   data-bs-placement="bottom"
-															   title="{{ trans('global.Visitors') }}"
-															></i> {{ data_get($post, 'visits_formatted') ?? 0 }}
-															
-															<i class="bi bi-geo-alt"
-															   data-bs-toggle="tooltip"
-															   data-bs-placement="bottom"
-															   title="{{ trans('global.Located In') }}"
-															></i> {{ data_get($post, 'city.name') ?? '-' }}
-															
-															<img src="{{ data_get($post, 'country_flag_url') }}" alt=""
-															     data-bs-toggle="tooltip"
-															     title="{{ data_get($post, 'country.name') }}"
-															>
-														</p>
+														</div>
+														
+														<div class="metadata-row d-flex flex-wrap gap-3 align-items-center mb-2 text-muted" style="font-size: 0.85rem;">
+															<span>
+																<i class="fa-regular fa-eye me-1"></i> {{ data_get($post, 'visits_formatted') ?? 0 }} vistas
+															</span>
+															<span>
+																<i class="bi bi-geo-alt me-1"></i> {{ data_get($post, 'city.name') ?? '-' }}
+																<img src="{{ data_get($post, 'country_flag_url') }}" alt="" class="ms-1" style="height: 12px; vertical-align: middle;">
+															</span>
+														</div>
+
+														<div class="dates-row text-secondary mb-2" style="font-size: 0.75rem; opacity: 0.8;">
+															@php
+																$createdAt = data_get($post, 'created_at_formatted');
+																$updatedAt = data_get($post, 'updated_at_formatted');
+																// If the helper format is too long, we can use Carbon here
+																try {
+																	$carbonCreated = \Illuminate\Support\Carbon::parse(data_get($post, 'created_at'));
+																	$carbonUpdated = \Illuminate\Support\Carbon::parse(data_get($post, 'updated_at'));
+																	$createdAt = $carbonCreated->translatedFormat('d M, H:i');
+																	$updatedAt = $carbonUpdated->translatedFormat('d M, H:i');
+																} catch (\Exception $e) {}
+															@endphp
+															<div class="d-flex flex-wrap gap-x-3">
+																<span><i class="fa-regular fa-clock me-1"></i> Criado: {{ $createdAt }}</span>
+																<span><i class="bi bi-arrow-repeat me-1"></i> Atualizado: {{ $updatedAt }}</span>
+															</div>
+														</div>
+
+														{{-- Mobile Price --}}
+														<div class="price-td-mobile d-md-none">
+															{!! $priceFormatted !!}
+														</div>
 													</div>
 												</td>
-												<td style="width:16%" class="price-td d-md-table-cell d-sm-none d-none">
-													<div class="fw-bold">
-														{!! data_get($post, 'price_formatted') !!}
+												<td style="width:16%" class="price-td d-md-table-cell d-none text-end">
+													<div class="fw-bold fs-5 text-primary">
+														{!! $priceFormatted !!}
 													</div>
 												</td>
 												<td style="width:10%" class="action-td">
 													<div>
-														<div class="btn-group">
+														<div class="btn-group dropup-mobile">
 															<button type="button"
 															        class="btn btn btn-outline-primary dropdown-toggle"
 															        data-bs-toggle="dropdown"
@@ -254,7 +444,7 @@
 															>
 																{{ trans('global.action') }}
 															</button>
-															<ul class="dropdown-menu">
+															<ul class="dropdown-menu dropdown-menu-end">
 																@if ($isEditingAllowed)
 																	<li>
 																		<a class="dropdown-item" href="{{ $editingUrl }}">
