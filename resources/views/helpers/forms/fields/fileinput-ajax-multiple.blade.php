@@ -26,7 +26,7 @@
 	$wrapper ??= [];
 	$diskName ??= StorageDisk::getDiskName();
 	$fileLoadingMessage ??= trans('global.loading_wd');
-	$limit = $pluginOptions['limit'] ?? 5;
+	$limit = $pluginOptions['limit'] ?? ($limit ?? 5);
 	$deleteUrlPattern ??= '/';
 	$reorderUrl ??= '/';
 	$previewFrameWidth ??= null;
