@@ -40,14 +40,14 @@
 	@endphp
 	
 	@if ($position == 'bottom')
-		<div class="d-flex align-items-center my-4">
+		<div class="d-flex align-items-center my-2">
 			<hr class="flex-grow-1">
 			<span class="mx-2 text-2 text-muted fw-300">{{ $bottomSeparator }}</span>
 			<hr class="flex-grow-1">
 		</div>
 	@endif
 	@if ($position == 'topWithTitle')
-		<div class="d-flex align-items-center my-4">
+		<div class="d-flex align-items-center my-2">
 			<hr class="flex-grow-1">
 			<span class="mx-2 text-2 text-muted fw-300">{{ $topSeparator }}</span>
 			<hr class="flex-grow-1">
@@ -57,7 +57,7 @@
 		<div class="d-flex align-items-center my-3"></div>
 	@endif
 	
-	<div class="row mb-3 social-media d-flex justify-content-center {{ $sGutter }}">
+	<div class="row mb-1 social-media d-flex justify-content-center {{ $sGutter }}">
 		@foreach($socialLoginProviders as $provider => $providerData)
 			@php
 				$btnClass = data_get($providerData, 'btnClass');
@@ -66,25 +66,23 @@
 				$label = data_get($providerData, 'label');
 				$title = strip_tags($label);
 			@endphp
-			<div class="{{ $sCol }} col-sm-12 col-12 d-grid">
-				<div class="col-xl-12 col-md-12 col-sm-12 col-12 btn {{ $btnClass }}">
-					<a href="{{ $url }}" title="{!! $title !!}">
-						<i class="{{ $iconClass }}"></i> {!! $label !!}
-					</a>
-				</div>
+			<div class="{{ $sCol }} col-sm-12 col-12 text-center mb-1">
+				<a href="{{ $url }}" title="{!! $title !!}" class="btn {{ $btnClass }} px-4 py-1">
+					<i class="{{ $iconClass }}"></i> {!! $label !!}
+				</a>
 			</div>
 		@endforeach
 	</div>
 	
 	@if ($position == 'topWithTitle')
-		<div class="d-flex align-items-center my-4">
+		<div class="d-flex align-items-center my-2">
 			<hr class="flex-grow-1">
 			<span class="mx-2 text-2 text-muted fw-300">{{ trans('auth.or') }}</span>
 			<hr class="flex-grow-1">
 		</div>
 	@endif
 	@if ($position == 'top')
-		<div class="d-flex align-items-center my-4">
+		<div class="d-flex align-items-center my-2">
 			<hr class="flex-grow-1">
 			<span class="mx-2 text-2 text-muted fw-300">{{ trans('auth.or') }}</span>
 			<hr class="flex-grow-1">
