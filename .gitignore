@@ -30,6 +30,7 @@
 
 # LaraClassified specific
 /public/webcron.php
+ads.txt
 
 # Package manager files
 npm-debug.log
