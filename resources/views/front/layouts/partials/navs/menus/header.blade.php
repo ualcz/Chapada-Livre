@@ -21,7 +21,7 @@
 	@if (!empty($children))
 		<li class="nav-item{{ $ms }} dropdown{{ $openOnHover }}">
 			{!! $labelHtml !!}
-			<ul class="dropdown-menu shadow-sm">
+			<ul class="dropdown-menu dropdown-menu-end shadow-sm">
 				@foreach($children as $subMenu)
 					@php
 						$subLabelHtml = data_get($subMenu, 'label_html');

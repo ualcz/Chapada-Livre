@@ -21,13 +21,23 @@
 	$wrapperClass = ' my-4 px-1';
 	$itemClass = ' mb-4';
 	$itemBorderClass = ' border-0 shadow-sm rounded-4';
-	$h5BgColor = ' bg-primary bg-opacity-10 text-primary rounded-pill px-4 py-2 border border-primary border-opacity-25';
+	$h5BgColor = ' sitemap-cat-header rounded-pill px-4 py-2 border';
 	$subCatIcon = '<i class="bi bi-chevron-right fs-xs me-2 opacity-50"></i> ';
 @endphp
 
 @section('after_styles')
 	@parent
 	<style>
+		.sitemap-cat-header {
+			background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+			color: var(--bs-primary) !important;
+			border-color: rgba(var(--bs-primary-rgb), 0.25) !important;
+		}
+		.sitemap-cat-header .cat-title-link, 
+		.sitemap-cat-header i, 
+		.sitemap-cat-header a {
+			color: var(--bs-primary) !important;
+		}
 		.sitemap-cat-card {
 			transition: all 0.3s ease;
 			background: #fff;
@@ -38,11 +48,10 @@
 			box-shadow: 0 12px 24px rgba(0,0,0,0.08) !important;
 		}
 		.cat-title-link {
-			color: #1a202c;
-			transition: color 0.2s;
+			transition: opacity 0.2s;
 		}
 		.cat-title-link:hover {
-			color: var(--bs-primary);
+			opacity: 0.7;
 		}
 		.city-pill {
 			display: inline-flex;

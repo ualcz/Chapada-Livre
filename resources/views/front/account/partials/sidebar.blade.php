@@ -15,6 +15,8 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         border-radius: 1.25rem !important;
         overflow: hidden;
+        overflow-x: hidden;
+        max-width: 100%;
         background: #fff !important;
     }
     
@@ -64,6 +66,13 @@
         color: #4a4a4a !important;
     }
     
+    .offcanvas-account {
+        border-top-right-radius: 1.5rem;
+        border-bottom-right-radius: 1.5rem;
+        width: 280px !important;
+        max-width: 75vw !important;
+    }
+    
     .account-sidebar .list-group-item.active .badge {
         background: rgba(255, 255, 255, 0.2) !important;
         color: #fff !important;
@@ -75,12 +84,24 @@
     }
     
     .account-sidebar .fa-angle-down {
-        font-size: 0.8rem;
-        transition: transform 0.3s ease;
+        display: none;
     }
     
-    [aria-expanded="true"] .fa-angle-down {
-        transform: rotate(180deg);
+    .cross-link-btn {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background-color: var(--bs-primary) !important;
+        color: #fff !important;
+    }
+    .cross-link-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(var(--bs-primary-rgb), 0.3) !important;
+        background-color: var(--bs-primary) !important;
+        filter: brightness(0.9);
+        color: #fff !important;
+    }
+    
+    .account-sidebar .sidebar-group:not(:last-child) {
+        margin-bottom: 1rem;
     }
 
     /* Floating Button for Mobile (Chevron Tab) */
@@ -90,37 +111,6 @@
         left: 0;
         transform: translateY(-50%);
         z-index: 1050;
-        width: 32px;
-        height: 60px;
-        border-radius: 0 12px 12px 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 4px 0 15px rgba(var(--bs-primary-rgb), 0.2);
-        padding: 0;
-        background: var(--bs-primary) !important;
-        border: none !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        opacity: 0.8;
-    }
-    
-    .mobile-menu-trigger:hover {
-        width: 40px;
-        opacity: 1;
-    }
-    
-    .mobile-menu-trigger i {
-        color: #fff;
-        font-size: 1.2rem;
-        transition: transform 0.3s ease;
-    }
-
-    .offcanvas-account {
-        border-top-right-radius: 1.5rem;
-        border-bottom-right-radius: 1.5rem;
-        width: 280px !important;
-    }
-
     [data-bs-theme="dark"] .account-sidebar {
         background: #1e1e1e !important;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -137,18 +127,14 @@
 </style>
 
 {{-- Desktop Sidebar --}}
-<aside class="d-none d-md-block">
+<aside class="d-none d-xl-block">
 	<div class="container account-sidebar p-4 p-lg-4 p-md-3 mb-4 mb-md-0 vstack gap-4">
 		@include('front.account.partials.sidebar-content')
 	</div>
 </aside>
 
-{{-- Mobile Trigger & Offcanvas --}}
-<div class="d-md-none">
-    <button id="accountMenuTrigger" class="mobile-menu-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAccountMenu" aria-controls="offcanvasAccountMenu">
-        <i class="fa-solid fa-chevron-right"></i>
-    </button>
-
+{{-- Mobile Offcanvas --}}
+<div class="d-xl-none">
     <div class="offcanvas offcanvas-start offcanvas-account" tabindex="-1" id="offcanvasAccountMenu" aria-labelledby="offcanvasAccountMenuLabel">
         <div class="offcanvas-header border-bottom">
             <h5 class="offcanvas-title fw-bold" id="offcanvasAccountMenuLabel">
@@ -166,17 +152,13 @@
 
 <script>
     onDocumentReady((event) => {
-        const offcanvasElement = document.getElementById('offcanvasAccountMenu');
-        const triggerButton = document.getElementById('accountMenuTrigger');
-        
-        if (offcanvasElement && triggerButton) {
-            offcanvasElement.addEventListener('show.bs.offcanvas', function () {
-                triggerButton.classList.add('d-none');
-            });
-            
-            offcanvasElement.addEventListener('hidden.bs.offcanvas', function () {
-                triggerButton.classList.remove('d-none');
-            });
+        // Hijack the main header's hamburger button to open the Account Sidebar instead
+        const mainToggler = document.querySelector('header .navbar-toggler');
+        if (mainToggler) {
+            mainToggler.setAttribute('data-bs-toggle', 'offcanvas');
+            mainToggler.setAttribute('data-bs-target', '#offcanvasAccountMenu');
+            mainToggler.setAttribute('aria-controls', 'offcanvasAccountMenu');
+            mainToggler.removeAttribute('aria-expanded');
         }
     });
 </script>

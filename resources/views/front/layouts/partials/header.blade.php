@@ -168,7 +168,7 @@
 			</a>
 			
 			{{-- Toggle Nav (Mobile) --}}
-			<button class="navbar-toggler float-end"
+			<button class="navbar-toggler float-end border-0"
 			        type="button"
 			        data-bs-toggle="collapse"
 			        data-bs-target="#navbarNav"
@@ -179,12 +179,84 @@
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			
+			<style>
+				@media (max-width: 1199.98px) {
+					#navbarNav {
+						position: fixed !important;
+						top: 0;
+						left: -300px;
+						width: 280px;
+						height: 100vh !important;
+						background-color: var(--bs-body-bg, #fff);
+						z-index: 1050;
+						transition: left 0.3s ease-in-out;
+						box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+						border-top-right-radius: 1.5rem;
+						border-bottom-right-radius: 1.5rem;
+						padding: 1.5rem 1rem;
+						display: block !important;
+						overflow-y: auto;
+					}
+					#navbarNav.show {
+						left: 0;
+					}
+					#navbarNav.collapsing {
+						left: -300px;
+						transition: left 0.3s ease-in-out;
+						display: block !important;
+						height: 100vh !important;
+					}
+					/* Drawer Header for mobile only */
+					.mobile-drawer-header {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						margin-bottom: 1.5rem;
+						padding-bottom: 1rem;
+						border-bottom: 1px solid rgba(0,0,0,0.1);
+					}
+					
+					/* Force Dropdowns to be always open and flat in the mobile drawer */
+					#navbarNav .dropdown-menu {
+						display: block !important;
+						position: static !important;
+						float: none !important;
+						box-shadow: none !important;
+						border: none !important;
+						background-color: transparent !important;
+						padding-left: 1rem;
+						padding-top: 0;
+						margin-top: 0;
+					}
+					#navbarNav .dropdown-toggle::after {
+						display: none !important;
+					}
+					#navbarNav .dropdown-menu li {
+						padding: 4px 0;
+					}
+				}
+				@media (min-width: 1200px) {
+					.mobile-drawer-header {
+						display: none !important;
+					}
+				}
+				[data-bs-theme="dark"] #navbarNav {
+					background-color: #1e1e1e;
+				}
+			</style>
+
 			<div class="collapse navbar-collapse" id="navbarNav">
+				
+				<div class="mobile-drawer-header">
+					<h5 class="m-0 fw-bold"><i class="bi bi-list text-primary me-2"></i> {{ trans('global.Menu') }}</h5>
+					<button type="button" class="btn-close" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Close"></button>
+				</div>
+				
 				<ul class="navbar-nav me-md-auto">
 					{{-- Country Flag --}}
 					@if ($showCountryFlagNextLogo)
 						@if (!empty($countryFlag32Url))
-							<li class="nav-item flag-menu country-flag mb-xl-0 mb-2"
+							<li class="nav-item flag-menu country-flag mb-xl-0 mb-3"
 							    data-bs-toggle="tooltip"
 							    data-bs-placement="{{ (config('lang.direction') == 'rtl') ? 'bottom' : 'right' }}" {!! $multiCountryLabel !!}
 							>
@@ -203,7 +275,7 @@
 					@endif
 				</ul>
 				
-				<ul class="navbar-nav ms-auto">
+				<ul class="navbar-nav ms-auto gap-xl-2">
 					@include('front.layouts.partials.navs.menus.header')
 					
 					{{-- Currency Exchange Dropdown --}}

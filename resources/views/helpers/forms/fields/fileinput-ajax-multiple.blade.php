@@ -170,15 +170,145 @@
 
 @pushonce("{$viewName}_assets_styles")
 	<style>
+		/* Modern Drop Zone */
+		.file-drop-zone {
+			border: 2px dashed rgba(var(--bs-primary-rgb), 0.4) !important;
+			border-radius: 16px !important;
+			background-color: rgba(var(--bs-primary-rgb), 0.03) !important;
+			transition: all 0.3s ease;
+			padding: 2.5rem 1rem !important;
+			margin: 0 !important;
+		}
+		.file-drop-zone:hover {
+			background-color: rgba(var(--bs-primary-rgb), 0.08) !important;
+			border-color: var(--bs-primary) !important;
+		}
+		.file-drop-zone-title {
+			color: #6c757d !important;
+			font-weight: 600 !important;
+			font-size: 1.2rem !important;
+			padding: 0 !important;
+		}
+		
+		/* Clean Buttons */
+		.btn-file, .fileinput-upload-button {
+			border-radius: 50px !important;
+			font-weight: 600 !important;
+			padding: 0.6rem 1.5rem !important;
+			box-shadow: 0 4px 10px rgba(0,0,0,0.08) !important;
+			transition: all 0.2s ease;
+		}
+		
+		/* Thumbnail styling */
+		.krajee-default.file-preview-frame {
+			border: none !important;
+			box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+			border-radius: 12px !important;
+			margin: 8px !important;
+			overflow: hidden;
+			background: #fff;
+			transition: all 0.3s ease;
+		}
+		.krajee-default.file-preview-frame:hover {
+			box-shadow: 0 8px 18px rgba(0,0,0,0.12) !important;
+			transform: translateY(-3px);
+		}
+		
+		/* Hide extra visual clutter */
+		.kv-fileinput-caption {
+			border-radius: 50px 0 0 50px !important;
+		}
+		.krajee-default .file-footer-caption {
+			padding-top: 10px !important;
+			font-weight: 500 !important;
+		}
+		
+		/* Desktop Image Size */
 		.file-drop-zone .krajee-default.file-preview-frame .kv-file-content,
 		.file-drop-zone .krajee-default.file-preview-frame .kv-file-content img.file-preview-image {
 			width: {{ $previewFrameWidth }}px !important;
 			height: auto;
 			max-height: {{ $previewFrameHeight }}px !important;
+			object-fit: cover !important;
 		}
 		
 		.file-drop-zone .kv-file-content img.file-preview-image {
 			cursor: pointer;
+		}
+
+		/* Mobile Optimizations */
+		@media (max-width: 576px) {
+			.file-drop-zone {
+				padding: 1.5rem 0.5rem !important;
+			}
+			.file-drop-zone-title {
+				font-size: 1rem !important;
+			}
+			/* Horizontal scrolling row for all thumbnails */
+			.file-preview-thumbnails {
+				display: block !important;
+				white-space: nowrap !important;
+				overflow-x: auto !important;
+				overflow-y: hidden !important;
+				-webkit-overflow-scrolling: touch;
+				padding-bottom: 15px !important;
+				padding-top: 5px !important;
+				text-align: left !important;
+			}
+			/* Custom scrollbar for better look */
+			.file-preview-thumbnails::-webkit-scrollbar {
+				height: 6px;
+			}
+			.file-preview-thumbnails::-webkit-scrollbar-track {
+				background: rgba(0,0,0,0.05);
+				border-radius: 10px;
+			}
+			.file-preview-thumbnails::-webkit-scrollbar-thumb {
+				background: rgba(var(--bs-primary-rgb), 0.3);
+				border-radius: 10px;
+			}
+			/* Krajee's wrappers set to inline-block to prevent line breaks */
+			.file-initial-thumbs, .file-live-thumbs {
+				display: inline-block !important;
+				vertical-align: top !important;
+				white-space: nowrap !important;
+			}
+			.file-preview-thumbnails::after, .file-initial-thumbs::after, .file-live-thumbs::after {
+				display: none !important;
+			}
+			/* Each photo card in the scrollable row */
+			.krajee-default.file-preview-frame {
+				display: inline-block !important;
+				vertical-align: top !important;
+				width: 140px !important;
+				margin: 0 12px 0 0 !important;
+				float: none !important;
+				white-space: normal !important; /* Restore normal text wrap inside cards */
+			}
+			.file-drop-zone .krajee-default.file-preview-frame .kv-file-content,
+			.file-drop-zone .krajee-default.file-preview-frame .kv-file-content img.file-preview-image {
+				width: 100% !important;
+				height: 120px !important;
+				max-height: 120px !important;
+				object-fit: cover !important;
+			}
+			.file-thumbnail-footer {
+				padding: 8px !important;
+				width: 100% !important;
+			}
+			.krajee-default .file-footer-caption {
+				font-size: 0.75rem !important;
+				margin-bottom: 5px !important;
+				width: 100% !important;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
+			}
+			/* Reduce button sizes on mobile */
+			.file-actions .btn {
+				padding: 0.25rem 0.4rem !important;
+				font-size: 0.8rem !important;
+			}
 		}
 	</style>
 @endpushonce
