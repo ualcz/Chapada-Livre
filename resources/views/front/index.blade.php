@@ -42,6 +42,23 @@
 	@includeWhen(!auth()->check(), 'auth.login.partials.modal')
 @endsection
 
+@section('after_styles')
+	@parent
+	<style>
+		/* Espaçamento adicional entre seções na página inicial (mobile) */
+		@media (max-width: 991.98px) {
+			#homepage > div,
+			#homepage > section {
+				margin-bottom: 2.5rem !important;
+			}
+			#homepage > div:last-child,
+			#homepage > section:last-child {
+				margin-bottom: 0 !important;
+			}
+		}
+	</style>
+@endsection
+
 @section('after_scripts')
 	@parent
 	<script>
