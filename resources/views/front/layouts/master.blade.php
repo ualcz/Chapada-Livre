@@ -123,6 +123,152 @@
 			width: 100%;
 			position: relative;
 		}
+
+		/* Modern Login Modal */
+		#quickLogin .modal-content {
+			border-radius: 16px !important;
+			border: none !important;
+			box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+		}
+		#quickLogin .modal-header {
+			border-bottom: none !important;
+			padding: 1.5rem 1.5rem 0.5rem !important;
+		}
+		#quickLogin .modal-title {
+			font-weight: 700 !important;
+			color: #1a202c !important;
+		}
+		#quickLogin .modal-title i {
+			color: #28a745 !important;
+			margin-right: 8px;
+		}
+		#quickLogin .modal-body {
+			padding: 1.5rem 2rem !important;
+		}
+		#quickLogin .auth-field-item, 
+		#quickLogin .mb-3 {
+			margin-bottom: 1.5rem !important; /* Spacing between fields */
+		}
+		#quickLogin label {
+			margin-bottom: 0.5rem !important;
+			font-weight: 600 !important;
+			color: #475569 !important;
+		}
+		#quickLogin .form-control {
+			border-radius: 10px !important;
+			padding: 0.6rem 1rem !important;
+			border: 1px solid #e2e8f0 !important;
+			background-color: #f8fafc !important;
+		}
+		#quickLogin .form-control:focus {
+			background-color: #ffffff !important;
+			border-color: #28a745 !important;
+			box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.1) !important;
+		}
+		#quickLogin .btn-primary {
+			background-color: #28a745 !important;
+			border-color: #28a745 !important;
+			border-radius: 10px !important;
+			padding: 0.6rem 2rem !important;
+			font-weight: 600 !important;
+		}
+		#quickLogin .btn-secondary {
+			background-color: #f1f5f9 !important;
+			border: none !important;
+			color: #475569 !important;
+			border-radius: 10px !important;
+			padding: 0.6rem 1.5rem !important;
+			font-weight: 600 !important;
+		}
+		#quickLogin .link-primary, #quickLogin .auth-field, #quickLogin a {
+			color: #28a745 !important;
+			font-weight: 600 !important;
+			text-decoration: none !important;
+		}
+		#quickLogin .input-group-text {
+			background-color: #f8fafc !important;
+			border-color: #e2e8f0 !important;
+			border-radius: 10px 0 0 10px !important;
+			color: #64748b !important;
+		}
+		
+		#quickLogin .hr-text {
+			display: flex;
+			align-items: center;
+			text-align: center;
+			margin: 1.5rem 0;
+			color: #94a3b8;
+			font-size: 0.85rem;
+		}
+		#quickLogin .hr-text::before, #quickLogin .hr-text::after {
+			content: '';
+			flex: 1;
+			border-bottom: 1px solid #e2e8f0;
+		}
+		#quickLogin .hr-text:not(:empty)::before { margin-right: .5em; }
+		#quickLogin .hr-text:not(:empty)::after { margin-left: .5em; }
+
+		/* Social Buttons Global Style (Modal & Pages) */
+		html body #main-wrapper .btn-social,
+		html body .modal .btn-social,
+		html body #quickLogin a.btn-social {
+			border-radius: 8px !important;
+			padding: 0.6rem 0.5rem !important;
+			font-weight: 600 !important;
+			display: flex !important;
+			align-items: center;
+			justify-content: center;
+			gap: 4px !important;
+			border: 1px solid #e2e8f0 !important;
+			background: #ffffff !important;
+			color: #1a202c !important; /* Force dark text to override modal green */
+			transition: all 0.2s ease !important;
+			font-size: 0.85rem !important;
+			box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+			text-decoration: none !important;
+			white-space: nowrap !important;
+		}
+
+		html body .modal .btn-facebook,
+		html body #quickLogin a.btn-facebook { border-color: #1877F2 !important; }
+		
+		html body .modal .btn-google,
+		html body .modal a[class*="btn-google"],
+		html body #quickLogin a.btn-google { border-color: #ea4335 !important; }
+
+		html body .modal .btn-apple,
+		html body #quickLogin a.btn-apple { border-color: #000000 !important; }
+
+		html body .modal .btn-social:hover,
+		html body #quickLogin a.btn-social:hover {
+			background: #f8fafc !important;
+			transform: translateY(-1px);
+			box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+		}
+
+		html body .modal .btn-facebook:hover,
+		html body #quickLogin a.btn-facebook:hover { 
+			color: #1877F2 !important; 
+			border-color: #1877F2 !important; 
+		}
+		
+		html body .modal .btn-google:hover,
+		html body #quickLogin a.btn-google:hover { 
+			color: #ea4335 !important; 
+			border-color: #ea4335 !important; 
+		}
+
+		/* Force row layout for social media in modal */
+		#quickLogin .social-media {
+			display: flex !important;
+			flex-wrap: wrap !important;
+			justify-content: center !important;
+		}
+		#quickLogin .social-media > div {
+			flex: 0 0 50% !important;
+			max-width: 50% !important;
+			padding: 0 4px !important;
+		}
 	</style>
 	
 	@if (config('settings.other.js_code'))

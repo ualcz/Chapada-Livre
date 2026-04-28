@@ -34,17 +34,17 @@
 			// $mbAuth = socialLogin()->isEnabled() ? ' mb-4' : ' mb-4';
 			$mbAuth = ' mb-4';
 		@endphp
-		<div class="row d-flex justify-content-center">
-			<div class="col-12 col-sm-12 col-md-12 col-lg-11 col-xl-10 col-xxl-8">
-				<h3 class="fw-600{{ $mbAuth }}">{{ trans('auth.sign_in') }}</h3>
+		<div class="row d-flex justify-content-center text-center">
+			<div class="col-12">
+				<h2 class="fw-bold mb-2" style="letter-spacing: -0.5px;">{{ trans('auth.sign_in') }}</h2>
+				<p class="text-muted mb-4">{{ getLoginDescription() }}</p>
 			</div>
 		</div>
 		
 		@include('auth.login.partials.social', ['page' => 'login', 'position' => 'top'])
 		
 		<div class="row d-flex justify-content-center">
-			<div class="col-12 col-sm-12 col-md-12 col-lg-11 col-xl-10 col-xxl-8">
-				<p class="text-muted mb-4">{{ getLoginDescription() }}</p>
+			<div class="col-12">
 				
 				<form id="loginForm" action="{{ url()->current() }}" method="post" role="form">
 					@csrf

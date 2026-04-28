@@ -28,7 +28,7 @@
 								</div>
 							@endif
 							
-							@include('auth.login.partials.social', ['socialCol' => 12, 'page' => 'modal'])
+							@include('auth.login.partials.social', ['socialCol' => 6, 'page' => 'modal'])
 							@php
 								$mtAuth = !socialLogin()->isEnabled() ? ' mt-3' : '';
 							@endphp
