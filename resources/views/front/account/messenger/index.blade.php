@@ -25,22 +25,15 @@
     <div class="main-container">
         <div class="container">
             <div class="messenger-wrapper">
-                {{-- Sidebar: Filter & Thread List --}}
-                <div class="messenger-sidebar">
-                    <div class="messenger-header">
-                        <h5 class="m-0 fw-bold">{{ trans('global.inbox') }}</h5>
+                <div class="row g-0 w-100 h-100">
+                    {{-- Sidebar --}}
+                    <div class="messenger-sidebar">
+                    <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 fw-bold">{{ trans('global.Messages') }}</h5>
                         <div class="btn-group">
-                            <button type="button" id="btnRefresh" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="{{ trans('global.refresh') }}">
+                            <a href="{{ url(urlGen()->getAccountBasePath() . '/messages') }}" class="btn btn-outline-secondary btn-sm border-0">
                                 <i class="fa-solid fa-rotate"></i>
-                            </button>
-                            <div class="dropdown d-inline-block">
-                                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="" class="dropdown-item markAllAsRead">{{ trans('global.Mark all as read') }}</a></li>
-                                </ul>
-                            </div>
+                            </a>
                         </div>
                     </div>
                     
@@ -52,25 +45,20 @@
                     <div class="messenger-thread-list" id="listThreads">
                         @include('front.account.messenger.threads.threads')
                     </div>
-                    
-                    <div class="p-2 border-top bg-light" id="linksThreads">
-                        @include('front.account.messenger.threads.links')
-                    </div>
                 </div>
 
-                {{-- Main Chat Area: Empty State --}}
-                <div class="messenger-content d-none d-md-flex align-items-center justify-content-center text-center p-5">
-                    <div>
-                        <div class="mb-4">
-                            <i class="bi bi-chat-dots text-primary" style="font-size: 5rem;"></i>
-                        </div>
+                {{-- Empty State / Content Area --}}
+                <div class="messenger-content d-none d-md-flex">
+                    <div class="messenger-empty-state">
+                        <i class="bi bi-chat-dots"></i>
                         <h4 class="fw-bold">{{ trans('global.welcome_to_messenger') }}</h4>
-                        <p class="text-muted">{{ trans('global.select_a_conversation_to_start') }}</p>
+                        <p>{{ trans('global.select_a_conversation_to_start') }}</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 @endsection
 
 

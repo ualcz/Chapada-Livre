@@ -838,6 +838,9 @@ return [
 	'datepicker_thursday' => 'Th',
 	'datepicker_friday' => 'Fr',
 	'datepicker_saturday' => 'Sa',
+	'welcome_to_messenger' => 'Welcome to Messenger',
+	'select_a_conversation_to_start' => 'Select a conversation to start',
+	'back_to_list' => 'Back to list',
 	'security_tips_title' => 'Safety Tips',
 	'security_tips_text' => '<ul class="mb-0">
 <li>The advertisements are published by individuals or professionals and don\'t directly concern <strong>:appName</strong>. Our site is a channel for connecting people. So please check the quality of the product or service before buying or renting it.</li>

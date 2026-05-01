@@ -764,6 +764,9 @@ return [
     'datepicker_thursday' => 'Qui',
     'datepicker_friday' => 'Sex',
     'datepicker_saturday' => 'Sáb',
+    'welcome_to_messenger' => 'Bem-vindo ao Messenger',
+    'select_a_conversation_to_start' => 'Selecione uma conversa para começar',
+    'back_to_list' => 'Voltar para a lista',
     'security_tips_title' => 'Dicas de segurança',
     'security_tips_text' => '<ul class="mb-0">
 <li>Os anúncios são publicados por indivíduos ou profissionais e não dizem respeito diretamente à <strong>:appName</strong>. Nosso site é um canal para conectar pessoas. Portanto, verifique a qualidade do produto ou serviço antes de comprá-lo ou alugá-lo.</li>

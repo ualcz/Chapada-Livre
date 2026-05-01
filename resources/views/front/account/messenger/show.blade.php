@@ -40,56 +40,51 @@
                     </div>
                     @include('front.account.messenger.partials.sidebar')
                     <div class="messenger-thread-list" id="listThreads">
-                        {{-- The threads are loaded via AJAX or in the index, but for show we can display a back button or a limited list --}}
-                        <div class="p-3 text-center">
-                            <a href="{{ url(urlGen()->getAccountBasePath() . '/messages') }}" class="btn btn-primary btn-sm w-100">
-                                <i class="fa-solid fa-list"></i> {{ trans('global.back_to_list') }}
-                            </a>
-                        </div>
-                    </div>
                 </div>
 
                 {{-- Main Chat Area --}}
                 <div class="messenger-content">
                     <div class="messenger-header">
-                        <div class="d-flex align-items-center">
-                            <a href="{{ url(urlGen()->getAccountBasePath() . '/messages') }}" class="btn btn-link d-md-none me-2">
-                                <i class="fa-solid fa-arrow-left"></i>
+                        <div class="d-flex align-items-center flex-grow-1">
+                            <a href="{{ url(urlGen()->getAccountBasePath() . '/messages') }}" class="btn btn-link p-0 me-3 d-md-none text-dark">
+                                <i class="fa-solid fa-chevron-left fs-4"></i>
                             </a>
                             @if ($authUserId != data_get($thread, 'p_creator.id'))
-                                <img src="{{ url(data_get($thread, 'p_creator.photo_url')) }}" class="thread-avatar me-2" style="width: 40px; height: 40px;">
-                                <div>
-                                    <h6 class="m-0 fw-bold">{{ data_get($thread, 'p_creator.name') }}</h6>
-                                    <small class="text-muted">
+                                <div class="position-relative me-3">
+                                    <img src="{{ url(data_get($thread, 'p_creator.photo_url')) }}" class="thread-avatar" style="width: 40px; height: 40px;">
+                                    @if (isUserOnline(data_get($thread, 'p_creator')))
+                                        <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-light rounded-circle" style="width: 12px; height: 12px;"></span>
+                                    @endif
+                                </div>
+                                <div class="min-width-0">
+                                    <h6 class="m-0 fw-bold text-truncate">{{ data_get($thread, 'p_creator.name') }}</h6>
+                                    <small class="text-muted d-block text-truncate">
                                         @if (isUserOnline(data_get($thread, 'p_creator')))
-                                            <i class="fa-solid fa-circle text-success" style="font-size: 8px;"></i> Online
+                                            Online
                                         @else
                                             Offline
                                         @endif
                                     </small>
                                 </div>
                             @else
-                                {{-- It's the current user, show the other participant or the post title --}}
-                                <div>
-                                    <h6 class="m-0 fw-bold">{{ data_get($thread, 'post.title') }}</h6>
+                                <div class="min-width-0">
+                                    <h6 class="m-0 fw-bold text-truncate">{{ data_get($thread, 'post.title') }}</h6>
                                 </div>
                             @endif
                         </div>
-                        <div class="messenger-actions">
-                            <div class="btn-group">
-                                @if (data_get($thread, 'p_is_important'))
-                                    <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/actions?type=markAsNotImportant') }}" class="btn btn-outline-secondary btn-sm markAsNotImportant border-0">
-                                        <i class="fa-solid fa-star text-warning"></i>
-                                    </a>
-                                @else
-                                    <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/actions?type=markAsImportant') }}" class="btn btn-outline-secondary btn-sm markAsImportant border-0">
-                                        <i class="fa-regular fa-star"></i>
-                                    </a>
-                                @endif
-                                <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/delete') }}" class="btn btn-outline-secondary btn-sm border-0" onclick="return confirm('{{ trans('global.Are you sure?') }}')">
-                                    <i class="fa-solid fa-trash text-danger"></i>
+                        <div class="messenger-actions d-flex align-items-center">
+                            @if (data_get($thread, 'p_is_important'))
+                                <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/actions?type=markAsNotImportant') }}" class="btn btn-link text-warning p-2" title="{{ trans('global.Mark as not important') }}">
+                                    <i class="fa-solid fa-star"></i>
                                 </a>
-                            </div>
+                            @else
+                                <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/actions?type=markAsImportant') }}" class="btn btn-link text-secondary p-2" title="{{ trans('global.Mark as important') }}">
+                                    <i class="fa-regular fa-star"></i>
+                                </a>
+                            @endif
+                            <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/delete') }}" class="btn btn-link text-danger p-2" onclick="return confirm('{{ trans('global.Are you sure?') }}')" title="{{ trans('global.Delete') }}">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </a>
                         </div>
                     </div>
 
