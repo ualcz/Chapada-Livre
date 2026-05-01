@@ -30,13 +30,19 @@
     <div class="main-container px-0 px-md-3">
         <div class="container-fluid py-0 py-md-3">
             <div class="messenger-wrapper content-active">
-                {{-- Sidebar --}}
                 <div class="messenger-sidebar">
                     <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
                         <h5 class="m-0 fw-bold">{{ trans('global.Messages') }}</h5>
                     </div>
                     
                     @include('front.account.messenger.partials.sidebar')
+
+                    <div class="messenger-thread-list" id="listThreads">
+                        {{-- Threads will be loaded via AJAX --}}
+                        <div class="p-4 text-center text-muted">
+                            <i class="fa-solid fa-circle-notch fa-spin"></i>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Main Chat Area --}}
@@ -192,6 +198,24 @@
         onDocumentReady((event) => {
             {{-- fileinput (file_path) --}}
             $('#addFile').fileinput(options);
+
+            {{-- Load threads in sidebar --}}
+            fetchThreads('{{ url(urlGen()->getAccountBasePath() . '/messages') }}');
         });
+
+        function fetchThreads(url) {
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.threads) {
+                    document.getElementById('listThreads').innerHTML = data.threads;
+                }
+            })
+            .catch(error => console.error('Error loading threads:', error));
+        }
     </script>
 @endsection

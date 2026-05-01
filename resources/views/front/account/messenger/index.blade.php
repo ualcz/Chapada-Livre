@@ -46,8 +46,8 @@
                     </div>
                 </div>
 
-                {{-- Empty State / Content Area --}}
-                <div class="messenger-content d-none d-md-flex">
+                {{-- Empty State / Content Area — hidden on mobile via CSS, visible on desktop --}}
+                <div class="messenger-content">
                     <div class="messenger-empty-state">
                         <i class="bi bi-chat-dots"></i>
                         <h4 class="fw-bold">{{ trans('global.welcome_to_messenger') }}</h4>

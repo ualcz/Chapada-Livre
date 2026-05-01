@@ -50,10 +50,3 @@
 	</ul>
 </div>
 
-<div class="px-3 py-3">
-    <a href="{{ url(urlGen()->getAccountBasePath()) }}" class="btn btn-primary w-100 messenger-back-btn d-flex align-items-center justify-content-center">
-        <i class="bi bi-arrow-left-circle me-2"></i>
-        {{ trans('global.back_to_list') }}
-    </a>
-</div>
-
