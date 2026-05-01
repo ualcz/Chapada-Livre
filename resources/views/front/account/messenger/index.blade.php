@@ -25,8 +25,8 @@
     <div class="main-container px-0 px-md-3">
         <div class="container-fluid">
             <div class="messenger-wrapper">
-                {{-- Sidebar --}}
-                <div class="messenger-sidebar">
+                {{-- Sidebar: always visible (full width on mobile, fixed width on desktop) --}}
+                <div class="messenger-sidebar d-flex flex-column">
                     <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
                         <h5 class="m-0 fw-bold">{{ trans('global.Messages') }}</h5>
                         <div class="btn-group">
@@ -46,8 +46,8 @@
                     </div>
                 </div>
 
-                {{-- Empty State / Content Area — hidden on mobile via CSS, visible on desktop --}}
-                <div class="messenger-content">
+                {{-- Empty State: hidden on mobile, visible on desktop --}}
+                <div class="messenger-content d-none d-md-flex">
                     <div class="messenger-empty-state">
                         <i class="bi bi-chat-dots"></i>
                         <h4 class="fw-bold">{{ trans('global.welcome_to_messenger') }}</h4>

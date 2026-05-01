@@ -50,42 +50,28 @@
 }
 
 /* ============================================
-   MOBILE LAYOUT (≤ 768px) — WhatsApp style
+   MOBILE LAYOUT (≤ 768px)
+   Bootstrap d-none/d-md-flex on the blade templates controls visibility.
+   Here we just adjust sizing.
    ============================================ */
 
 @media (max-width: 768px) {
     .messenger-wrapper {
-        height: calc(100vh - 56px); /* deduct mobile nav height */
+        height: calc(100dvh - 56px);
         margin: 0;
         border-radius: 0;
-        flex-direction: column !important;
     }
 
-    /* Both panels fill the wrapper */
-    .messenger-sidebar,
+    /* On index page: sidebar fills full width */
+    .messenger-sidebar {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+
+    /* On show page: content fills full width */
     .messenger-content {
         width: 100% !important;
         flex: 1 1 100% !important;
-        max-height: 100%;
-    }
-
-    /* ---- INDEX PAGE (no conversation open) ----
-       Show sidebar (thread list), hide content panel */
-    .messenger-wrapper:not(.content-active) .messenger-sidebar {
-        display: flex !important;
-    }
-    .messenger-wrapper:not(.content-active) .messenger-content {
-        display: none !important;
-    }
-
-    /* ---- SHOW PAGE (conversation open, .content-active) ----
-       Hide sidebar, show full-screen chat */
-    .messenger-wrapper.content-active .messenger-sidebar {
-        display: none !important;
-    }
-    .messenger-wrapper.content-active .messenger-content {
-        display: flex !important;
-        flex-direction: column;
     }
 }
 

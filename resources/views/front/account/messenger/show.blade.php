@@ -30,7 +30,8 @@
     <div class="main-container px-0 px-md-3">
         <div class="container-fluid py-0 py-md-3">
             <div class="messenger-wrapper content-active">
-                <div class="messenger-sidebar">
+                {{-- Sidebar: hidden on mobile (d-none), flex on desktop (d-md-flex) --}}
+                <div class="messenger-sidebar d-none d-md-flex flex-column">
                     <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
                         <h5 class="m-0 fw-bold">{{ trans('global.Messages') }}</h5>
                     </div>
@@ -45,7 +46,7 @@
                     </div>
                 </div>
 
-                {{-- Main Chat Area --}}
+                {{-- Main Chat Area: always visible --}}
                 <div class="messenger-content">
                     <div class="messenger-header">
                         <div class="d-flex align-items-center flex-grow-1">
