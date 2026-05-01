@@ -18,6 +18,27 @@
 		$ms = ($savedType == 'button' && $type == 'button') ? ' ms-1' : '';
 	@endphp
 	@continue(!$canBeDisplayed)
+	@php
+		$isUserMenu = str_contains(data_get($menu, 'label', ''), '{user.name}');
+	@endphp
+	
+	@if (($isMobileMenu ?? false) && $isUserMenu)
+		@if (!empty($children))
+			@foreach($children as $subMenu)
+				@php
+					$subLabelHtml = data_get($subMenu, 'label_html');
+					$subShouldDisplay = data_get($subMenu, 'should_display');
+					$subCanBeDisplayed = ($subShouldDisplay && !empty($subLabelHtml));
+				@endphp
+				@continue(!$subCanBeDisplayed)
+				<li class="nav-item">
+					{!! $subLabelHtml !!}
+				</li>
+			@endforeach
+		@endif
+		@continue
+	@endif
+	
 	@if (!empty($children))
 		<li class="nav-item{{ $ms }} dropdown{{ $openOnHover }}">
 			{!! $labelHtml !!}

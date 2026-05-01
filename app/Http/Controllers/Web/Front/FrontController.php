@@ -309,43 +309,9 @@ class FrontController extends Controller
 		// Merge all arrays
 		array_push($menuArray, $connections, $logOut, $closeAccount, $adminPanel);
 		
-		// Determine current context (Ads vs User Settings)
-		$isAdsContext = in_array(request()->segment(2), ['posts', 'saved-posts', 'messages', 'saved-searches']);
-		
-		// Add Cross-Context Navigation Link
-		if ($isAdsContext) {
-			array_unshift($menuArray, [
-				'name'       => '← Voltar para Configurações',
-				'url'        => urlGen()->accountOverview(),
-				'icon'       => 'bi bi-gear',
-				'group'      => 'Navegação',
-				'countVar'   => null,
-				'inDropdown' => false,
-				'isActive'   => false,
-				'isCrossLink'=> true,
-			]);
-		} else {
-			array_unshift($menuArray, [
-				'name'       => 'Gerenciar Meus Anúncios →',
-				'url'        => url(urlGen()->getAccountBasePath() . '/posts/list'),
-				'icon'       => 'bi bi-megaphone',
-				'group'      => 'Navegação',
-				'countVar'   => null,
-				'inDropdown' => false,
-				'isActive'   => false,
-				'isCrossLink'=> true,
-			]);
-		}
-		
 		// Set missed information
 		return collect($menuArray)
 			->reject(fn ($item) => empty($item))
-			->filter(function ($item) use ($isAdsContext) {
-				if (!empty($item['isCrossLink'])) return true;
-				
-				$isAdGroup = ($item['group'] === trans('global.my_listings'));
-				return $isAdsContext ? $isAdGroup : !$isAdGroup;
-			})
 			->map(function ($item) {
 				// countCustomClass
 				$item['countCustomClass'] = $item['countCustomClass'] ?? '';

@@ -234,16 +234,17 @@
 </header>
 
 {{-- Mobile Nav Drawer (Offcanvas) - Separado do desktop, sem impactar o layout --}}
+{{-- Mobile Nav Drawer (Offcanvas) - Estilo unificado com o menu de conta --}}
 <div class="offcanvas offcanvas-start d-xl-none" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel"
-     style="max-width: 75vw; width: 280px; border-top-right-radius: 1.5rem; border-bottom-right-radius: 1.5rem;">
-    <div class="offcanvas-header border-bottom">
+     style="width: 280px; border-top-right-radius: 1.5rem; border-bottom-right-radius: 1.5rem;">
+    <div class="offcanvas-header border-bottom py-3 px-4">
         <h5 class="offcanvas-title fw-bold" id="mobileNavDrawerLabel">
-            <i class="bi bi-list text-primary me-2"></i> {{ trans('global.Menu') }}
+            <i class="bi bi-person-circle text-primary me-2"></i> {{ auth()->check() ? auth()->user()->name : trans('global.Menu') }}
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="offcanvas-body">
-		<ul class="navbar-nav flex-column gap-1 mb-3">
+    <div class="offcanvas-body p-3">
+		<ul class="navbar-nav flex-column gap-1 mb-2">
 			{{-- Country Flag --}}
 			@if ($showCountryFlagNextLogo && !empty($countryFlag32Url))
 				<li class="nav-item">
@@ -260,45 +261,148 @@
 			@endif
 		</ul>
 		
-		<ul class="navbar-nav flex-column gap-1">
-			@include('front.layouts.partials.navs.menus.header')
-			
-			@if (config('addons.currencyexchange.installed'))
-				@include('currencyexchange::select-currency')
-			@endif
-			
-			@if (isSettingsAppDarkModeEnabled())
-				@include('front.layouts.partials.navs.themes', [
-					'dropdownTag'    => 'li',
-					'dropdownClass'  => 'nav-item',
-					'buttonClass'    => 'nav-link',
-					'menuAlignment'  => 'dropdown-menu-end',
-					'showIconOnly'   => false,
-					'linkColorClass' => '',
-				])
-			@endif
-			
-			@include('front.layouts.partials.navs.languages')
-		</ul>
+		<div class="mobile-nav-content">
+			<ul class="navbar-nav flex-column gap-1">
+				@include('front.layouts.partials.navs.menus.header', ['isMobileMenu' => true])
+				
+				@if (config('addons.currencyexchange.installed'))
+					@include('currencyexchange::select-currency')
+				@endif
+				
+				@if (isSettingsAppDarkModeEnabled())
+					@include('front.layouts.partials.navs.themes', [
+						'dropdownTag'    => 'li',
+						'dropdownClass'  => 'nav-item',
+						'buttonClass'    => 'nav-link',
+						'menuAlignment'  => 'dropdown-menu-end',
+						'showIconOnly'   => false,
+						'linkColorClass' => '',
+					])
+				@endif
+				
+				@include('front.layouts.partials.navs.languages')
+			</ul>
+		</div>
 		
 		<style>
-			/* Forçar sub-menus abertos e planos dentro da gaveta mobile */
+			/* Estilo Premium para a Gaveta Mobile (Igual ao Menu de Conta) */
+			#mobileNavDrawer {
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+			}
+			
+			#mobileNavDrawer .nav-item {
+				margin-bottom: 2px;
+				list-style: none;
+			}
+			
+			#mobileNavDrawer .nav-link, 
+			#mobileNavDrawer .nav-item > a {
+				display: flex !important;
+				align-items: center !important;
+				gap: 12px !important;
+				padding: 0.75rem 1rem !important;
+				border-radius: 0.85rem !important;
+				font-weight: 500 !important;
+				color: #444 !important;
+				transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+				text-decoration: none !important;
+				border: none !important;
+			}
+			
+			#mobileNavDrawer .nav-link:hover,
+			#mobileNavDrawer .nav-item > a:hover {
+				background: rgba(var(--bs-primary-rgb), 0.05) !important;
+				transform: translateX(4px);
+				color: var(--bs-primary) !important;
+			}
+			
+			#mobileNavDrawer .nav-link.active,
+			#mobileNavDrawer .nav-item > a.active {
+				background: var(--bs-primary) !important;
+				color: #fff !important;
+				box-shadow: 0 4px 15px rgba(var(--bs-primary-rgb), 0.25);
+			}
+			
+			#mobileNavDrawer .nav-link i,
+			#mobileNavDrawer .nav-item > a i {
+				font-size: 1.15rem;
+				width: 24px;
+				text-align: center;
+				opacity: 0.8;
+			}
+			
+			/* Títulos e Divisores */
+			#mobileNavDrawer hr {
+				margin: 1rem 0;
+				opacity: 0.1;
+			}
+			
+			#mobileNavDrawer .menu-type-title {
+				font-size: 0.75rem !important;
+				text-uppercase: uppercase !important;
+				font-weight: 700 !important;
+				color: #999 !important;
+				letter-spacing: 0.5px !important;
+				padding: 1.25rem 1rem 0.5rem !important;
+				pointer-events: none;
+			}
+			
+			/* Submenus (Dropdowns) */
 			#mobileNavDrawer .dropdown-menu {
 				display: block !important;
 				position: static !important;
 				box-shadow: none !important;
 				border: none !important;
 				background-color: transparent !important;
-				padding-left: 1rem;
-				padding-top: 0;
-				margin-top: 0;
+				padding-left: 1.5rem !important;
+				padding-top: 0 !important;
+				margin-top: -2px !important;
 			}
+			
 			#mobileNavDrawer .dropdown-toggle::after {
 				display: none !important;
 			}
-			#mobileNavDrawer .dropdown-menu li {
-				padding: 4px 0;
+			
+			#mobileNavDrawer .dropdown-item {
+				padding: 0.6rem 1rem !important;
+				font-size: 0.92rem !important;
+				border-radius: 0.75rem !important;
+				color: #555 !important;
+			}
+			
+			#mobileNavDrawer .dropdown-item:hover {
+				background: rgba(var(--bs-primary-rgb), 0.04) !important;
+				color: var(--bs-primary) !important;
+			}
+			
+			/* Botões de Destaque (ex: Criar Anúncio) */
+			#mobileNavDrawer .btn-warning,
+			#mobileNavDrawer .menu-type-button a {
+				justify-content: center !important;
+				margin: 0.75rem 0 !important;
+				padding: 0.85rem !important;
+				font-weight: 700 !important;
+				border-radius: 1rem !important;
+				box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2) !important;
+				transform: none !important;
+			}
+			
+			/* Dark Mode Support */
+			[data-bs-theme="dark"] #mobileNavDrawer {
+				background: #1a1a1a !important;
+			}
+			[data-bs-theme="dark"] #mobileNavDrawer .nav-link,
+			[data-bs-theme="dark"] #mobileNavDrawer .nav-item > a {
+				color: #ccc !important;
+			}
+			[data-bs-theme="dark"] #mobileNavDrawer .nav-link:hover,
+			[data-bs-theme="dark"] #mobileNavDrawer .nav-item > a:hover {
+				background: rgba(255, 255, 255, 0.05) !important;
+			}
+			[data-bs-theme="dark"] #mobileNavDrawer .dropdown-item {
+				color: #bbb !important;
 			}
 		</style>
     </div>
 </div>
+
