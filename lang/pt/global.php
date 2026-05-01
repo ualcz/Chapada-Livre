@@ -98,6 +98,7 @@ return [
     'new' => 'Novo',
     'used' => 'Usado',
     'none' => 'Nenhum',
+    'Regarding' => 'Referente a',
     'location' => 'Localização',
     'locations' => 'Locais',
     'urgent' => 'Urgente',

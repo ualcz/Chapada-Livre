@@ -53,28 +53,60 @@
                             <a href="{{ url(urlGen()->getAccountBasePath() . '/messages') }}" class="btn btn-link p-0 me-3 d-md-none text-dark">
                                 <i class="fa-solid fa-chevron-left fs-4"></i>
                             </a>
-                            @if ($authUserId != data_get($thread, 'p_creator.id'))
-                                <div class="position-relative me-3">
-                                    <img src="{{ url(data_get($thread, 'p_creator.photo_url')) }}" class="thread-avatar" style="width: 40px; height: 40px;">
-                                    @if (isUserOnline(data_get($thread, 'p_creator')))
-                                        <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-light rounded-circle" style="width: 12px; height: 12px;"></span>
-                                    @endif
-                                </div>
-                                <div class="min-width-0">
-                                    <h6 class="m-0 fw-bold text-truncate">{{ data_get($thread, 'p_creator.name') }}</h6>
-                                    <small class="text-muted d-block text-truncate">
-                                        @if (isUserOnline(data_get($thread, 'p_creator')))
-                                            Online
-                                        @else
-                                            Offline
-                                        @endif
-                                    </small>
-                                </div>
-                            @else
-                                <div class="min-width-0">
-                                    <h6 class="m-0 fw-bold text-truncate">{{ data_get($thread, 'post.title') }}</h6>
-                                </div>
-                            @endif
+                            @php
+                                $otherUser = null;
+                                $participants = data_get($thread, 'participants', []);
+                                
+                                // 1. Try to find from participants list (most reliable)
+                                if (!empty($participants)) {
+                                    foreach ($participants as $p) {
+                                        $u = data_get($p, 'user') ?? $p;
+                                        if (data_get($u, 'id') && data_get($u, 'id') != $authUserId) {
+                                            $otherUser = $u;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                // 2. Fallback to creator/recipient logic
+                                if (empty($otherUser)) {
+                                    $pCreator = data_get($thread, 'p_creator');
+                                    if (!empty($pCreator) && data_get($pCreator, 'id') != $authUserId) {
+                                        $otherUser = $pCreator;
+                                    } else {
+                                        $pRecipient = data_get($thread, 'p_recipient');
+                                        $otherUser = data_get($pRecipient, 'user') ?? data_get($thread, 'post.user');
+                                    }
+                                }
+                                
+                                $post = data_get($thread, 'post');
+                                $postTitle = data_get($post, 'title');
+                                $postUrl = !empty($post) ? urlGen()->post($post) : '#';
+                                
+                                $otherUserName = data_get($otherUser, 'name', 'User');
+                                $otherUserPhoto = data_get($otherUser, 'photo_url');
+                            @endphp
+
+                            <div class="position-relative me-3">
+                                @php
+                                    $photoUrl = !empty($otherUserPhoto) ? url($otherUserPhoto) : url('images/user.jpg');
+                                @endphp
+                                <img src="{{ $photoUrl }}" class="thread-avatar" style="width: 40px; height: 40px;" onerror="this.src='{{ url('images/user.jpg') }}'">
+                                @if (!empty($otherUser) && isUserOnline($otherUser))
+                                    <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-light rounded-circle" style="width: 12px; height: 12px;"></span>
+                                @endif
+                            </div>
+                            <div class="min-width-0">
+                                <h6 class="m-0 fw-bold text-truncate">{{ $otherUserName }}</h6>
+                                @if (!empty($postTitle))
+                                    <div class="d-flex align-items-center gap-1 text-muted" style="font-size: 0.75rem;">
+                                        <span class="d-none d-sm-inline">{{ trans('global.Regarding') }}:</span>
+                                        <a href="{{ $postUrl }}" class="text-primary text-truncate fw-medium" target="_blank" style="text-decoration: none;">
+                                            {{ $postTitle }}
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                         <div class="messenger-actions d-flex align-items-center">
                             @if (data_get($thread, 'p_is_important'))
@@ -115,10 +147,10 @@
                             @honeypot
                             <div class="messenger-input-wrapper">
                                 <div class="file-upload-btn button-wrap">
-                                    <input id="addFile" name="file_path" type="file" class="d-none">
-                                    <label for="addFile" class="btn btn-outline-secondary rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                    <label for="addFile" class="btn btn-outline-secondary rounded-circle" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
                                         <i class="fa-solid fa-paperclip"></i>
                                     </label>
+                                    <input id="addFile" name="file_path" type="file" class="d-none">
                                 </div>
                                 <textarea id="body" name="body" maxlength="500" class="messenger-input" placeholder="{{ trans('global.Type a message') }}" rows="1"></textarea>
                                 <button id="sendChat" class="messenger-btn-send" type="submit">
@@ -144,8 +176,38 @@
         <link href="{{ url('assets/plugins/bootstrap-fileinput/themes/' . $fiTheme . '/theme.min.css') }}" rel="stylesheet">
     @endif
     <style>
-        .file-input {
-            display: inline-block;
+        .file-input { display: none !important; } /* hide extra fileinput widget */
+
+        /* Hide site footer and sub-header on mobile inside messenger */
+        @media (max-width: 768px) {
+            html, body {
+                overflow: hidden !important;
+                height: 100dvh !important;
+                overscroll-behavior-y: none;
+            }
+            body header,
+            body .navbar,
+            body footer,
+            body .footer,
+            body #footer,
+            body .breadcrumb-wrapper,
+            body .sub-header,
+            body .spacer {
+                display: none !important;
+            }
+            .main-container {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+                height: 100dvh !important;
+                overflow: hidden !important;
+            }
+            .messenger-wrapper {
+                height: 100dvh !important;
+            }
+            .messenger-footer {
+                padding-bottom: 25px !important;
+                background: #fff;
+            }
         }
     </style>
 @endsection
@@ -163,9 +225,14 @@
             'important': '{{ trans('global.Mark as important') }}',
             'notImportant': '{{ trans('global.Mark as not important') }}',
         };
+
+        {{-- Garante atualização a cada 5s mesmo se o admin não configurou o timer --}}
+        if (typeof timerNewMessagesChecking === 'undefined' || timerNewMessagesChecking <= 0) {
+            timerNewMessagesChecking = 5000;
+        }
     </script>
-    <script src="{{ url('assets/js/app/messenger.js') }}" type="text/javascript"></script>
-    <script src="{{ url('assets/js/app/messenger-chat.js') }}" type="text/javascript"></script>
+    <script src="{{ url('assets/js/app/messenger.js') }}?v={{ time() }}" type="text/javascript"></script>
+    <script src="{{ url('assets/js/app/messenger-chat.js') }}?v={{ time() }}" type="text/javascript"></script>
     
     <script src="{{ url('assets/plugins/bootstrap-fileinput/js/plugins/sortable.min.js') }}" type="text/javascript"></script>
     <script src="{{ url('assets/plugins/bootstrap-fileinput/js/fileinput.min.js') }}" type="text/javascript"></script>
@@ -197,18 +264,15 @@
         };
         
         onDocumentReady((event) => {
-            {{-- fileinput (file_path) --}}
-            $('#addFile').fileinput(options);
-
-            {{-- Load threads in sidebar --}}
-            fetchThreads('{{ url(urlGen()->getAccountBasePath() . '/messages') }}');
+            {{-- Load threads in sidebar on desktop --}}
+            if (window.innerWidth >= 768) {
+                fetchThreads('{{ url(urlGen()->getAccountBasePath() . '/messages') }}');
+            }
         });
 
         function fetchThreads(url) {
             fetch(url, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
             .then(response => response.json())
             .then(data => {

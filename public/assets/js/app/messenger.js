@@ -120,14 +120,11 @@ onDocumentReady((event) => {
  * @param url
  */
 function getThreads(url) {
-	showWaitingDialog();
-	
 	let ajax = $.ajax({
 		method: 'GET',
 		url: url
 	});
 	ajax.done(function (xhr) {
-		hideWaitingDialog();
 		if (typeof xhr.threads === 'undefined' || typeof xhr.links === 'undefined') {
 			return false;
 		}

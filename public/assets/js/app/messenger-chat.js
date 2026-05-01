@@ -37,8 +37,7 @@ onDocumentReady((event) => {
 		autoScrollEnabled = false;
 	});
 	
-	// Set initial focus on the chat text input
-	chatTextField.focus();
+	// Auto-scroll logic initialized
 	
 	// Auto-refresh chat messages if a timer is defined
 	if (typeof timerNewMessagesChecking !== 'undefined' && timerNewMessagesChecking > 0) {
@@ -56,8 +55,6 @@ onDocumentReady((event) => {
 				clearInterval(showNewMsgTimer); // Stop auto-refresh on manual navigation
 			}
 			
-			showWaitingDialog();
-			
 			fetchMessages(link.getAttribute('href'), false, false);
 			
 			return false;
@@ -74,6 +71,12 @@ onDocumentReady((event) => {
 			const formUrl = chatForm.getAttribute('action');
 			const formData = new FormData(chatForm);
 			
+			// Optimistic UI: Append message immediately if it's text
+			const messageText = chatTextField.value;
+			if (messageText.trim()) {
+				appendOptimisticMessage(messageText);
+			}
+			
 			// Clear fields immediately before sending AJAX
 			clearTextField(chatTextField);
 			clearFileInput(chatFileField);
@@ -87,6 +90,35 @@ onDocumentReady((event) => {
 			}
 			
 			updateChat(formUrl, formData); // Send the message
+		}
+	};
+	
+	// Appends a message to the UI immediately (Optimistic UI)
+	const appendOptimisticMessage = (text) => {
+		const history = document.getElementById('messageChatHistory');
+		if (!history) return;
+		
+		const now = new Date();
+		const hours = String(now.getHours()).padStart(2, '0');
+		const minutes = String(now.getMinutes()).padStart(2, '0');
+		const time = `${hours}:${minutes}`;
+		
+		const html = `
+			<div class="messenger-message me">
+				<div class="message-bubble">
+					<div class="message-text">${text.replace(/\n/g, '<br>')}</div>
+					<div class="message-meta">
+						<span class="message-time">${time}</span>
+						<i class="fa-solid fa-check opacity-50"></i>
+					</div>
+				</div>
+			</div>
+		`;
+		history.insertAdjacentHTML('beforeend', html);
+		
+		// Use the global scroll function
+		if (typeof scrollChatHistoryToBottom === 'function') {
+			scrollChatHistoryToBottom();
 		}
 	};
 	
@@ -127,7 +159,6 @@ onDocumentReady((event) => {
 function fetchMessages(url, firstLoading = false, canBeAutoScroll = true) {
 	httpRequest('GET', url)
 	.then(data => {
-		hideWaitingDialog();
 		
 		const successMsg = document.getElementById('successMsg');
 		const errorMsg = document.getElementById('errorMsg');
@@ -170,7 +201,6 @@ function fetchMessages(url, firstLoading = false, canBeAutoScroll = true) {
 		autoScrollEnabled = canBeAutoScroll;
 	})
 	.catch((reason) => {
-		hideWaitingDialog();
 		console.error(reason);
 		jsAlert(loadingErrorMessage, 'error', false);
 	});
@@ -182,19 +212,13 @@ function fetchMessages(url, firstLoading = false, canBeAutoScroll = true) {
  * @param formData
  */
 function updateChat(formUrl, formData) {
-	showWaitingDialog();
-	
-	// Send the message via POST with FormData
+	// Send the message via POST with FormData (silently, no loading dialog)
 	httpRequest('POST', formUrl, formData)
 	.then(data => {
 		fetchMessages(formUrl, true); // Refresh messages after successful send
 		
-		const chatTextField = document.getElementById('body');
-		chatTextField.focus(); // Refocus after successful send
 	})
 	.catch(error => {
-		hideWaitingDialog();
-		
 		const successMsg = document.getElementById('successMsg');
 		const errorMsg = document.getElementById('errorMsg');
 		
