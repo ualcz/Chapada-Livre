@@ -22,12 +22,11 @@
 
 @section('content')
 	@include('front.common.spacer')
-    <div class="main-container">
-        <div class="container">
+    <div class="main-container px-0 px-md-3">
+        <div class="container-fluid">
             <div class="messenger-wrapper">
-                <div class="row g-0 w-100 h-100">
-                    {{-- Sidebar --}}
-                    <div class="messenger-sidebar">
+                {{-- Sidebar --}}
+                <div class="messenger-sidebar">
                     <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
                         <h5 class="m-0 fw-bold">{{ trans('global.Messages') }}</h5>
                         <div class="btn-group">
@@ -58,9 +57,7 @@
             </div>
         </div>
     </div>
-</div>
 @endsection
-
 
 @section('after_styles')
     @parent

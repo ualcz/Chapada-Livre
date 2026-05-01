@@ -27,19 +27,16 @@
 
 @section('content')
 	@include('front.common.spacer')
-    <div class="main-container">
-        <div class="container">
-            <div class="messenger-wrapper">
-                {{-- Sidebar: Filter & Thread List --}}
-                <div class="messenger-sidebar d-none d-md-flex">
-                    <div class="messenger-header">
-                        <h5 class="m-0 fw-bold">{{ trans('global.inbox') }}</h5>
-                        <a href="{{ url(urlGen()->getAccountBasePath() . '/messages') }}" class="btn btn-sm btn-outline-primary">
-                            <i class="fa-solid fa-rotate"></i>
-                        </a>
+    <div class="main-container px-0 px-md-3">
+        <div class="container-fluid py-0 py-md-3">
+            <div class="messenger-wrapper content-active">
+                {{-- Sidebar --}}
+                <div class="messenger-sidebar">
+                    <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 fw-bold">{{ trans('global.Messages') }}</h5>
                     </div>
+                    
                     @include('front.account.messenger.partials.sidebar')
-                    <div class="messenger-thread-list" id="listThreads">
                 </div>
 
                 {{-- Main Chat Area --}}
@@ -95,7 +92,7 @@
                     {{-- Chat History --}}
                     <div class="messenger-chat-history" id="messageChatHistory">
                         <div id="linksMessages" class="text-center mb-3">
-                            {!! $linksRender !!}
+                            {!! $linksRender ?? '' !!}
                         </div>
                         @include('front.account.messenger.messages.messages')
                     </div>
@@ -124,12 +121,10 @@
                         </form>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 @endsection
-
 
 @section('after_styles')
     @parent
