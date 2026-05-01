@@ -1,49 +1,46 @@
 @php
 	$stats ??= [];
-	$countThreadsWithNewMessage = (int)data_get($stats, 'threads.withNewMessage'); // not sent
+	$countThreadsWithNewMessage = (int)data_get($stats, 'threads.withNewMessage');
 	
 	$navLinks = [
 		'inbox' => [
 			'label'    => trans('global.inbox'),
 			'url'      => url(urlGen()->getAccountBasePath() . '/messages'),
 			'isActive' => (!request()->has('filter') || request()->query('filter')==''),
+            'icon'     => 'bi-inbox',
 		],
 		'unread' => [
 			'label'    => trans('global.unread'),
 			'url'      => url(urlGen()->getAccountBasePath() . '/messages?filter=unread'),
 			'isActive' => (request()->query('filter')=='unread'),
+            'icon'     => 'bi-envelope',
 		],
 		'started' => [
 			'label'    => trans('global.started'),
 			'url'      => url(urlGen()->getAccountBasePath() . '/messages?filter=started'),
 			'isActive' => (request()->query('filter')=='started'),
+            'icon'     => 'bi-star',
 		],
 		'important' => [
 			'label'    => trans('global.important'),
 			'url'      => url(urlGen()->getAccountBasePath() . '/messages?filter=important'),
 			'isActive' => (request()->query('filter')=='important'),
+            'icon'     => 'bi-exclamation-circle',
 		],
 	];
 @endphp
-<div class="col-md-3 col-lg-2">
-	<ul class="nav nav-pills nav-justified inbox-nav">
+<div class="px-2 py-3 border-bottom">
+	<ul class="nav nav-pills flex-column messenger-filters">
 		@foreach($navLinks as $key => $item)
 			@php
 				$activeClass = $item['isActive'] ? ' active' : '';
-				$linkUrl = $item['url'];
-				$linkLabel = $item['label'];
-				$activeLinkClass = $item['isActive'] ? 'text-white' : 'link-primary';
-			
-				$hasBadge = ($key == 'inbox');
-				$badgeColor = ' ' . ($item['isActive'] ? 'text-bg-light' : 'text-bg-primary');
-				$badgeVisibility = ($countThreadsWithNewMessage <= 0) ? ' d-none' : '';
-				$badgeVisibility = '';
 			@endphp
-			<li class="nav-item">
-				<a class="nav-link{{ $activeClass }}" href="{{ $linkUrl }}">
-					{{ $linkLabel }}
-					@if ($hasBadge)
-						<span class="count-threads-with-new-messages count badge rounded-pill {{ $badgeColor . $badgeVisibility }}">
+			<li class="nav-item mb-1">
+				<a class="nav-link{{ $activeClass }} d-flex align-items-center" href="{{ $item['url'] }}">
+					<i class="bi {{ $item['icon'] }} me-2"></i>
+					<span class="flex-grow-1">{{ $item['label'] }}</span>
+					@if ($key == 'inbox' && $countThreadsWithNewMessage > 0)
+						<span class="badge rounded-pill bg-danger ms-2">
 							{{ \App\Helpers\Common\Num::short($countThreadsWithNewMessage) }}
 						</span>
 					@endif
@@ -52,3 +49,4 @@
 		@endforeach
 	</ul>
 </div>
+

@@ -29,169 +29,116 @@
 	@include('front.common.spacer')
     <div class="main-container">
         <div class="container">
-            <div class="row">
-                
-                <div class="col-md-3">
-                    @include('front.account.partials.sidebar')
-                </div>
-                
-                <div class="col-md-9">
-                    <div class="container border rounded bg-body-tertiary p-4 p-lg-3 p-md-2">
-                        <h2 class="fw-bold border-bottom pb-3 mb-4">
-                            <i class="bi bi-chat-text"></i> {{ trans('global.inbox') }}
-                        </h2>
-                        
-                        @if (isset($errors) && $errors->any())
-                            <div class="alert alert-danger alert-dismissible">
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ trans('global.Close') }}"></button>
-                                <ul>
-                                    @foreach($errors->all() as $error)
-                                        <li class="mb-0">{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                        
-                        <div id="successMsg" class="alert alert-success d-none" role="alert"></div>
-                        <div id="errorMsg" class="alert alert-danger d-none" role="alert"></div>
-                        
-                        <div class="container px-0">
-                            <div class="row mb-2">
-                                <div class="col-md-12 col-lg-12">
-                                    <div class="d-flex justify-content-between user-bar-top">
-                                        <div class="fs-5">
-                                            <p>
-                                                <a href="{{ url(urlGen()->getAccountBasePath() . '/messages') }}" class="{{ linkClass() }}">
-                                                    <i class="fa-solid fa-inbox"></i>
-                                                </a>&nbsp;
-                                                @if ($authUserId != data_get($thread, 'p_creator.id'))
-                                                    <a href="{{ urlGen()->user(data_get($thread, 'p_creator')) }}" class="{{ linkClass() }}">
-                                                        @if (isUserOnline(data_get($thread, 'p_creator')))
-                                                            <i class="fa-solid fa-circle text-success"></i>&nbsp;
-                                                        @endif
-                                                        <span>
-                                                            {{ data_get($thread, 'p_creator.name') }}
-                                                        </span>
-                                                    </a>
-                                                @endif
-                                                <span>{{ trans('global.Contact request about') }}</span>
-                                                <a href="{{ urlGen()->post(data_get($thread, 'post')) }}" class="{{ linkClass() }}">
-                                                    {{ data_get($thread, 'post.title') }}
-                                                </a>
-                                            </p>
-                                        </div>
-                                        
-                                        <div class="call-xhr-action">
-                                            <div class="btn-group btn-group-sm">
-                                                @if (data_get($thread, 'p_is_important'))
-                                                    <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/actions?type=markAsNotImportant') }}"
-                                                       class="btn btn-outline-primary markAsNotImportant"
-                                                       data-bs-toggle="tooltip"
-                                                       data-bs-placement="top"
-                                                       title="{{ trans('global.Mark as not important') }}"
-                                                    >
-                                                        <i class="fa-solid fa-star"></i>
-                                                    </a>
-                                                @else
-                                                    <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/actions?type=markAsImportant') }}"
-                                                       class="btn btn-outline-primary markAsImportant"
-                                                       data-bs-toggle="tooltip"
-                                                       data-bs-placement="top"
-                                                       title="{{ trans('global.Mark as important') }}"
-                                                    >
-                                                        <i class="fa-regular fa-star"></i>
-                                                    </a>
-                                                @endif
-                                                <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/delete') }}"
-                                                   class="btn btn-outline-primary"
-                                                   data-bs-toggle="tooltip"
-                                                   data-bs-placement="top"
-                                                   title="{{ trans('global.Delete') }}"
-                                                >
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </a>
-                                                @if (data_get($thread, 'p_is_unread'))
-                                                    <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/actions?type=markAsRead') }}"
-                                                       class="btn btn-outline-primary markAsRead"
-                                                       data-bs-toggle="tooltip"
-                                                       data-bs-placement="top"
-                                                       title="{{ trans('global.Mark as read') }}"
-                                                    >
-                                                        <i class="fa-solid fa-envelope"></i>
-                                                    </a>
-                                                @else
-                                                    <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/actions?type=markAsUnread') }}"
-                                                       class="btn btn-outline-primary markAsRead"
-                                                       data-bs-toggle="tooltip"
-                                                       data-bs-placement="top"
-                                                       title="{{ trans('global.Mark as unread') }}"
-                                                    >
-                                                        <i class="fa-solid fa-envelope-open"></i>
-                                                    </a>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                @include('front.account.messenger.partials.sidebar')
-                                
-                                <div class="col-md-9 col-lg-10">
-                                    <div class="p-0 m-0 message-chat">
-                                        <div class="container mx-0 border rounded bg-body pb-3 mb-3">
-                                            <div id="messageChatHistory" class="container mt-3 overflow-y-auto" id="listMessages" style="max-height: 550px;">
-                                                <div id="linksMessages" class="text-center">
-                                                    {!! $linksRender !!}
-                                                </div>
-                                                
-                                                @include('front.account.messenger.messages.messages')
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="container px-0 mx-0 type-message">
-                                            @php
-                                                $updateUrl = url(urlGen()->getAccountBasePath() . '/messages/' . $threadId);
-                                            @endphp
-                                            <form id="chatForm" role="form" method="POST" action="{{ $updateUrl }}" enctype="multipart/form-data">
-                                                @csrf
-                                                @method('PUT')
-                                                @honeypot
-                                                <div class="hstack gap-3 type-form">
-                                                    <textarea id="body" name="body"
-                                                              maxlength="500"
-                                                              rows="5"
-                                                              class="form-control me-auto input-write"
-                                                              placeholder="{{ trans('global.Type a message') }}"
-                                                              style="height: 60px;"
-                                                    ></textarea>
-                                                    <div class="p-0 m-0 text-nowrap d-flex align-items-center button-wrap">
-                                                        <input id="addFile" name="file_path" type="file">
-                                                    </div>
-                                                    <div class="vr"></div>
-                                                    <button id="sendChat" class="btn btn-primary" type="submit">
-                                                        <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
+            <div class="messenger-wrapper">
+                {{-- Sidebar: Filter & Thread List --}}
+                <div class="messenger-sidebar d-none d-md-flex">
+                    <div class="messenger-header">
+                        <h5 class="m-0 fw-bold">{{ trans('global.inbox') }}</h5>
+                        <a href="{{ url(urlGen()->getAccountBasePath() . '/messages') }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fa-solid fa-rotate"></i>
+                        </a>
+                    </div>
+                    @include('front.account.messenger.partials.sidebar')
+                    <div class="messenger-thread-list" id="listThreads">
+                        {{-- The threads are loaded via AJAX or in the index, but for show we can display a back button or a limited list --}}
+                        <div class="p-3 text-center">
+                            <a href="{{ url(urlGen()->getAccountBasePath() . '/messages') }}" class="btn btn-primary btn-sm w-100">
+                                <i class="fa-solid fa-list"></i> {{ trans('global.back_to_list') }}
+                            </a>
                         </div>
-                        
                     </div>
                 </div>
-                
+
+                {{-- Main Chat Area --}}
+                <div class="messenger-content">
+                    <div class="messenger-header">
+                        <div class="d-flex align-items-center">
+                            <a href="{{ url(urlGen()->getAccountBasePath() . '/messages') }}" class="btn btn-link d-md-none me-2">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </a>
+                            @if ($authUserId != data_get($thread, 'p_creator.id'))
+                                <img src="{{ url(data_get($thread, 'p_creator.photo_url')) }}" class="thread-avatar me-2" style="width: 40px; height: 40px;">
+                                <div>
+                                    <h6 class="m-0 fw-bold">{{ data_get($thread, 'p_creator.name') }}</h6>
+                                    <small class="text-muted">
+                                        @if (isUserOnline(data_get($thread, 'p_creator')))
+                                            <i class="fa-solid fa-circle text-success" style="font-size: 8px;"></i> Online
+                                        @else
+                                            Offline
+                                        @endif
+                                    </small>
+                                </div>
+                            @else
+                                {{-- It's the current user, show the other participant or the post title --}}
+                                <div>
+                                    <h6 class="m-0 fw-bold">{{ data_get($thread, 'post.title') }}</h6>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="messenger-actions">
+                            <div class="btn-group">
+                                @if (data_get($thread, 'p_is_important'))
+                                    <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/actions?type=markAsNotImportant') }}" class="btn btn-outline-secondary btn-sm markAsNotImportant border-0">
+                                        <i class="fa-solid fa-star text-warning"></i>
+                                    </a>
+                                @else
+                                    <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/actions?type=markAsImportant') }}" class="btn btn-outline-secondary btn-sm markAsImportant border-0">
+                                        <i class="fa-regular fa-star"></i>
+                                    </a>
+                                @endif
+                                <a href="{{ url(urlGen()->getAccountBasePath() . '/messages/' . $threadId . '/delete') }}" class="btn btn-outline-secondary btn-sm border-0" onclick="return confirm('{{ trans('global.Are you sure?') }}')">
+                                    <i class="fa-solid fa-trash text-danger"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Status Messages for JS --}}
+                    <div id="successMsg" class="alert alert-success d-none m-2" role="alert"></div>
+                    <div id="errorMsg" class="alert alert-danger d-none m-2" role="alert"></div>
+
+                    {{-- Chat History --}}
+                    <div class="messenger-chat-history" id="messageChatHistory">
+                        <div id="linksMessages" class="text-center mb-3">
+                            {!! $linksRender !!}
+                        </div>
+                        @include('front.account.messenger.messages.messages')
+                    </div>
+
+                    {{-- Footer: Message Input --}}
+                    <div class="messenger-footer">
+                        @php
+                            $updateUrl = url(urlGen()->getAccountBasePath() . '/messages/' . $threadId);
+                        @endphp
+                        <form id="chatForm" role="form" method="POST" action="{{ $updateUrl }}" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+                            @honeypot
+                            <div class="messenger-input-wrapper">
+                                <div class="file-upload-btn button-wrap">
+                                    <input id="addFile" name="file_path" type="file" class="d-none">
+                                    <label for="addFile" class="btn btn-outline-secondary rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                        <i class="fa-solid fa-paperclip"></i>
+                                    </label>
+                                </div>
+                                <textarea id="body" name="body" maxlength="500" class="messenger-input" placeholder="{{ trans('global.Type a message') }}" rows="1"></textarea>
+                                <button id="sendChat" class="messenger-btn-send" type="submit">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 @endsection
 
+
 @section('after_styles')
     @parent
+    <link href="{{ url('assets/css/messenger-modern.css') }}" rel="stylesheet">
     <link href="{{ url('assets/plugins/bootstrap-fileinput/css/fileinput.min.css') }}" rel="stylesheet">
     @if (config('lang.direction') == 'rtl')
         <link href="{{ url('assets/plugins/bootstrap-fileinput/css/fileinput-rtl.min.css') }}" rel="stylesheet">
