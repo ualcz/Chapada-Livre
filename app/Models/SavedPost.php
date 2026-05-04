@@ -30,6 +30,10 @@ class SavedPost extends BaseModel
 {
 	use Crud, AppendsTrait;
 	
+	protected array $invalidatesCacheFor = [
+		Post::class,
+	];
+	
 	/**
 	 * The table associated with the model.
 	 *

@@ -175,6 +175,7 @@ trait SectionDataTrait
 			'action'           => 'get.listings.section',
 			'country'          => config('country.code'),
 			'selectedCurrency' => config('selectedCurrency'),
+			'user'             => auth(getAuthGuard())->user()?->getAuthIdentifier() ?? '-1',
 		]);
 		
 		// Search
