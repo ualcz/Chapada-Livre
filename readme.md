@@ -1,269 +1,215 @@
-# 🏗️ Chapada Livre - Guia de Configuração Docker
+<div align="center">
 
-Este guia explica como configurar e rodar o projeto **Chapada Livre** (baseado no LaraClassified) usando Docker.
+<br/>
+
+<img src="https://chapadalivre.com.br/storage/app/logo/thumbnails/1500x1500-logo-69dcd992726af-201940723676.png" width="160" alt="Chapada Livre" />
+
+<br/>
+<br/>
+
+# Chapada Livre
+
+**O portal de classificados da Chapada Diamantina**
+
+Conectando compradores e vendedores em 19 municípios da Bahia —  
+de forma simples, rápida e segura.
+
+<br/>
+
+[![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?style=flat-square&logo=php&logoColor=white)](https://www.php.net/)
+[![Laravel](https://img.shields.io/badge/Laravel-10.x-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?style=flat-square&logo=redis&logoColor=white)](https://redis.io/)
+[![Nginx](https://img.shields.io/badge/Nginx-Proxy-009639?style=flat-square&logo=nginx&logoColor=white)](https://nginx.org/)
+
+<br/>
+
+[🌐 Acessar o Site](https://chapadalivre.com.br) &nbsp;·&nbsp;
+[📖 Guia Docker](./DOCKER.md) &nbsp;·&nbsp;
+[🐛 Reportar Bug](https://github.com/ualcz/Chapada-Livre/issues) &nbsp;·&nbsp;
+[💡 Sugerir Funcionalidade](https://github.com/ualcz/Chapada-Livre/issues)
+
+<br/>
+
+</div>
 
 ---
 
-## 📋 Pré-requisitos
+## Índice
 
-Antes de começar, certifique-se de ter instalado:
-
-| Software | Versão Mínima | Download |
-|----------|--------------|----------|
-| **Docker Desktop** | 4.0+ | [docker.com](https://www.docker.com/products/docker-desktop/) |
-| **Git** | 2.0+ | [git-scm.com](https://git-scm.com/) |
-
-> **Nota:** No Windows, o Docker Desktop já inclui o Docker Compose.
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [Funcionalidades](#-funcionalidades)
+- [Stack Tecnológica](#-stack-tecnológica)
+- [Início Rápido](#-início-rápido)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Cidades Atendidas](#-cidades-atendidas)
+- [Contribuindo](#-contribuindo)
+- [Licença](#-licença)
 
 ---
 
-## 🚀 Início Rápido (3 comandos)
+## 📌 Sobre o Projeto
+
+O **Chapada Livre** é uma plataforma de classificados online desenvolvida especificamente para a região da [Chapada Diamantina](https://pt.wikipedia.org/wiki/Chapada_Diamantina), Bahia. O projeto nasce da necessidade de um espaço digital local, onde moradores e visitantes possam anunciar e negociar produtos, imóveis, veículos e serviços com segurança e sem intermediários.
+
+A plataforma é construída sobre o **Laravel** e containerizada com **Docker**, garantindo um ambiente de desenvolvimento consistente e um deploy simplificado.
+
+---
+
+## ✨ Funcionalidades
+
+| Módulo | Descrição |
+|---|---|
+| 📢 **Anúncios** | Criação, edição e exclusão de anúncios com upload de fotos |
+| 🔍 **Busca avançada** | Filtros por categoria, cidade, faixa de preço e palavra-chave |
+| 🗂️ **Categorias** | Automóveis, Imóveis, Eletrônicos, Serviços, Móveis e mais |
+| 📍 **Geolocalização** | Filtragem por cidade ou região dentro da Chapada Diamantina |
+| 👤 **Autenticação** | Login com e-mail/senha ou via OAuth (Google) |
+| 💾 **Favoritos** | Salvar e gerenciar anúncios de interesse |
+| 🔒 **Anti-Golpe** | Guia de segurança integrado para transações confiáveis |
+| 📱 **Responsivo** | Interface adaptada para mobile, tablet e desktop |
+
+---
+
+## 🛠 Stack Tecnológica
+
+```
+Backend          Laravel 10 (PHP 8.2)
+Frontend         Blade Templates · CSS · JavaScript
+Banco de Dados   MySQL 8.0
+Cache & Filas    Redis
+Servidor Web     Nginx (Alpine)
+Containerização  Docker · Docker Compose
+Autenticação     Laravel Auth · Laravel Socialite (Google OAuth)
+Storage          Laravel Filesystem (S3-compatible / local)
+```
+
+---
+
+## 🚀 Início Rápido
+
+O ambiente de desenvolvimento é totalmente containerizado. Você precisará apenas de **Docker** e **Git** instalados.
 
 ```bash
-# 1. Clonar o repositório
-git clone https://github.com/seu-usuario/Chapada-LIvre.git
+# 1. Clone o repositório
+git clone https://github.com/ualcz/Chapada-LIvre.git
 cd Chapada-LIvre
 
-# 2. Copiar o arquivo de ambiente
+# 2. Configure as variáveis de ambiente
 cp .env.example .env
 
-# 3. Subir todos os containers
+# 3. Suba os containers
 docker-compose up -d --build
 ```
 
-**Pronto!** Aguarde alguns minutos para a instalação automática das dependências e acesse:
+Aguarde alguns minutos na primeira execução — o entrypoint instala as dependências automaticamente.
 
-🌐 **http://localhost:8000**
-
----
-
-## 🏛️ Arquitetura dos Containers
-
-O projeto utiliza 4 containers Docker:
-
-```mermaid
-graph TD;
-    Nginx-->App;
-    App-->MySQL;
-    App-->Redis;
+```
+✓  http://localhost:8000
 ```
 
-| Container | Imagem | Função | Porta |
-|-----------|--------|--------|-------|
-| `laravel_app` | `php:8.2-fpm` | Executa o código PHP/Laravel | 9000 (interna) |
-| `laravel_nginx` | `nginx:alpine` | Servidor web / proxy reverso | **8000** → 80 |
-| `laravel_mysql` | `mysql:8.0` | Banco de dados | **3306** |
-| `laravel_redis` | `redis:alpine` | Cache e filas | 6379 (interna) |
+> **Configuração detalhada** — Para instruções completas sobre variáveis de ambiente, credenciais do banco, comandos úteis e resolução de problemas, consulte o **[Guia de Configuração Docker →](./DOCKER.md)**
+
+### Containers em execução
+
+| Container | Imagem | Porta |
+|---|---|---|
+| `laravel_app` | `php:8.2-fpm` | `9000` (interna) |
+| `laravel_nginx` | `nginx:alpine` | `8000` |
+| `laravel_mysql` | `mysql:8.0` | `3306` |
+| `laravel_redis` | `redis:alpine` | `6379` (interna) |
 
 ---
 
-## 📁 Estrutura dos Arquivos Docker
+## 🗂 Estrutura do Projeto
 
 ```
 Chapada-LIvre/
-├── Dockerfile              # Imagem PHP com extensões e Node.js
-├── docker-compose.yml      # Orquestração dos containers
-├── nginx.conf              # Configuração do Nginx
-├── .env                    # Variáveis de ambiente
-├── .dockerignore           # Arquivos ignorados no build
-└── docker/
-    ├── entrypoint.sh       # Script de inicialização automática
-    └── mysql/
-        └── init.sql        # Permissões do MySQL (auto)
+│
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/        # Lógica de negócio por recurso
+│   │   └── Middleware/         # Autenticação, logging, etc.
+│   ├── Models/                 # Modelos Eloquent (User, Ad, Category…)
+│   └── Providers/              # Service Providers do Laravel
+│
+├── database/
+│   ├── migrations/             # Histórico de alterações do schema
+│   └── seeders/                # Dados iniciais (cidades, categorias…)
+│
+├── docker/
+│   ├── entrypoint.sh           # Bootstrap automático do container app
+│   └── mysql/
+│       └── init.sql            # Grants iniciais do MySQL
+│
+├── resources/
+│   ├── views/                  # Templates Blade
+│   ├── css/                    # Estilos da aplicação
+│   └── js/                     # Scripts do frontend
+│
+├── routes/
+│   └── web.php                 # Definição de rotas HTTP
+│
+├── storage/                    # Uploads, logs e cache gerado
+│
+├── Dockerfile                  # Imagem PHP 8.2-FPM + Node.js
+├── docker-compose.yml          # Orquestração dos 4 containers
+├── nginx.conf                  # Configuração do servidor web
+├── DOCKER.md                   # Guia completo de configuração Docker
+└── .env.example                # Modelo de variáveis de ambiente
 ```
 
 ---
 
-## ⚙️ O que o Entrypoint Automatiza
+## 🌍 Cidades Atendidas
 
-Quando o container `app` inicia, o script `docker/entrypoint.sh` executa automaticamente:
+A plataforma cobre **19 municípios** da Chapada Diamantina:
 
-| Etapa | Ação | Condição |
-|-------|------|----------|
-| 1 | `composer install` | Só se `/vendor` não existir |
-| 2 | `npm install` | Só se `/node_modules` não existir |
-| 3 | `npm run production` | Só se `/public/css` ou `/public/js` não existir |
-| 4 | `php artisan key:generate` | Só se `APP_KEY` não estiver definida |
-| 5 | Corrigir permissões | Sempre (storage, bootstrap/cache) |
+<div align="center">
 
-> **Resultado:** Na primeira vez que rodar, pode levar **3-5 minutos**. Nas próximas vezes, inicia em segundos.
+Seabra · Lençóis · Mucugê · Piatã · Iraquara · Andaraí · Boninal  
+Abaíra · Bonito · Ibicoara · Jussiape · Morro do Chapéu · Nova Redenção  
+Novo Horizonte · Souto Soares · Utinga · Wagner · Ibitiara · Barra da Estiva
+
+</div>
 
 ---
 
-## 🔧 Configuração do `.env`
+## 🤝 Contribuindo
 
-O arquivo `.env` já vem pré-configurado para Docker. As configurações importantes são:
+Contribuições são bem-vindas. Por favor, siga o fluxo abaixo:
 
-```env
-# URL da aplicação (HTTP, não HTTPS!)
-APP_URL=http://localhost:8000
-FORCE_HTTPS=false
-
-# Banco de dados (deve usar o nome do serviço Docker)
-DB_HOST=mysql
-DB_PORT=3306
-DB_DATABASE=laravel
-DB_USERNAME=laravel
-DB_PASSWORD=password
-
-# Redis (deve usar o nome do serviço Docker)
-REDIS_HOST=redis
-```
-
-> ⚠️ **Importante:** O `DB_HOST` deve ser `mysql` (nome do serviço Docker), e **não** `localhost` ou `127.0.0.1`.
+1. Faça um **fork** do repositório
+2. Crie uma branch descritiva:
+   ```bash
+   git checkout -b feat/nome-da-funcionalidade
+   # ou
+   git checkout -b fix/descricao-do-bug
+   ```
+3. Faça seus commits seguindo o padrão [Conventional Commits](https://www.conventionalcommits.org/):
+   ```bash
+   git commit -m "feat: adiciona filtro por faixa de preço"
+   git commit -m "fix: corrige redirect após login social"
+   ```
+4. Envie sua branch e abra um **Pull Request** descrevendo as mudanças
 
 ---
 
-## 🔑 Credenciais do Banco de Dados
+## 🔒 Segurança
 
-Para o **Instalador do LaraClassified**, use estas credenciais:
+Transações online exigem atenção. Antes de fechar qualquer negócio pela plataforma:
 
-| Campo | Valor |
-|-------|-------|
-| **Host** | `mysql` |
-| **Port** | `3306` |
-| **Database name** | `laravel` |
-| **Database tables prefix** | `lc_` |
-| **Username** | `laravel` |
-| **Password** | `password` |
+- Nunca realize pagamentos antecipados sem verificar o produto presencialmente
+- Prefira negociar em locais públicos e movimentados
+- Desconfie de valores muito abaixo do mercado
+- Em caso de suspeita, reporte o anúncio diretamente na plataforma
+
+Consulte o [Guia Anti-Golpe completo →](https://chapadalivre.com.br/page/anti-scam)
 
 ---
 
-## 📖 Comandos Úteis
+## 📄 Licença
 
-### Gerenciamento dos Containers
-
-```bash
-# Subir containers (primeira vez ou após mudanças no Dockerfile)
-docker-compose up -d --build
-
-# Subir containers (sem rebuild)
-docker-compose up -d
-
-# Parar todos os containers
-docker-compose down
-
-# Parar e remover volumes (⚠️ apaga o banco de dados!)
-docker-compose down -v
-
-# Ver status dos containers
-docker-compose ps
-
-# Ver logs em tempo real
-docker-compose logs -f
-
-# Ver logs de um container específico
-docker-compose logs -f app
-docker-compose logs -f nginx
-docker-compose logs -f mysql
-
-# Executar migrations e seeders
-docker-compose exec app php artisan migrate --force
-docker-compose exec app php artisan db:seed --class=ChapadaDiamantinaCitiesSeeder --force
-docker-compose exec app php artisan db:seed --class=PortugueseLanguageSeeder --force
-docker-compose exec app php artisan cache:clear
-docker-compose exec app php artisan view:clear
-```
-
-### Comandos Laravel (Artisan)
-
-```bash
-# Executar comandos artisan
-docker-compose exec app php artisan migrate
-docker-compose exec app php artisan cache:clear
-docker-compose exec app php artisan config:clear
-docker-compose exec app php artisan view:clear
-
-# Acessar o shell do container
-docker-compose exec app bash
-```
-
-### Banco de Dados
-
-```bash
-# Acessar o MySQL via terminal
-docker-compose exec mysql mysql -ularavel -ppassword laravel
-
-# Fazer backup do banco
-docker-compose exec mysql mysqldump -ularavel -ppassword laravel > backup.sql
-
-# Restaurar backup
-docker-compose exec -T mysql mysql -ularavel -ppassword laravel < backup.sql
-```
-
----
-
-## 🐛 Resolução de Problemas
-
-### 1. Erro: "HTTPS redirect" / Página não carrega
-
-**Causa:** O sistema tenta redirecionar para HTTPS.
-
-**Solução:** Verificar se o `nginx.conf` contém a linha:
-```nginx
-fastcgi_param HTTPS off;
-```
-
-### 2. Erro: "Permission denied" no storage
-
-**Causa:** O usuário `www-data` não tem permissão nas pastas.
-
-**Solução:**
-```bash
-docker-compose exec app chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-docker-compose exec app chmod -R 775 /var/www/storage /var/www/bootstrap/cache
-```
-
-### 3. Erro: "FLUSH TABLES" / Access denied
-
-**Causa:** O usuário MySQL não tem privilégios suficientes.
-
-**Solução:** O arquivo `docker/mysql/init.sql` resolve isso automaticamente na **primeira criação** do container. Se o problema persistir:
-```bash
-docker-compose exec mysql mysql -uroot -prootpassword -e "GRANT ALL PRIVILEGES ON *.* TO 'laravel'@'%'; FLUSH PRIVILEGES;"
-```
-
-> ⚠️ **Nota:** Se o volume do MySQL já existia antes do `init.sql`, o script não será executado. Nesse caso, apague o volume e recrie:
-> ```bash
-> docker-compose down -v
-> docker-compose up -d --build
-> ```
-
-### 4. Erro: "Connection refused" no banco
-
-**Causa:** O container do MySQL ainda não está pronto.
-
-**Solução:** O `docker-compose.yml` já inclui um **healthcheck** que faz o container `app` esperar o MySQL estar pronto. Se ainda ocorrer, aguarde 30 segundos e recarregue a página.
-
-### 5. Container `app` reiniciando em loop
-
-**Causa:** Erro no `entrypoint.sh` ou dependências faltando.
-
-**Solução:**
-```bash
-# Ver o log do erro
-docker-compose logs app
-
-# Reiniciar do zero
-docker-compose down
-docker-compose up -d --build
-```
-
----
-
-## 🔄 Resetar Tudo (Instalação Limpa)
-
-Se precisar recomeçar do zero:
-
-```bash
-# 1. Parar containers e remover volumes
-docker-compose down -v
-
-# 2. Remover dependências locais
-rm -rf vendor node_modules
-
-# 3. Rebuild e iniciar
-docker-compose up -d --build
-```
-
-Depois acesse http://localhost:8000 para refazer a instalação.
+Distribuído sob licença proprietária.  
+Todos os direitos reservados © 2026 **Chapada Livre**.
