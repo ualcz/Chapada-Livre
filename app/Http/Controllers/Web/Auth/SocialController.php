@@ -101,6 +101,10 @@ class SocialController extends FrontController
 			// Save the previous URL to retrieve it after success or failed login.
 			session()->put('url.intended', url()->previous());
 		}
+
+		if (request()->has('from_react')) {
+			session()->put('is_react', true);
+		}
 		
 		// Redirect to the provider's website
 		try {
@@ -200,6 +204,16 @@ class SocialController extends FrontController
 				if (auth()->loginUsingId($userId)) {
 					if (!empty($authToken)) {
 						session()->put('authToken', $authToken);
+					}
+					
+					if (session('is_react')) {
+						session()->forget('is_react');
+						$query = http_build_query([
+							'token'   => $authToken,
+							'user_id' => $userId,
+						]);
+						
+						return redirect()->to('/social-login-callback?' . $query);
 					}
 					
 					return redirect()->intended($this->redirectTo);

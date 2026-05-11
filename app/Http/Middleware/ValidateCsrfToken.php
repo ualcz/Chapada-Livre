@@ -33,7 +33,9 @@ class ValidateCsrfToken extends Middleware
 	 *
 	 * @var array
 	 */
-	protected $except = [];
+	protected $except = [
+		'api/*',
+	];
 	
 	/**
 	 * Handle an incoming request.

@@ -91,7 +91,7 @@ class SocialService extends BaseService
 		try {
 			$socialiteObj = Socialite::driver($serviceKey)->stateless();
 			
-			return $socialiteObj->redirect()->getTargetUrl();
+			return apiResponse()->success($socialiteObj->redirect()->getTargetUrl());
 		} catch (Throwable $e) {
 			$message = $e->getMessage();
 			if (empty($message)) {

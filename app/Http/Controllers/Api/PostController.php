@@ -215,4 +215,37 @@ class PostController extends BaseController
 	{
 		return $this->postService->destroy($ids);
 	}
+	
+	/**
+	 * Offline listing
+	 *
+	 * @authenticated
+	 * @header Authorization Bearer {YOUR_AUTH_TOKEN}
+	 *
+	 * @urlParam id int required The post/listing's ID.
+	 *
+	 * @param $id
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	public function offline($id): JsonResponse
+	{
+		return $this->postService->offline($id);
+	}
+	
+	/**
+	 * Repost listing
+	 *
+	 * @authenticated
+	 * @header Authorization Bearer {YOUR_AUTH_TOKEN}
+	 *
+	 * @urlParam id int required The post/listing's ID.
+	 *
+	 * @param $id
+	 * @param \App\Http\Requests\Front\PostRequest\LimitationCompliance $request
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	public function repost($id, \App\Http\Requests\Front\PostRequest\LimitationCompliance $request): JsonResponse
+	{
+		return $this->postService->repost($id, $request);
+	}
 }

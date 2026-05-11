@@ -447,6 +447,8 @@ Route::prefix('settings')
 Route::prefix('sections')
 	->controller(SectionController::class)
 	->group(function ($router) {
+		Route::get('home/banner', 'banner')->name('api.sections.banner');
+		
 		$router->pattern('method', '[^/]+');
 		Route::get('/', 'index')->name('api.sections.index');
 		Route::get('{method}', 'show')->name('api.sections.show');

@@ -179,6 +179,10 @@ class LoginService extends BaseService
 					$personalAccess->delete();
 				}
 			}
+		} else {
+			// Se o logout veio da web (Painel Admin), deletar os tokens da API
+			// para garantir que o usuário também seja deslogado do React (Vice-versa)
+			$authUser->tokens()->delete();
 		}
 		
 		// Update last user logged date

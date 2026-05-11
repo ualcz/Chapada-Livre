@@ -4,7 +4,7 @@
 /public/storage/
 /vendor/
 .phpunit.result.cache
-/classifieds-connect
+/react-app
 
 # Environment
 .env

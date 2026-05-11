@@ -88,7 +88,7 @@ trait VerifyCode
 					if (!empty($authToken)) {
 						session()->put('authToken', $authToken);
 					}
-					$nextUrl = urlGen()->accountOverview();
+					$nextUrl = urlGen()->home();
 				} else {
 					if (session()->has('userNextUrl')) {
 						$nextUrl = session('userNextUrl');

@@ -73,12 +73,7 @@ trait ListTrait
 			$posts->with('country');
 		}
 		if (in_array('user', $embed)) {
-			if (!$posts->relationLoaded('user')) {
-				$posts->with(['user']);
-			}
-			if ($posts->relationLoaded('user') && !$posts->relationLoaded('user.permissions')) {
-				$posts->with(['user.permissions']);
-			}
+			$posts->with(['user', 'user.permissions']);
 		}
 		if (in_array('category', $embed)) {
 			$posts->with('category');

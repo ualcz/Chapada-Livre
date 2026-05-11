@@ -94,7 +94,6 @@ class Kernel
 		$middleware->group('api', [
 			\App\Http\Middleware\Installed::class,
 			\App\Http\Middleware\VerifyAPIAccess::class,
-			\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
 			/*
 			 * See the RouteServiceProvider::configureRateLimiting() method
 			 */

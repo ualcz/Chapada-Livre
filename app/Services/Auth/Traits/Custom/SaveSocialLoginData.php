@@ -173,7 +173,7 @@ trait SaveSocialLoginData
 	 */
 	private function loginUserFromApi(User $user, ?string $deviceName = null): JsonResponse
 	{
-		if (isApiRoute()) {
+		if (isApiRoute() || session('is_react')) {
 			// Revoke previous tokens
 			$user->tokens()->delete();
 		}
@@ -181,7 +181,7 @@ trait SaveSocialLoginData
 		if (auth()->loginUsingId($user->id)) {
 			$extra = [];
 			
-			if (isApiRoute()) {
+			if (isApiRoute() || session('is_react')) {
 				// Create the API access token
 				$defaultDeviceName = doesRequestIsFromWebClient() ? 'Website' : 'Other Client';
 				$deviceName = !empty($deviceName) ? ucfirst($deviceName) : $defaultDeviceName;

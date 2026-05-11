@@ -52,7 +52,11 @@ class UserResource extends BaseResource
 		$entity['p_is_online'] = $this->p_is_online ?? null;
 		$entity['country_flag_url'] = $this->country_flag_url ?? null;
 		
-		$authUser = auth(getAuthGuard())->user();
+		// Determinar o guard de autenticação. 
+		// Se for uma rota de API, priorizamos o 'sanctum' (Bearer Token)
+		// Isso evita que a sessão do cookie (do admin) vaze para o usuário comum no React.
+		$guard = isApiRoute() ? 'sanctum' : getAuthGuard();
+		$authUser = auth($guard)->user();
 		
 		if (!empty($authUser)) {
 			$isAuthUserData = ($this->id == $authUser->getAuthIdentifier());
@@ -86,6 +90,9 @@ class UserResource extends BaseResource
 			
 			// Logged User's Info
 			if ($isAuthUserData) {
+				// Usar a checagem de permissão de staff em vez de apenas o campo is_admin da tabela
+				// para ser mais robusto e evitar conflitos de sessão. Passamos o $authUser ou $this->resource
+				$entity['is_admin'] = doesUserHaveStaffPermission($authUser) ? 1 : 0;
 				$entity['time_zone'] = $this->time_zone ?? null;
 				
 				if (in_array('payment', $this->embed)) {

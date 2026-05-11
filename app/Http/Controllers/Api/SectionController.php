@@ -65,4 +65,43 @@ class SectionController extends BaseController
 		
 		return $this->sectionService->getSectionByKey($name, $params);
 	}
+
+	/**
+	 * Get homepage banner data
+	 *
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	public function banner(): JsonResponse
+	{
+		$countryCode = config('country.code', config('settings.app.default_country'));
+		$appLocale = config('app.locale', 'pt');
+		
+		$section = \App\Models\Section::query()->where('name', 'search_form')->first();
+		$country = \App\Models\Country::query()->where('code', $countryCode)->first();
+		
+		$options = $section->field_values ?? [];
+		
+		// Titles
+		$title = $options['title_' . $appLocale] ?? $options['title_en'] ?? null;
+		$subTitle = $options['sub_title_' . $appLocale] ?? $options['sub_title_en'] ?? null;
+		
+		// Background Image
+		$bgImage = $options['background_image_url'] ?? null;
+		if (empty($bgImage)) {
+			$bgImage = $country->background_image_url ?? null;
+		}
+		
+		$data = [
+			'title'                   => $title ? replaceGlobalPatterns($title) : null,
+			'sub_title'               => $subTitle ? replaceGlobalPatterns($subTitle) : null,
+			'background_image_url'    => $bgImage,
+			'background_image_darken' => $options['background_image_darken'] ?? 0.4,
+			'full_height'             => $options['full_height'] ?? '0',
+		];
+		
+		return apiResponse()->json([
+			'success' => true,
+			'result'  => $data,
+		]);
+	}
 }
