@@ -98,6 +98,18 @@ class PostResource extends BaseResource
 		if (in_array('possiblePayment', $this->embed)) {
 			$entity['possiblePayment'] = new PaymentResource($this->whenLoaded('possiblePayment'), $this->params);
 		}
+		if (in_array('postValues', $this->embed)) {
+			$postValues = $this->whenLoaded('postValues');
+			if (!empty($postValues)) {
+				$entity['post_values'] = $postValues->map(function ($pv) {
+					return [
+						'field_id'  => $pv->field_id,
+						'option_id' => $pv->option_id,
+						'value'     => $pv->value,
+					];
+				})->values()->toArray();
+			}
+		}
 		
 		// Reviews Addon
 		if (config('addons.reviews.installed')) {

@@ -5,6 +5,7 @@
 /vendor/
 .phpunit.result.cache
 /react-app
+/public/react
 
 # Environment
 .env

@@ -9,26 +9,43 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght,SOFT@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&display=swap" as="style" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght,SOFT@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&display=swap" rel="stylesheet" />
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    </noscript>
 
     <meta property="og:title" content="Chapa Livre — Classificados" />
     <meta property="og:description" content="O marketplace da Chapada Diamantina. Compre e venda perto de você." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E4L7M39WQK"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-E4L7M39WQK');
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var script = document.createElement('script');
+          script.async = true;
+          script.src = "https://www.googletagmanager.com/gtag/js?id=G-E4L7M39WQK";
+          document.head.appendChild(script);
+
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-E4L7M39WQK');
+        }, 2000); // 2 segundos de delay
+      });
     </script>
-    <script type="module" crossorigin src="/react/assets/index-DnP2zQlr.js"></script>
-    <link rel="modulepreload" crossorigin href="/react/assets/vendor-react-CkAiIce4.js">
-    <link rel="modulepreload" crossorigin href="/react/assets/vendor-ui-D6sbFHW5.js">
-    <link rel="stylesheet" crossorigin href="/react/assets/index-22AJtlhh.css">
+    <script type="module" crossorigin src="/react/assets/index-ClbzLMvu.js"></script>
+    <link rel="modulepreload" crossorigin href="/react/assets/vendor-react-BaRanaP8.js">
+    <link rel="modulepreload" crossorigin href="/react/assets/vendor-ui-BrEokNo6.js">
+    <link rel="modulepreload" crossorigin href="/react/assets/vendor-icons-rn703Adv.js">
+    <link rel="stylesheet" crossorigin href="/react/assets/index-BhbvMkAK.css">
   </head>
   <body>
     <div id="root">

@@ -123,6 +123,9 @@ trait ShowTrait
 				}
 				$post->with('pictures');
 			}
+			if (in_array('postValues', $embed)) {
+				$post->with('postValues');
+			}
 			
 			if (!empty($countryCode)) {
 				$post->inCountry($countryCode)->has('country');
