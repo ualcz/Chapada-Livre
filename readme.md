@@ -16,17 +16,16 @@ de forma simples, rápida e segura.
 
 <br/>
 
-[![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?style=flat-square&logo=php&logoColor=white)](https://www.php.net/)
+[![React](https://img.shields.io/badge/React-18.x-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Laravel](https://img.shields.io/badge/Laravel-10.x-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
-[![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?style=flat-square&logo=redis&logoColor=white)](https://redis.io/)
-[![Nginx](https://img.shields.io/badge/Nginx-Proxy-009639?style=flat-square&logo=nginx&logoColor=white)](https://nginx.org/)
 
 <br/>
 
 [🌐 Acessar o Site](https://chapadalivre.com.br) &nbsp;·&nbsp;
-[📖 Guia Docker](./DOCKER.md) &nbsp;·&nbsp;
+[📖 Guia de Configuração (Docker+React)](./DOCKER.md) &nbsp;·&nbsp;
 [🐛 Reportar Bug](https://github.com/ualcz/Chapada-Livre/issues) &nbsp;·&nbsp;
 [💡 Sugerir Funcionalidade](https://github.com/ualcz/Chapada-Livre/issues)
 
@@ -53,7 +52,7 @@ de forma simples, rápida e segura.
 
 O **Chapada Livre** é uma plataforma de classificados online desenvolvida especificamente para a região da [Chapada Diamantina](https://pt.wikipedia.org/wiki/Chapada_Diamantina), Bahia. O projeto nasce da necessidade de um espaço digital local, onde moradores e visitantes possam anunciar e negociar produtos, imóveis, veículos e serviços com segurança e sem intermediários.
 
-A plataforma é construída sobre o **Laravel** e containerizada com **Docker**, garantindo um ambiente de desenvolvimento consistente e um deploy simplificado.
+O projeto possui uma **arquitetura moderna desacoplada**: a interface do usuário (Frontend) é uma **SPA construída em React**, enquanto a base de dados e a lógica de negócios (Backend API) operam sobre **Laravel** containerizado com Docker.
 
 ---
 
@@ -65,99 +64,96 @@ A plataforma é construída sobre o **Laravel** e containerizada com **Docker**,
 | 🔍 **Busca avançada** | Filtros por categoria, cidade, faixa de preço e palavra-chave |
 | 🗂️ **Categorias** | Automóveis, Imóveis, Eletrônicos, Serviços, Móveis e mais |
 | 📍 **Geolocalização** | Filtragem por cidade ou região dentro da Chapada Diamantina |
-| 👤 **Autenticação** | Login com e-mail/senha ou via OAuth (Google) |
+| 👤 **Autenticação** | Login seguro via Backend |
 | 💾 **Favoritos** | Salvar e gerenciar anúncios de interesse |
 | 🔒 **Anti-Golpe** | Guia de segurança integrado para transações confiáveis |
-| 📱 **Responsivo** | Interface adaptada para mobile, tablet e desktop |
+| 📱 **Responsivo** | Interface moderna e rápida (React) adaptada para qualquer dispositivo |
 
 ---
 
 ## 🛠 Stack Tecnológica
 
-```
-Backend          Laravel 10 (PHP 8.2)
-Frontend         Blade Templates · CSS · JavaScript
-Banco de Dados   MySQL 8.0
-Cache & Filas    Redis
-Servidor Web     Nginx (Alpine)
-Containerização  Docker · Docker Compose
-Autenticação     Laravel Auth · Laravel Socialite (Google OAuth)
-Storage          Laravel Filesystem (S3-compatible / local)
-```
+**Frontend (SPA)**
+- React 18
+- Vite
+- TypeScript
+- TailwindCSS e Shadcn UI
+- React Query & React Router
+
+**Backend (API)**
+- Laravel 10 (PHP 8.2)
+- MySQL 8.0
+- Redis (Cache e Filas)
+- Servidor Web Nginx (Alpine)
+- Ambiente containerizado (Docker Compose)
 
 ---
 
 ## 🚀 Início Rápido
 
-O ambiente de desenvolvimento é totalmente containerizado. Você precisará apenas de **Docker** e **Git** instalados.
+O ambiente de desenvolvimento está dividido em duas partes. Para rodar a plataforma, você precisará iniciar o Backend e o Frontend.
+
+### 1. Iniciar o Backend (API)
 
 ```bash
-# 1. Clone o repositório
+# Clone o repositório
 git clone https://github.com/ualcz/Chapada-LIvre.git
 cd Chapada-LIvre
 
-# 2. Configure as variáveis de ambiente
+# Configure as variáveis de ambiente do backend
 cp .env.example .env
 
-# 3. Suba os containers
+# Suba os containers (Laravel, MySQL, Redis, Nginx)
 docker-compose up -d --build
 ```
+*Aguarde a primeira execução concluir. A API ficará disponível em `http://localhost:8000`.*
 
-Aguarde alguns minutos na primeira execução — o entrypoint instala as dependências automaticamente.
+### 2. Iniciar o Frontend (React SPA)
 
+Abra um novo terminal na pasta raiz do projeto:
+
+```bash
+# Acesse a pasta do frontend
+cd react-app
+
+# Instale as dependências Node
+npm install
+
+# Inicie o ambiente de desenvolvimento local
+npm run dev
 ```
-✓  http://localhost:8000
-```
+*A interface estará acessível em `http://localhost:5173`.*
 
-> **Configuração detalhada** — Para instruções completas sobre variáveis de ambiente, credenciais do banco, comandos úteis e resolução de problemas, consulte o **[Guia de Configuração Docker →](./DOCKER.md)**
-
-### Containers em execução
-
-| Container | Imagem | Porta |
-|---|---|---|
-| `laravel_app` | `php:8.2-fpm` | `9000` (interna) |
-| `laravel_nginx` | `nginx:alpine` | `8000` |
-| `laravel_mysql` | `mysql:8.0` | `3306` |
-| `laravel_redis` | `redis:alpine` | `6379` (interna) |
+> **Configuração detalhada** — Para instruções completas, conexão entre as partes, variáveis e comandos, consulte o **[Guia de Configuração (Docker + React) →](./DOCKER.md)**
 
 ---
 
 ## 🗂 Estrutura do Projeto
 
+Abaixo a visão geral da separação das responsabilidades:
+
 ```
 Chapada-LIvre/
 │
-├── app/
-│   ├── Http/
-│   │   ├── Controllers/        # Lógica de negócio por recurso
-│   │   └── Middleware/         # Autenticação, logging, etc.
-│   ├── Models/                 # Modelos Eloquent (User, Ad, Category…)
-│   └── Providers/              # Service Providers do Laravel
+├── react-app/                  # ⚛️ FRONTEND EM REACT (SPA)
+│   ├── src/                    # Código-fonte principal (Components, Pages, Hooks)
+│   ├── public/                 # Assets estáticos
+│   ├── package.json            # Dependências Node.js
+│   ├── tailwind.config.ts      # Configurações do Tailwind
+│   └── vite.config.ts          # Configurações do compilador Vite
 │
-├── database/
-│   ├── migrations/             # Histórico de alterações do schema
-│   └── seeders/                # Dados iniciais (cidades, categorias…)
+├── app/                        # ⚙️ BACKEND EM LARAVEL (API)
+│   ├── Http/Controllers/       # Lógica da API
+│   └── Models/                 # Modelos do Banco de Dados
 │
-├── docker/
-│   ├── entrypoint.sh           # Bootstrap automático do container app
-│   └── mysql/
-│       └── init.sql            # Grants iniciais do MySQL
+├── database/                   # Migrations e Seeders do MySQL
+├── routes/                     # Definições de Rotas HTTP da API
+├── docker/                     # Scripts de inicialização e configurações (Nginx, MySQL)
 │
-├── resources/
-│   ├── views/                  # Templates Blade
-│   ├── css/                    # Estilos da aplicação
-│   └── js/                     # Scripts do frontend
-│
-├── routes/
-│   └── web.php                 # Definição de rotas HTTP
-│
-├── storage/                    # Uploads, logs e cache gerado
-│
-├── Dockerfile                  # Imagem PHP 8.2-FPM + Node.js
-├── docker-compose.yml          # Orquestração dos 4 containers
-├── nginx.conf                  # Configuração do servidor web
-├── DOCKER.md                   # Guia completo de configuração Docker
-└── .env.example                # Modelo de variáveis de ambiente
+├── Dockerfile                  # Imagem PHP FPM para a API
+├── docker-compose.yml          # Orquestração do Backend
+├── DOCKER.md                   # Documentação detalhada do ambiente local
+└── README.md                   # Este arquivo
 ```
 
 ---
@@ -189,8 +185,8 @@ Contribuições são bem-vindas. Por favor, siga o fluxo abaixo:
    ```
 3. Faça seus commits seguindo o padrão [Conventional Commits](https://www.conventionalcommits.org/):
    ```bash
-   git commit -m "feat: adiciona filtro por faixa de preço"
-   git commit -m "fix: corrige redirect após login social"
+   git commit -m "feat: adiciona skeleton loading no frontend"
+   git commit -m "fix: corrige rota de favoritos na api"
    ```
 4. Envie sua branch e abra um **Pull Request** descrevendo as mudanças
 
@@ -204,8 +200,6 @@ Transações online exigem atenção. Antes de fechar qualquer negócio pela pla
 - Prefira negociar em locais públicos e movimentados
 - Desconfie de valores muito abaixo do mercado
 - Em caso de suspeita, reporte o anúncio diretamente na plataforma
-
-Consulte o [Guia Anti-Golpe completo →](https://chapadalivre.com.br/page/anti-scam)
 
 ---
 
