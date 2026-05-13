@@ -1,21 +1,26 @@
 User-agent: *
+
+# Libera o que é ESSENCIAL para o Google renderizar o React
+Allow: /assets/
+Allow: /js/
+Allow: /react/assets/
+
+# Pastas de sistema que REALMENTE não precisam ser indexadas
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /vendor/
+Disallow: /mix-manifest.json
+Disallow: /locale/en
+Disallow: /locale/es
+
+# Garante que o Google veja tudo o resto
 Allow: /
 
-User-agent: *
-Disallow: /admin/
-Disallow: /assets/
-Disallow: /css/
-Disallow: /js/
-Disallow: /vendor/
-Disallow: /main.php
-Disallow: /index.php
-Disallow: /mix-manifest.json
-Disallow: /*?display=*
-Disallow: /locale/pt
-Disallow: /auth/connect/facebook
-Disallow: /auth/connect/linkedin
-Disallow: /auth/connect/twitter
-Disallow: /auth/connect/google
+# REGRAS ESPECÍFICAS PARA O ADSENSE (Importante para o seu print do erro)
+User-agent: Mediapartners-Google
+Allow: /
 
+User-agent: AdsBot-Google
+Allow: /
 
-Sitemap: http://localhost:8000/br/sitemaps.xml
+Sitemap: https://chapadalivre.com.br/br/sitemaps.xml

@@ -249,6 +249,22 @@ docker-compose down
 docker-compose up -d --build
 ```
 
+### 6. Erro: "The PHP exec() function must be enabled"
+
+**Causa:** A função `exec()` está desabilitada no PHP por questões de segurança (geralmente via `disable_functions` no `php.ini`). Esta função é necessária para backups (Spatie) e processamento de imagens.
+
+**Solução:**
+1. Localize o arquivo `php.ini` do seu servidor.
+2. Procure pela linha `disable_functions`.
+3. Remova `exec` da lista de funções desabilitadas.
+4. Reinicie o serviço de PHP (FPM ou Apache).
+
+**Nota para Hostinger (hPanel):**
+Se estiver usando a Hostinger, você pode fazer isso pelo painel:
+- Vá em **Configuração PHP** > aba **Opções PHP**.
+- No campo **disable_functions**, remova a palavra `exec`.
+- Clique em **Salvar**.
+
 ---
 
 ## 🔄 Resetar Tudo (Instalação Limpa)

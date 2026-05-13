@@ -32,6 +32,17 @@ class VerifyAPIAccess
 	 */
 	public function handle(Request $request, Closure $next)
 	{
+		$userAgent = strtolower($request->userAgent() ?? '');
+		
+		// Permite Google, Bing e robôs conhecidos mesmo sem o token da API para indexação
+		if (str_contains($userAgent, 'google') 
+			|| str_contains($userAgent, 'bot') 
+			|| str_contains($userAgent, 'crawl') 
+			|| str_contains($userAgent, 'spider') 
+			|| str_contains($userAgent, 'bing')) {
+			return $next($request);
+		}
+
 		if (
 			!(app()->environment('local'))
 			&& (

@@ -32,9 +32,18 @@ class BlockBots
 	 */
 	public function handle(Request $request, Closure $next): Response
 	{
-		$crawlerDetect = new CrawlerDetect();
+		$userAgent = strtolower($request->userAgent() ?? '');
 		
-		$userAgent = $request->userAgent();
+		// Prioridade Absoluta: Permite Google, Bing e outros robôs conhecidos em qualquer rota
+		if (str_contains($userAgent, 'google') 
+			|| str_contains($userAgent, 'bot') 
+			|| str_contains($userAgent, 'crawl') 
+			|| str_contains($userAgent, 'spider') 
+			|| str_contains($userAgent, 'bing')) {
+			return $next($request);
+		}
+
+		$crawlerDetect = new CrawlerDetect();
 		$errorMessage = 'Bot access is not allowed';
 		
 		// Always block bot/crawler requests to the Admin Panel or to the API
@@ -58,8 +67,6 @@ class BlockBots
 		if ($blockingEnabled != '1') {
 			return $next($request);
 		}
-		
-		$userAgent = strtolower($userAgent ?? '');
 		
 		if ($crawlerDetect->isCrawler()) {
 			// Get blocked bots list from settings

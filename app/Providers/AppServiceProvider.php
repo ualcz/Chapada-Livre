@@ -121,17 +121,17 @@ class AppServiceProvider extends ServiceProvider
 					? Limit::none()
 					: (
 					$request->user()
-						? Limit::perMinute(90)->by($request->user()->id)
-						: Limit::perMinute(60)->by($request->ip())
+						? Limit::perMinute(1200)->by($request->user()->id)
+						: Limit::perMinute(600)->by($request->ip())
 					);
 			}
 			
 			// Limits access to the routes associated with it to:
-			// - (For logged users): 1200 requests per minute by user ID
-			// - (For guests): 600 requests per minute by IP address
+			// - (For logged users): 5000 requests per minute by user ID
+			// - (For guests): 2000 requests per minute by IP address
 			return $request->user()
-				? Limit::perMinute(1200)->by($request->user()->id)
-				: Limit::perMinute(600)->by($request->ip());
+				? Limit::perMinute(5000)->by($request->user()->id)
+				: Limit::perMinute(2000)->by($request->ip());
 		});
 		
 		// Global rate limit (Not used)

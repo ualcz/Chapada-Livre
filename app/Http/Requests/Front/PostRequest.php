@@ -233,7 +233,13 @@ class PostRequest extends Request
 		}
 		$rules['contact_name'] = ['required', new BetweenRule(2, 200)];
 		$rules['auth_field'] = ['required', Rule::in($authFields)];
-		$rules['phone'] = ['max:30'];
+		$rules['phone'] = [
+			'max:30',
+			Rule::unique('users', 'phone')->ignore(auth()->id()),
+			Rule::unique('posts', 'phone')->whereNull('archived_at')->when(auth()->check(), function ($query) {
+				return $query->where('user_id', '!=', auth()->id());
+			}),
+		];
 		$rules['phone_country'] = ['required_with:phone'];
 		$rules['city_id'] = ['required', 'not_in:0', 'exists:cities,id'];
 		
@@ -466,6 +472,8 @@ class PostRequest extends Request
 		if (!isApiRoute()) {
 			$messages = $messages + $this->customFieldMessages;
 		}
+
+		$messages['phone.unique'] = "Este número de telefone já está sendo utilizado por outro usuário.";
 		
 		// Posts Limitation Compliance
 		$messages = $messages + $this->limitationComplianceMessages;
