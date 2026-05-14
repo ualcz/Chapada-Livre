@@ -39,7 +39,11 @@ class ReactAppController extends Controller
         $path = $request->path();
         if (preg_match('/\/(\d+)$/', $path, $matches)) {
             $postId = $matches[1];
-            $post = \App\Models\Post::with(['category', 'city', 'pictures'])->find($postId);
+            
+            // Usamos Cache para não sobrecarregar o banco em múltiplos acessos
+            $post = \Illuminate\Support\Facades\Cache::remember("seo_post_{$postId}", 600, function() use ($postId) {
+                return \App\Models\Post::with(['category', 'city', 'pictures'])->find($postId);
+            });
             
             if ($post) {
                 $cityName = $post->city->name ?? 'Chapada Diamantina';

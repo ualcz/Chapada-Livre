@@ -125,7 +125,7 @@ class PostQueries
 		$posts = PaginationHelper::adjustSides($posts);
 		
 		// Generate listings images thumbnails
-		GeneratePostCollectionMainImageThumbsJob::dispatch($posts);
+		// GeneratePostCollectionMainImageThumbsJob::dispatch($posts);
 		
 		// Remove Distance from Request
 		$this->input = $this->removeDistanceFromRequest($this->input);

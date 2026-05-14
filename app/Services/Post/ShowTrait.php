@@ -148,7 +148,7 @@ trait ShowTrait
 		PostWasVisited::dispatch($post);
 		
 		// Generate the listing's images thumbnails
-		GeneratePostImageThumbsJob::dispatch($post);
+		// GeneratePostImageThumbsJob::dispatch($post);
 		
 		$fieldsValues = [];
 		if (in_array('fieldsValues', $embed)) {

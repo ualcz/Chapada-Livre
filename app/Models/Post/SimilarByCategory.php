@@ -134,7 +134,7 @@ trait SimilarByCategory
 		$posts = PaginationHelper::adjustSides($posts);
 		
 		// Generate listings images thumbnails
-		GeneratePostCollectionMainImageThumbsJob::dispatch($posts);
+		// GeneratePostCollectionMainImageThumbsJob::dispatch($posts);
 		
 		return $posts;
 	}
