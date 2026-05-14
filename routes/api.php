@@ -245,6 +245,7 @@ Route::prefix('posts')
 		$router->pattern('id', '[0-9]+');
 		
 		Route::get('/', 'index')->name('api.posts.index');
+		Route::get('check-phone', 'checkPhoneExists');
 		Route::get('{id}', 'show')->name('api.posts.show');
 		Route::post('/', 'store')->name('api.posts.store');
 		Route::middleware(['auth:sanctum'])
@@ -299,6 +300,7 @@ Route::prefix('savedSearches')
 
 // pictures
 Route::prefix('pictures')
+	->middleware(['auth:sanctum'])
 	->controller(PictureController::class)
 	->group(function ($router) {
 		$router->pattern('id', '[0-9]+');

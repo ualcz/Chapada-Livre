@@ -234,9 +234,10 @@ class PostRequest extends Request
 		$rules['contact_name'] = ['required', new BetweenRule(2, 200)];
 		$rules['auth_field'] = ['required', Rule::in($authFields)];
 		$rules['phone'] = [
+			'nullable',
 			'max:30',
 			Rule::unique('users', 'phone')->ignore(auth()->id()),
-			Rule::unique('posts', 'phone')->whereNull('archived_at')->when(auth()->check(), function ($query) {
+			Rule::unique('posts', 'phone')->whereNull('archived_at')->ignore($this->route('id'))->when(auth()->check(), function ($query) {
 				return $query->where('user_id', '!=', auth()->id());
 			}),
 		];

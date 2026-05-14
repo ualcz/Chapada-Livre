@@ -248,4 +248,35 @@ class PostController extends BaseController
 	{
 		return $this->postService->repost($id, $request);
 	}
+
+	/**
+	 * Check if phone exists
+	 *
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	public function checkPhoneExists(): JsonResponse
+	{
+		$phone = request()->input('phone');
+		$excludePostId = request()->input('exclude_post_id');
+		
+		if (empty($phone)) {
+			return apiResponse()->json([
+				'success' => true,
+				'result'  => ['exists' => false],
+			]);
+		}
+		
+		$query = \App\Models\Post::query()->where('phone', $phone);
+		
+		if (!empty($excludePostId)) {
+			$query->where('id', '!=', $excludePostId);
+		}
+		
+		$exists = $query->exists();
+		
+		return apiResponse()->json([
+			'success' => true,
+			'result'  => ['exists' => $exists],
+		]);
+	}
 }
