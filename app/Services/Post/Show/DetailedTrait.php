@@ -120,7 +120,7 @@ trait DetailedTrait
 		}
 		
 		// Increment the listing's visit counter
-		PostWasVisited::dispatch($post);
+		// PostWasVisited::dispatch($post);
 		
 		// Generate the listing's images thumbnails
 		GeneratePostImageThumbsJob::dispatch($post);

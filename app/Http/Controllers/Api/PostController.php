@@ -81,6 +81,15 @@ class PostController extends BaseController
 		$params['op'] = request()->input('op');
 		$params['perPage'] = request()->integer('perPage');
 		
+		// Cache public listings for 5 minutes to save CPU
+		$publicOps = ['search', 'premium', 'latest', 'free', 'premiumFirst', 'similar'];
+		if (in_array($params['op'], $publicOps) && !auth(getAuthGuard())->check()) {
+			$cacheKey = 'api_posts_list_' . md5(serialize($params) . config('app.locale'));
+			return cache()->remember($cacheKey, 300, function () use ($params) {
+				return $this->postService->getEntries($params);
+			});
+		}
+		
 		return $this->postService->getEntries($params);
 	}
 	
@@ -109,6 +118,14 @@ class PostController extends BaseController
 			'embed'    => request()->input('embed'),
 			'detailed' => (request()->input('detailed') == 1),
 		];
+		
+		// Cache single ad details for 5 minutes for guests to save CPU
+		if (!auth(getAuthGuard())->check()) {
+			$cacheKey = 'api_post_show_' . $id . '_' . md5(serialize($params) . config('app.locale'));
+			return cache()->remember($cacheKey, 300, function () use ($id, $params) {
+				return $this->postService->getEntry($id, $params);
+			});
+		}
 		
 		return $this->postService->getEntry($id, $params);
 	}
@@ -266,13 +283,65 @@ class PostController extends BaseController
 			]);
 		}
 		
-		$query = \App\Models\Post::query()->where('phone', $phone);
+		// Normaliza para E164 para bater com o formato salvo no banco
+		$phone = phoneE164($phone, getPhoneCountry());
 		
-		if (!empty($excludePostId)) {
-			$query->where('id', '!=', $excludePostId);
+		if (empty($phone)) {
+			return apiResponse()->json([
+				'success' => true,
+				'result'  => ['exists' => false],
+			]);
 		}
 		
-		$exists = $query->exists();
+		$currentUserId = auth(getAuthGuard())->id();
+		
+		// Fallback por email se o token falhar
+		if (empty($currentUserId) && request()->filled('email')) {
+			$user = \App\Models\User::where('email', request()->input('email'))->first();
+			if ($user) {
+				$currentUserId = $user->id;
+			}
+		}
+		
+		// Fallback: Se estiver editando um post, identifica o dono dele
+		if (empty($currentUserId) && !empty($excludePostId)) {
+			$postToUpdate = \App\Models\Post::find($excludePostId);
+			if ($postToUpdate) {
+				$currentUserId = $postToUpdate->user_id;
+			}
+		}
+
+		$posts = \App\Models\Post::query()
+			->where('phone', $phone)
+			->whereNull('archived_at')
+			->get();
+		
+		$exists = false;
+		foreach ($posts as $post) {
+			// Ignora se for o próprio post sendo editado
+			if (!empty($excludePostId) && $post->id == $excludePostId) {
+				continue;
+			}
+			// Ignora se o post pertencer ao usuário atual
+			if (!empty($currentUserId) && $post->user_id == $currentUserId) {
+				continue;
+			}
+			
+			// Se encontrou um post que não é o atual e não pertence ao usuário, ele já existe para outro
+			$exists = true;
+			break;
+		}
+
+		// Se não encontrou em posts de outros, verifica na tabela de usuários
+		if (!$exists) {
+			$userWithPhone = \App\Models\User::query()->where('phone', $phone)->first();
+			if ($userWithPhone) {
+				// Só existe como "outra pessoa" se o ID do usuário for diferente do atual
+				if (empty($currentUserId) || $userWithPhone->id != $currentUserId) {
+					$exists = true;
+				}
+			}
+		}
 		
 		return apiResponse()->json([
 			'success' => true,

@@ -65,7 +65,12 @@ class CategoryController extends BaseController
 		
 		$parentId = request()->integer('parentId');
 		
-		return $this->categoryService->getEntries($parentId, $params);
+		// Categories change very rarely — cache at the response level for 24 hours
+		$cacheKey = 'api_categories_index_' . md5(serialize($params) . '_pid' . $parentId . '_' . config('app.locale'));
+		
+		return cache()->remember($cacheKey, 86400, function () use ($parentId, $params) {
+			return $this->categoryService->getEntries($parentId, $params);
+		});
 	}
 	
 	/**
@@ -84,7 +89,12 @@ class CategoryController extends BaseController
 	{
 		$parentSlug = is_numeric($slugOrId) ? null : request()->input('parentCatSlug');
 		
-		return $this->categoryService->getEntry($slugOrId, $parentSlug);
+		// Categories change very rarely — cache at the response level for 24 hours
+		$cacheKey = 'api_categories_show_' . md5($slugOrId . '_' . $parentSlug . '_' . config('app.locale'));
+		
+		return cache()->remember($cacheKey, 86400, function () use ($slugOrId, $parentSlug) {
+			return $this->categoryService->getEntry($slugOrId, $parentSlug);
+		});
 	}
 	
 	/**

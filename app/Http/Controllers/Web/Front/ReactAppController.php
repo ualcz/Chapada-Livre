@@ -1,6 +1,6 @@
 <?php
 /*
- * Chapa Livre — Serve a SPA React para todas as rotas de usuário.
+ * Chapada Livre — Serve a SPA React para todas as rotas de usuário.
  * O React Router cuida da navegação interna (/perfil, /meus-anuncios, etc.)
  */
 
@@ -19,95 +19,107 @@ class ReactAppController extends Controller
      */
     public function serve(\Illuminate\Http\Request $request)
     {
-        $indexPath = public_path('react/index.html');
-
-        if (!file_exists($indexPath)) {
-            abort(503, 'React app não encontrado. Execute: cd react-app && npm run build');
-        }
-
-        $html = file_get_contents($indexPath);
-
-        // SEO Default - Tunado para busca regional
-        $meta = [
-            'title' => 'Chapada Livre | Classificados da Chapada Diamantina: Compra e Venda em Seabra e Região',
-            'description' => 'Encontre tudo na Chapada Diamantina: Carros, Imóveis, Serviços e muito mais em Seabra, Lençóis, Palmeiras e região. O melhor lugar para comprar e vender localmente.',
-            'og_image' => url('/og-image.png'),
-            'canonical' => $request->fullUrl(),
-        ];
-
-        // Lógica para Anúncio Específico - Título e Descrição mais "vendedores"
         $path = $request->path();
-        if (preg_match('/\/(\d+)$/', $path, $matches)) {
-            $postId = $matches[1];
-            
-            // Usamos Cache para não sobrecarregar o banco em múltiplos acessos
-            $post = \Illuminate\Support\Facades\Cache::remember("seo_post_{$postId}", 600, function() use ($postId) {
-                return \App\Models\Post::with(['category', 'city', 'pictures'])->find($postId);
-            });
-            
-            if ($post) {
-                $cityName = $post->city->name ?? 'Chapada Diamantina';
-                $catName = $post->category->name ?? 'Classificados';
+        $fullUrl = $request->fullUrl();
+        $cacheKey = 'react_app_html_' . md5($fullUrl);
+
+        // Cacheia o HTML completo por 10 minutos (600 segundos)
+        $html = \Illuminate\Support\Facades\Cache::remember($cacheKey, 600, function() use ($request, $path) {
+            $indexPath = public_path('react/index.html');
+
+            if (!file_exists($indexPath)) {
+                abort(503, 'React app não encontrado. Execute: cd react-app && npm run build');
+            }
+
+            $htmlContent = file_get_contents($indexPath);
+
+            // SEO Default - Tunado para busca regional
+            $meta = [
+                'title' => 'Chapada Livre | Classificados da Chapada Diamantina: Compra e Venda em Seabra e Região',
+                'description' => 'Encontre tudo na Chapada Diamantina: Carros, Imóveis, Serviços e muito mais em Seabra, Lençóis, Palmeiras e região. O melhor lugar para comprar e vender localmente.',
+                'og_image' => url('/og-image.png'),
+                'canonical' => $request->fullUrl(),
+            ];
+
+            $post = null;
+            // Lógica para Anúncio Específico - Título e Descrição mais "vendedores"
+            if (preg_match('/\/(\d+)$/', $path, $matches)) {
+                $postId = $matches[1];
                 
-                $meta['title'] = $post->title . ' em ' . $cityName . ' - Chapada Diamantina | Chapada Livre';
-                $meta['description'] = 'Confira ' . $post->title . ' em ' . $cityName . ' na categoria ' . $catName . '. Preço: ' . $post->price_formatted . '. ' . $post->excerpt . '. Veja detalhes no Chapada Livre.';
+                // Usamos Cache para o objeto do post
+                $post = \Illuminate\Support\Facades\Cache::remember("seo_post_{$postId}", 600, function() use ($postId) {
+                    return \App\Models\Post::with(['category', 'city', 'pictures'])->find($postId);
+                });
                 
-                if ($post->picture) {
-                    $meta['og_image'] = $post->picture->file_url_large;
+                if ($post) {
+                    $cityName = $post->city->name ?? 'Chapada Diamantina';
+                    $catName = $post->category->name ?? 'Classificados';
+                    
+                    $meta['title'] = $post->title . ' em ' . $cityName . ' - Chapada Diamantina | Chapada Livre';
+                    $meta['description'] = 'Confira ' . $post->title . ' em ' . $cityName . ' na categoria ' . $catName . '. Preço: ' . $post->price_formatted . '. ' . $post->excerpt . '. Veja detalhes no Chapada Livre.';
+                    
+                    if ($post->picture) {
+                        $meta['og_image'] = $post->picture->file_url_large;
+                    }
+
+                    $meta['canonical'] = url($path);
+                }
+            }
+            // Lógica para Busca / Categorias / Cidades
+            else if (str_starts_with($path, 'buscar') || str_starts_with($path, 'category') || str_starts_with($path, 'location')) {
+                $q = $request->query('q');
+                $catSlug = null;
+                $cityName = null;
+
+                // Detectar categoria na URL
+                if (preg_match('/^category\/[^\/]+\/([^\/]+)$/', $path, $matches)) {
+                    $catSlug = $matches[1];
+                } else if (preg_match('/^category\/([^\/]+)$/', $path, $matches)) {
+                    $catSlug = $matches[1];
+                } 
+                // Detectar cidade na URL
+                else if (preg_match('/^location\/([^\/]+)/', $path, $matches)) {
+                    $cityName = str_replace('-', ' ', $matches[1]);
                 }
 
-                $meta['canonical'] = url($path);
-            }
-        }
-        // Lógica para Busca / Categorias / Cidades
-        else if (str_starts_with($path, 'buscar') || str_starts_with($path, 'category') || str_starts_with($path, 'location')) {
-            $q = $request->query('q');
-            $catSlug = null;
-            $cityName = null;
+                $titleParts = [];
+                if ($q) $titleParts[] = "Anúncios de \"$q\"";
+                
+                if ($catSlug) {
+                    $category = \App\Models\Category::where('slug', $catSlug)->first();
+                    if ($category) $titleParts[] = $category->name;
+                }
 
-            // Detectar categoria na URL: category/parent/child ou category/slug
-            if (preg_match('/^category\/[^\/]+\/([^\/]+)$/', $path, $matches)) {
-                $catSlug = $matches[1];
-            } else if (preg_match('/^category\/([^\/]+)$/', $path, $matches)) {
-                $catSlug = $matches[1];
-            } 
-            // Detectar cidade na URL: location/nome-da-cidade/id
-            else if (preg_match('/^location\/([^\/]+)/', $path, $matches)) {
-                $cityName = str_replace('-', ' ', $matches[1]);
-            }
+                if ($cityName) {
+                    $titleParts[] = "em " . ucwords($cityName);
+                }
 
-            $titleParts = [];
-            if ($q) $titleParts[] = "Anúncios de \"$q\"";
-            
-            if ($catSlug) {
-                $category = \App\Models\Category::where('slug', $catSlug)->first();
-                if ($category) $titleParts[] = $category->name;
+                if (!empty($titleParts)) {
+                    $meta['title'] = implode(' ', $titleParts) . ' - Chapada Diamantina | Chapada Livre';
+                    $meta['description'] = 'Confira os melhores anúncios de ' . implode(' ', $titleParts) . ' na Chapada Diamantina. Veja fotos, preços e contatos de vendedores locais.';
+                } else if (str_starts_with($path, 'category')) {
+                    $meta['title'] = 'Categorias de Anúncios - Chapada Diamantina | Chapada Livre';
+                }
             }
 
-            if ($cityName) {
-                $titleParts[] = "em " . ucwords($cityName);
-            }
+            $htmlContent = str_replace(
+                ['__META_TITLE__', '__META_DESCRIPTION__', '__OG_TITLE__', '__OG_DESCRIPTION__', '__OG_IMAGE__', '__CANONICAL_URL__'],
+                [e($meta['title']), e($meta['description']), e($meta['title']), e($meta['description']), e($meta['og_image']), e($meta['canonical'])],
+                $htmlContent
+            );
 
-            if (!empty($titleParts)) {
-                $meta['title'] = implode(' ', $titleParts) . ' - Chapada Diamantina | Chapada Livre';
-                $meta['description'] = 'Confira os melhores anúncios de ' . implode(' ', $titleParts) . ' na Chapada Diamantina. Veja fotos, preços e contatos de vendedores locais.';
-            } else if (str_starts_with($path, 'category')) {
-                $meta['title'] = 'Categorias de Anúncios - Chapada Diamantina | Chapada Livre';
-            }
-        }
+            // Injeção de Conteúdo Estático para SEO (Robôs)
+            $seoContent = $this->generateSeoContent($meta, $post);
+            $htmlContent = str_replace('<div id="root">', $seoContent . "\n" . '<div id="root">', $htmlContent);
 
-        $html = str_replace(
-            ['__META_TITLE__', '__META_DESCRIPTION__', '__OG_TITLE__', '__OG_DESCRIPTION__', '__OG_IMAGE__', '__CANONICAL_URL__'],
-            [e($meta['title']), e($meta['description']), e($meta['title']), e($meta['description']), e($meta['og_image']), e($meta['canonical'])],
-            $html
-        );
+            return $htmlContent;
+        });
 
-        // Injeção de Conteúdo Estático para SEO (Robôs)
-        $seoContent = $this->generateSeoContent($meta, $post ?? null);
-        $html = str_replace('<div id="root">', $seoContent . "\n" . '<div id="root">', $html);
-
-        return response($html)->header('Content-Type', 'text/html; charset=UTF-8');
+        return response($html)
+            ->header('Content-Type', 'text/html; charset=UTF-8')
+            ->header('Cache-Control', 'public, max-age=600, s-maxage=600');
     }
+
 
       /**
      * Gera o HTML estático otimizado para robôs de busca (SEO) antes do carregamento do React.

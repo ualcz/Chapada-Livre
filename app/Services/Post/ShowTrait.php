@@ -145,7 +145,7 @@ trait ShowTrait
 		abort_if(empty($post), 404, trans('global.post_not_found'));
 		
 		// Increment the listing's visit counter
-		PostWasVisited::dispatch($post);
+		// PostWasVisited::dispatch($post);
 		
 		// Generate the listing's images thumbnails
 		// GeneratePostImageThumbsJob::dispatch($post);

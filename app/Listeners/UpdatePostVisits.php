@@ -69,16 +69,10 @@ class UpdatePostVisits
 	private function incrementVisits($post): void
 	{
 		try {
-			// Remove|unset the 'pictures' attribute (added to limit pictures number related to a selected package)
-			$attributes = $post->getAttributes();
-			if (isset($attributes['pictures'])) {
-				unset($attributes['pictures']);
-				$post->setRawAttributes($attributes, true);
-			}
-			
-			// Increment the listing's visit count
-			$post->visits = $post->visits + 1;
-			$post->save();
+			// Increment the listing's visit count silently (without triggering Eloquent events)
+			\Illuminate\Support\Facades\DB::table('posts')
+				->where('id', $post->id)
+				->increment('visits');
 		} catch (Throwable $e) {
 		}
 	}

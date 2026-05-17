@@ -233,13 +233,61 @@ class PostRequest extends Request
 		}
 		$rules['contact_name'] = ['required', new BetweenRule(2, 200)];
 		$rules['auth_field'] = ['required', Rule::in($authFields)];
+		// Determine the current authenticated user id (try multiple fallbacks)
+		// 1) request()->user() (may be set by middleware)
+		// 2) auth using the resolved guard (API vs web)
+		// 3) default auth() guard (session/web)
+		$currentUserId = auth()->id() 
+			?? auth('sanctum')->id() 
+			?? auth('web')->id() 
+			?? request()->user()?->getAuthIdentifier();
+		
+		if (empty($currentUserId) && $this->filled('email')) {
+			$user = \App\Models\User::where('email', $this->input('email'))->first();
+			if ($user) {
+				$currentUserId = $user->id;
+			}
+		}
+		
+		// Fallback: Se estiver editando, assume o dono do post como o usuário a ser ignorado
+		if (empty($currentUserId) && $this->route('id')) {
+			$postToUpdate = \App\Models\Post::find($this->route('id'));
+			if ($postToUpdate) {
+				$currentUserId = $postToUpdate->user_id;
+			}
+		}
+
 		$rules['phone'] = [
 			'nullable',
 			'max:30',
-			Rule::unique('users', 'phone')->ignore(auth()->id()),
-			Rule::unique('posts', 'phone')->whereNull('archived_at')->ignore($this->route('id'))->when(auth()->check(), function ($query) {
-				return $query->where('user_id', '!=', auth()->id());
-			}),
+			function ($attribute, $value, $fail) use ($currentUserId) {
+				$phone = phoneE164($value, getPhoneCountry());
+				if (empty($phone)) return;
+
+				// 1. Verifica na tabela de posts (exceto o próprio post e posts do próprio usuário)
+				$postsWithPhone = \App\Models\Post::query()
+					->where('phone', $phone)
+					->whereNull('archived_at')
+					->get();
+				
+				foreach ($postsWithPhone as $p) {
+					// Ignora se for o próprio post sendo editado
+					if ($this->route('id') && $p->id == $this->route('id')) continue;
+					// Ignora se o post pertencer ao usuário atual
+					if (!empty($currentUserId) && $p->user_id == $currentUserId) continue;
+					
+					$fail("Este número de telefone já está sendo utilizado por outro usuário.");
+					return;
+				}
+
+				// 2. Verifica na tabela de usuários (exceto o próprio usuário)
+				$userWithPhone = \App\Models\User::query()->where('phone', $phone)->first();
+				if ($userWithPhone) {
+					if (empty($currentUserId) || $userWithPhone->id != $currentUserId) {
+						$fail("Este número de telefone já está sendo utilizado por outro usuário.");
+					}
+				}
+			}
 		];
 		$rules['phone_country'] = ['required_with:phone'];
 		$rules['city_id'] = ['required', 'not_in:0', 'exists:cities,id'];

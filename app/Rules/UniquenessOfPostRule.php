@@ -78,6 +78,10 @@ class UniquenessOfPostRule implements ValidationRule
 		$guard = getAuthGuard();
 		$authUser = auth($guard)->user();
 		
+		if (empty($authUser) && request()->filled('email')) {
+			$authUser = \App\Models\User::where('email', request()->input('email'))->first();
+		}
+		
 		$posts = Post::query()->withoutGlobalScopes([VerifiedScope::class, ReviewedScope::class]);
 		
 		if (!empty($authUser)) {

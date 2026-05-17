@@ -247,10 +247,11 @@ Route::prefix('posts')
 		Route::get('/', 'index')->name('api.posts.index');
 		Route::get('check-phone', 'checkPhoneExists');
 		Route::get('{id}', 'show')->name('api.posts.show');
-		Route::post('/', 'store')->name('api.posts.store');
+		
 		Route::middleware(['auth:sanctum'])
 			->group(function ($router) {
 				$router->pattern('ids', '[0-9,]+');
+				Route::post('/', 'store')->name('api.posts.store');
 				Route::put('{id}/offline', 'offline')->name('api.posts.offline');
 				Route::put('{id}/repost', 'repost')->name('api.posts.repost');
 				Route::put('{id}', 'update')->name('api.posts.update');

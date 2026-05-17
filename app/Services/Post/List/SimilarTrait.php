@@ -41,9 +41,11 @@ trait SimilarTrait
 		
 		// Create the MySQL Distance Calculation function If it doesn't exist
 		$distanceCalculationFormula = config('settings.listings_list.distance_calculation_formula', 'haversine');
+		/*
 		if (!DistanceHelper::checkIfDistanceCalculationFunctionExists($distanceCalculationFormula)) {
 			DistanceHelper::createDistanceCalculationFunction($distanceCalculationFormula);
 		}
+		*/
 		
 		// similar
 		$posts = collect();
@@ -63,7 +65,7 @@ trait SimilarTrait
 			}
 			$params['embed'] = $embed;
 			
-			$res = $this->getSimilarPostsData($postId, $distance);
+			$res = $this->getSimilarPostsData((int)$postId, $distance);
 			$posts = $res['posts'] ?? collect();
 			$post = $res['post'] ?? null;
 			
