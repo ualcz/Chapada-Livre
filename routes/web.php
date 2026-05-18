@@ -15,6 +15,7 @@
  */
 
 use App\Http\Controllers\Web\Front\ReactAppController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,6 +48,26 @@ Route::middleware(['installed'])
 		// Rotas de Autenticação e Front-end (Condicionais ou Híbridas)
 		Route::namespace('Auth')->prefix($authBasePath)->group(__DIR__ . '/web/auth.php');
 		Route::namespace('Front')->group(__DIR__ . '/web/front.php');
+
+			/*
+			 * SEO: redireciona URLs antigas de categoria
+			 * Ex.: /buscar?cat=97  ->  /category/{slug}
+			 *
+			 * Observação: quando o usuário navega dentro da SPA, esse redirect não é acionado (não há request ao servidor).
+			 * Por isso, existe também uma normalização equivalente no frontend (Search.tsx).
+			 */
+			Route::get('buscar', function (Request $request) {
+				$cat = $request->query('cat');
+				
+				if (!empty($cat) && is_string($cat) && ctype_digit($cat)) {
+					$category = \App\Models\Category::find((int)$cat);
+					if ($category && !empty($category->slug)) {
+						return redirect()->to('/category/' . $category->slug, 301);
+					}
+				}
+				
+				return app(ReactAppController::class)->serve($request);
+			})->name('buscar');
 
 		// Se o React estiver ativo, ele assume como "fallback" para qualquer rota não tratada acima
 		// (Isso permite que o React Router cuide de tudo no front-end)

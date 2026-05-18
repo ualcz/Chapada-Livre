@@ -37,10 +37,42 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)/$ /$1 [L,R=301]
 
-    # Handle Front Controller...
+    # ----------------------------------------------------------------------
+    # React SPA (static) + SEO routes (Laravel)
+    #
+    # Objetivo:
+    # - Rotas SEO (anúncios e categorias) passam pelo Laravel para injetar meta tags.
+    # - O restante do site é servido como SPA estática (/react/index.html), evitando
+    #   boot do Laravel em cada navegação/refresh e reduzindo CPU no compartilhado.
+    # ----------------------------------------------------------------------
+
+    # Rotas sempre do Laravel (API, Admin e endpoints do backend)
+    RewriteRule ^api(/|$) index.php [L]
+    RewriteRule ^admin(/|$) index.php [L]
+    RewriteRule ^auth(/|$) index.php [L]
+    RewriteRule ^install(/|$) index.php [L]
+    RewriteRule ^upgrade(/|$) index.php [L]
+    RewriteRule ^sitemap(\.xml)?$ index.php [L]
+
+    # Rotas SEO do Laravel
+    RewriteRule ^category(/|$) index.php [L]
+    RewriteRule ^anuncio(/|$) index.php [L]
+
+    # URL antiga de categoria: /buscar?cat=97 (somente quando houver cat numérico)
+    RewriteCond %{REQUEST_URI} ^/buscar$ [NC]
+    RewriteCond %{QUERY_STRING} (^|&)cat=[0-9]+(&|$) [NC]
+    RewriteRule ^buscar$ index.php [L]
+
+    # URL legada de anúncio (LaraClassifier): /{slug}/{id}
+    # Envia ao Laravel só quando não for uma rota interna conhecida da SPA.
+    RewriteCond %{REQUEST_URI} ^/[^/]+/[0-9]+$ [NC]
+    RewriteCond %{REQUEST_URI} !^/(mensagens|editar-anuncio|redefinir-senha|password|p|location|buscar|category|anuncio|api|admin|perfil|meus-anuncios|planos|contato|cidades|cadastro|login|verificar-email|social-login-callback|esqueci-senha|termos|privacidade|faq|anti-golpe|anunciar)(/|$) [NC]
+    RewriteRule ^ index.php [L]
+
+    # Para todo o resto (que não é arquivo nem pasta), serve a SPA estática
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+    RewriteRule ^ react/index.html [L,E=REACT_INDEX:1]
 </IfModule>
 
 # Iframe calling
@@ -51,4 +83,33 @@
 # CUSTOM APACHE RULES
 # ===================
 
+# ----------------------------------------------------------------------
+# Performance: cache + compression for static assets (important for mobile)
+# ----------------------------------------------------------------------
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 hour"
+    # Para arquivos SEM hash no nome (ex.: /react/banner.webp), use cache moderado
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType text/javascript "access plus 7 days"
+    ExpiresByType application/x-javascript "access plus 7 days"
+    ExpiresByType image/webp "access plus 7 days"
+    ExpiresByType image/jpeg "access plus 7 days"
+    ExpiresByType image/png "access plus 7 days"
+    ExpiresByType image/svg+xml "access plus 7 days"
+    ExpiresByType font/woff2 "access plus 30 days"
+</IfModule>
 
+<IfModule mod_headers.c>
+    # Cache longo APENAS para assets versionados (Vite) em /react/assets/
+    SetEnvIf Request_URI "^/react/assets/" VITE_ASSET=1
+    Header set Cache-Control "public, max-age=31536000, immutable" env=VITE_ASSET
+
+    # O index da SPA precisa ser revalidado para puxar o build novo (arquivo sem hash)
+    Header set Cache-Control "no-cache" env=REACT_INDEX
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain text/html text/css text/javascript application/javascript application/json application/xml image/svg+xml
+</IfModule>
