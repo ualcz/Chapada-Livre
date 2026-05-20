@@ -194,29 +194,6 @@ class Category extends BaseModel
 					return $defaultIconClass;
 				}
 				
-				$defaultFontIconSet = config('larapen.core.defaultFontIconSet', 'bootstrap');
-				
-				// This part will be removed at: 2022-10-14
-				$filePath = config("larapen.core.fontIconSet.{$defaultFontIconSet}.path");
-				$buffer = file_get_contents($filePath);
-				
-				$ifVersion = config("larapen.core.fontIconSet.{$defaultFontIconSet}.version");
-				$ifVersion = str_replace('.', '\.', $ifVersion);
-				
-				$matches = [];
-				preg_match('#version:[^\']+\'' . $ifVersion . '\',[^i]+icons:[^\[]*\[([^]]+)]#s', $buffer, $matches);
-				$iClasses = $matches[1] ?? '';
-				$iClasses = str_replace("'", '', $iClasses);
-				$iClasses = preg_replace('#[\n\t]*#', '', $iClasses);
-				
-				$iClassesArray = array_map('trim', explode(',', $iClasses));
-				
-				if (!empty($iClassesArray)) {
-					if (!in_array($value, $iClassesArray)) {
-						return $defaultIconClass;
-					}
-				}
-				
 				return $value;
 			},
 		);

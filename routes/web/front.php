@@ -73,36 +73,9 @@ if (config('app.usar_react', false)) {
 	Route::redirect('/category', '/categorias', 301);
 }
 
-// ============================================================
-// ADMIN LOGIN BRIDGE (React -> Web)
-// ============================================================
-Route::get('admin-login-bridge', function() {
-    $token = request()->query('token');
-    if ($token) {
-        $personalAccessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
-        if ($personalAccessToken && $personalAccessToken->tokenable) {
-            $user = $personalAccessToken->tokenable;
-            if (doesUserHaveStaffPermission($user)) {
-                auth('web')->login($user);
-                request()->session()->regenerate();
-                return redirect(urlGen()->adminUrl());
-            }
-        }
-    }
-    return redirect('/login');
-});
-
-// ============================================================
-// ADMIN LOGOUT BRIDGE (React -> Web)
-// ============================================================
-Route::get('admin-logout-bridge', function() {
-    if (auth('web')->check()) {
-        auth('web')->logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
-    }
-    return response()->json(['success' => true]);
-});
+// As rotas admin-login-bridge e admin-logout-bridge foram movidas para
+// routes/web.php (antes do Route::fallback do React) para evitar que
+// o ReactAppController as intercepte antes do Laravel processar.
 
 // ============================================================
 // ACCOUNT (Blade — mantido apenas para rotas de formulário

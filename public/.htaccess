@@ -54,6 +54,9 @@
     RewriteRule ^upgrade(/|$) index.php [L]
     RewriteRule ^sitemap(\.xml)?$ index.php [L]
 
+    # Favicon: browsers costumam pedir /favicon.ico (na raiz)
+    RewriteRule ^favicon\.ico$ react/favi.ico [L]
+
     # Rotas SEO do Laravel
     RewriteRule ^category(/|$) index.php [L]
     RewriteRule ^anuncio(/|$) index.php [L]

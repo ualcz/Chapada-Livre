@@ -204,30 +204,58 @@ class PostQueries
 			return $count;
 		}
 		
-		// Count entries by post type
-		$pattern = '/`post_type_id`\s*=\s*[\d\']+\s+/ui';
+		// Inicializa o array de contagem com zero para cada tipo
 		foreach ($postTypes as $postType) {
 			$postTypeId = data_get($postType, 'id');
-			$iPosts = clone $this->posts;
+			$count[$postTypeId] = 0;
+		}
+		
+		$iPosts = clone $this->posts;
+		$sql = DBUtils::getRealSql($iPosts->toSql(), $iPosts->getBindings());
+		
+		// Remove qualquer filtro específico de 'post_type_id' no SQL gerado pelo clone
+		// Substituímos por '1 = 1' para manter a validade sintática do SQL
+		$pattern = '/`post_type_id`\s*=\s*[\d\']+\s+/ui';
+		if (preg_match($pattern, $sql)) {
+			$sql = preg_replace($pattern, '1 = 1 ', $sql);
+		}
+		
+		try {
+			// Executa uma única query com GROUP BY para contar todos os tipos em lote
+			$groupedSql = 'SELECT post_type_id, COUNT(*) AS total FROM (' . $sql . ') AS x GROUP BY post_type_id';
+			$results = DB::select($groupedSql);
 			
-			$sql = DBUtils::getRealSql($iPosts->toSql(), $iPosts->getBindings());
-			
-			if (preg_match($pattern, $sql)) {
-				$sql = preg_replace($pattern, '`post_type_id` = ' . $postTypeId . ' ', $sql);
-			} else {
-				$iPosts->where('post_type_id', $postTypeId);
-				$sql = DBUtils::getRealSql($iPosts->toSql(), $iPosts->getBindings());
+			if (!empty($results)) {
+				foreach ($results as $row) {
+					$postTypeId = $row->post_type_id ?? null;
+					if ($postTypeId !== null && isset($count[$postTypeId])) {
+						$count[$postTypeId] = (int)$row->total;
+					}
+				}
 			}
-			
-			try {
-				$sql = 'SELECT COUNT(*) AS total FROM (' . $sql . ') AS x';
-				$result = DB::select($sql);
-			} catch (Throwable $e) {
-				// dd($e->getMessage()); // Debug!
-				$result = null;
+		} catch (Throwable $e) {
+			// Caso a query agrupada falhe por alguma particularidade do MySQL estrito,
+			// mantemos um fallback seguro executando a contagem individual original
+			foreach ($postTypes as $postType) {
+				$postTypeId = data_get($postType, 'id');
+				$iPostsFallback = clone $this->posts;
+				
+				$sqlFallback = DBUtils::getRealSql($iPostsFallback->toSql(), $iPostsFallback->getBindings());
+				if (preg_match($pattern, $sqlFallback)) {
+					$sqlFallback = preg_replace($pattern, '`post_type_id` = ' . $postTypeId . ' ', $sqlFallback);
+				} else {
+					$iPostsFallback->where('post_type_id', $postTypeId);
+					$sqlFallback = DBUtils::getRealSql($iPostsFallback->toSql(), $iPostsFallback->getBindings());
+				}
+				
+				try {
+					$sqlFallback = 'SELECT COUNT(*) AS total FROM (' . $sqlFallback . ') AS x';
+					$resultFallback = DB::select($sqlFallback);
+					$count[$postTypeId] = isset($resultFallback[0]) ? (int)$resultFallback[0]->total : 0;
+				} catch (Throwable $ex) {
+					$count[$postTypeId] = 0;
+				}
 			}
-			
-			$count[$postTypeId] = isset($result[0]) ? (int)$result[0]->total : 0;
 		}
 		
 		return $count;

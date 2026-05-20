@@ -21,12 +21,13 @@ class ReactAppController extends Controller
     {
         $path = $request->path();
         $fullUrl = $request->fullUrl();
-        $cacheKey = 'react_app_html_' . md5($fullUrl);
+        
+        $indexPath = public_path('react/index.html');
+        $mtime = file_exists($indexPath) ? filemtime($indexPath) : 0;
+        $cacheKey = 'react_app_html_' . md5($fullUrl) . '_' . $mtime;
 
         // Cacheia o HTML completo por 10 minutos (600 segundos)
-        $html = \Illuminate\Support\Facades\Cache::remember($cacheKey, 600, function() use ($request, $path) {
-            $indexPath = public_path('react/index.html');
-
+        $html = \Illuminate\Support\Facades\Cache::remember($cacheKey, 600, function() use ($request, $path, $indexPath) {
             if (!file_exists($indexPath)) {
                 abort(503, 'React app não encontrado. Execute: cd react-app && npm run build');
             }

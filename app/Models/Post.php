@@ -63,6 +63,8 @@ class Post extends BaseModel implements Feedable
 	use SimilarByCategory, SimilarByLocation;
 	use ReviewsAddon;
 	
+	protected ?string $purifiedDescriptionCache = null;
+	
 	/**
 	 * The table associated with the model.
 	 *
@@ -637,7 +639,7 @@ class Post extends BaseModel implements Feedable
 					}
 				}
 				
-				return htmlPurifierCleaner($value);
+				return $value;
 			},
 		);
 	}
@@ -646,7 +648,10 @@ class Post extends BaseModel implements Feedable
 	{
 		return Attribute::make(
 			get: function () {
-				$value = $this->description ?? '';
+				// Evita chamar o accessor 'description' que roda o htmlPurifierCleaner.
+				// Acessamos diretamente o valor original bruto da descrição do banco.
+				$value = $this->getAttributes()['description'] ?? '';
+				$value = strip_tags($value);
 				$value = stripUtf8mb4Chars($value);
 				$value = singleLineStringCleaner($value);
 				

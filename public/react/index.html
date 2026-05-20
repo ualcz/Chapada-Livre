@@ -1,182 +1,212 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>__META_TITLE__</title>
-    <meta name="description" content="__META_DESCRIPTION__" />
-    <link rel="canonical" href="__CANONICAL_URL__" />
-    <meta name="author" content="Chapada Livre" />
 
-    <!--
-      Fallback de UX:
-      Quando este HTML é servido estaticamente (sem passar pelo Laravel), os placeholders
-      __META_*__ podem aparecer por alguns instantes (ex.: no título da aba).
-      O script abaixo troca por valores padrão imediatamente.
-      Em rotas SEO (Laravel), os placeholders já chegam substituídos e o script não altera nada.
-    -->
-    <script>
-      (function () {
-        var DEFAULT_TITLE = "Chapada Livre | Classificados da Chapada Diamantina";
-        var DEFAULT_DESC =
-          "Encontre carros, imóveis, serviços e oportunidades na Chapada Diamantina. Compre e venda localmente com segurança no Chapada Livre.";
-
-        try {
-          if (document.title && document.title.indexOf("__META_TITLE__") !== -1) {
-            document.title = DEFAULT_TITLE;
-          }
-
-          var desc = document.querySelector('meta[name="description"]');
-          if (
-            desc &&
-            desc.getAttribute("content") &&
-            desc.getAttribute("content").indexOf("__META_DESCRIPTION__") !== -1
-          ) {
-            desc.setAttribute("content", DEFAULT_DESC);
-          }
-
-          var canonical = document.querySelector('link[rel="canonical"]');
-          if (
-            canonical &&
-            canonical.getAttribute("href") &&
-            canonical.getAttribute("href").indexOf("__CANONICAL_URL__") !== -1
-          ) {
-            canonical.setAttribute("href", window.location.href);
-          }
-        } catch (e) {
-          // noop
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Evitar flash de tema claro/escuro no splash screen -->
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("theme");
+        if (theme === "dark") {
+          document.documentElement.classList.add("dark");
         }
-      })();
-    </script>
+      } catch (e) { }
+    })();
+  </script>
+  <title>__META_TITLE__</title>
+  <link rel="icon" type="image/x-icon" href="/react/favi.ico" />
+  <meta name="description" content="__META_DESCRIPTION__" />
+  <link rel="canonical" href="__CANONICAL_URL__" />
+  <meta name="author" content="Chapada Livre" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <script>
+    (function () {
+      var DEFAULT_TITLE = "Chapada Livre | Classificados da Chapada Diamantina";
+      var DEFAULT_DESC =
+        "Encontre carros, imóveis, serviços e oportunidades na Chapada Diamantina. Compre e venda localmente com segurança no Chapada Livre.";
 
-    <link
-      rel="preload"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&display=swap"
-      as="style"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&display=swap"
-      rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&display=swap"
-        rel="stylesheet"
-      />
-    </noscript>
+      try {
+        if (document.title && document.title.indexOf("__META_TITLE__") !== -1) {
+          document.title = DEFAULT_TITLE;
+        }
 
-    <!-- Preload Hero Images for LCP Optimization -->
-    <!-- IMPORTANTE: usar /react/ porque em produção o app roda em /react/ -->
-    <link
-      rel="preload"
-      as="image"
-      href="/react/banner-mobile.webp"
-      type="image/webp"
-      media="(max-width: 768px)"
-    />
-    <link
-      rel="preload"
-      as="image"
-      href="/react/banner.webp"
-      type="image/webp"
-      media="(min-width: 769px)"
-    />
+        var desc = document.querySelector('meta[name="description"]');
+        if (
+          desc &&
+          desc.getAttribute("content") &&
+          desc.getAttribute("content").indexOf("__META_DESCRIPTION__") !== -1
+        ) {
+          desc.setAttribute("content", DEFAULT_DESC);
+        }
 
-    <link
-      rel="preload"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-      as="style"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
-    <link
-      rel="preload"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-      as="style"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
-    <noscript>
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    </noscript>
+        var canonical = document.querySelector('link[rel="canonical"]');
+        if (
+          canonical &&
+          canonical.getAttribute("href") &&
+          canonical.getAttribute("href").indexOf("__CANONICAL_URL__") !== -1
+        ) {
+          canonical.setAttribute("href", window.location.href);
+        }
+      } catch (e) {
+        // noop
+      }
+    })();
+  </script>
 
-    <meta property="og:title" content="__OG_TITLE__" />
-    <meta property="og:description" content="__OG_DESCRIPTION__" />
-    <meta property="og:image" content="__OG_IMAGE__" />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 
-    <script>
-      window.addEventListener("load", function () {
-        setTimeout(function () {
-          var script = document.createElement("script");
-          script.async = true;
-          script.src = "https://www.googletagmanager.com/gtag/js?id=G-E4L7M39WQK";
-          document.head.appendChild(script);
+  <!-- Google Fonts carregadas diretamente para evitar flash de fontes não estilizadas (FOUT) -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&display=swap"
+    rel="stylesheet" />
 
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag("js", new Date());
-          gtag("config", "G-E4L7M39WQK");
-        }, 2000); // 2 segundos de delay
-      });
-    </script>
-    <script type="module" crossorigin src="/react/assets/index-DXStPsHB.js"></script>
-    <link rel="modulepreload" crossorigin href="/react/assets/vendor-react-62jv0zeW.js">
-    <link rel="modulepreload" crossorigin href="/react/assets/vendor-ui-8x90N2oQ.js">
-    <link rel="modulepreload" crossorigin href="/react/assets/vendor-icons-CGaK4ZY1.js">
-    <link rel="stylesheet" crossorigin href="/react/assets/index-BQe2Df9x.css">
-  </head>
-  <body>
-    <div id="root">
-      <!-- SEO Pre-render Content (Visible to bots, replaced by React) -->
-      <div style="display: none" aria-hidden="true">
-        <h1>Chapada Livre | Classificados da Chapada Diamantina</h1>
-        <p>
-          Encontre carros, imóveis, serviços e oportunidades na Chapada Diamantina. Compre e venda localmente com segurança.
+  <!-- Preload assíncrono para fontes de ícones secundárias -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style"
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" as="style"
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  </noscript>
+
+  <meta property="og:title" content="__OG_TITLE__" />
+  <meta property="og:description" content="__OG_DESCRIPTION__" />
+  <meta property="og:image" content="__OG_IMAGE__" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <script>
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        var script = document.createElement("script");
+        script.async = true;
+        script.src = "https://www.googletagmanager.com/gtag/js?id=G-E4L7M39WQK";
+        document.head.appendChild(script);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+        gtag("js", new Date());
+        gtag("config", "G-E4L7M39WQK");
+      }, 2000); // 2 segundos de delay
+    });
+  </script>
+  <script type="module" crossorigin src="/react/assets/index-XPUwLxwa.js"></script>
+  <link rel="stylesheet" crossorigin href="/react/assets/index-BQe2Df9x.css">
+</head>
+
+<body>
+  <div id="root">
+    <!-- SEO Pre-render Content (Visible to bots, replaced by React) -->
+    <div style="display: none" aria-hidden="true">
+      <h1>Chapada Livre | Classificados da Chapada Diamantina</h1>
+      <p>
+        Encontre carros, imóveis, serviços e oportunidades na Chapada Diamantina. Compre e venda localmente com
+        segurança.
+      </p>
+    </div>
+    <style>
+      :root {
+        --splash-bg: #ffffff;
+        --splash-text: #0d1a15;
+        --splash-loader: #10b981;
+        --splash-loader-track: #e5e7eb;
+      }
+
+      .dark {
+        --splash-bg: #0c1814;
+        --splash-text: #f3f4f3;
+        --splash-loader: #10b981;
+        --splash-loader-track: #1b2622;
+      }
+
+      .splash-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+        background-color: var(--splash-bg);
+        color: var(--splash-text);
+        font-family: "Inter", sans-serif;
+        text-align: center;
+        transition: background-color 0.15s ease, color 0.15s ease;
+      }
+
+      .splash-hero {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      .splash-hero img {
+        height: 100%;
+        width: 100%;
+        -o-object-fit: cover;
+           object-fit: cover;
+      }
+
+      .splash-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55));
+      }
+
+      .splash-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid var(--splash-loader-track);
+        border-bottom-color: var(--splash-loader);
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+      }
+
+      @keyframes rotation {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <div class="splash-screen">
+      <div class="splash-content">
+        <div class="loader"></div>
+        <p style="margin-top: 18px; color: rgba(255, 255, 255, 0.9); font-weight: 700; letter-spacing: 0.02em">
+          Carregando Chapada Livre...
+        </p>
+        <p
+          style="margin-top: 6px; color: rgba(255, 255, 255, 0.75); font-weight: 500; font-size: 13px; max-width: 320px">
+          Classificados da Chapada Diamantina — rápido, simples e local.
         </p>
       </div>
-      <style>
-        .splash-screen {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          height: 100vh;
-          width: 100vw;
-          background-color: #ffffff;
-          font-family: "Inter", sans-serif;
-        }
-        .loader {
-          width: 48px;
-          height: 48px;
-          border: 5px solid #e5e7eb;
-          border-bottom-color: #10b981;
-          border-radius: 50%;
-          display: inline-block;
-          box-sizing: border-box;
-          animation: rotation 1s linear infinite;
-        }
-        @keyframes rotation {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-      </style>
-      <div class="splash-screen">
-        <div class="loader"></div>
-        <p style="margin-top: 20px; color: #6b7280; font-weight: 500">Carregando Chapada Livre...</p>
-      </div>
     </div>
-  </body>
-</html>
+  </div>
+</body>
 
+</html>
