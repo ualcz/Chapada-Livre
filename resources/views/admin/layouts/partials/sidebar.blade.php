@@ -50,6 +50,13 @@
 							<i data-feather="home" class="feather-icon"></i> <span class="hide-menu">{{ trans('admin.dashboard') }}</span>
 						</a>
 					</li>
+					@if (userHasSuperAdminPermissions())
+						<li class="sidebar-item">
+							<a href="{{ urlGen()->adminUrl('native-sponsors') }}" class="sidebar-link waves-effect waves-dark">
+								<i data-feather="star" class="feather-icon"></i> <span class="hide-menu">Anúncios Patrocinados</span>
+							</a>
+						</li>
+					@endif
 					@if (
 						doesUserHavePermission($authUser, 'admin.post.view')
 						|| doesUserHavePermission($authUser, 'admin.category.view')

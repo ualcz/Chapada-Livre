@@ -21,6 +21,7 @@ use App\Http\Controllers\Web\Admin\Action\RouteCacheController;
 use App\Http\Controllers\Web\Admin\ActionController;
 use App\Http\Controllers\Web\Admin\AddonController;
 use App\Http\Controllers\Web\Admin\AdvertisingController;
+use App\Http\Controllers\Web\Admin\NativeSponsorController;
 use App\Http\Controllers\Web\Admin\BackupController;
 use App\Http\Controllers\Web\Admin\BlacklistController;
 use App\Http\Controllers\Web\Admin\CategoryController;
@@ -135,6 +136,7 @@ Route::middleware(['admin', 'clearance', 'banned.user', 'no.http.cache'])
 		PanelRoutes::resource('cities', CityController::class);                                           // Redirect to /countries
 		
 		PanelRoutes::resource('advertisings', AdvertisingController::class);
+		PanelRoutes::resource('native-sponsors', NativeSponsorController::class);
 		PanelRoutes::resource('blacklists', BlacklistController::class);
 		PanelRoutes::resource('currencies', CurrencyController::class);
 		PanelRoutes::resource('homepage/sections', SectionController::class);

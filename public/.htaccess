@@ -47,19 +47,23 @@
     # ----------------------------------------------------------------------
 
     # Rotas sempre do Laravel (API, Admin e endpoints do backend)
-    RewriteRule ^api(/|$) index.php [L]
-    RewriteRule ^admin(/|$) index.php [L]
-    RewriteRule ^auth(/|$) index.php [L]
-    RewriteRule ^install(/|$) index.php [L]
-    RewriteRule ^upgrade(/|$) index.php [L]
+    RewriteRule ^api($|/.*) index.php [L]
+    RewriteRule ^admin($|/.*) index.php [L]
+    RewriteRule ^auth($|/.*) index.php [L]
+    RewriteRule ^install($|/.*) index.php [L]
+    RewriteRule ^upgrade($|/.*) index.php [L]
     RewriteRule ^sitemap(\.xml)?$ index.php [L]
+    RewriteRule ^docs/api($|/.*) index.php [L]
+    # Pontes de autenticação admin (React → Sessão Web Laravel)
+    RewriteRule ^admin-login-bridge$ index.php [L,QSA]
+    RewriteRule ^admin-logout-bridge$ index.php [L,QSA]
 
     # Favicon: browsers costumam pedir /favicon.ico (na raiz)
     RewriteRule ^favicon\.ico$ react/favi.ico [L]
 
     # Rotas SEO do Laravel
-    RewriteRule ^category(/|$) index.php [L]
-    RewriteRule ^anuncio(/|$) index.php [L]
+    RewriteRule ^category($|/.*) index.php [L]
+    RewriteRule ^anuncio($|/.*) index.php [L]
 
     # URL antiga de categoria: /buscar?cat=97 (somente quando houver cat numérico)
     RewriteCond %{REQUEST_URI} ^/buscar$ [NC]

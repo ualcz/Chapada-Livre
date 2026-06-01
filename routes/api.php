@@ -45,6 +45,7 @@ use App\Http\Controllers\Api\ThreadController;
 use App\Http\Controllers\Api\ThreadMessageController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserTypeController;
+use App\Http\Controllers\Api\NativeSponsorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -456,6 +457,13 @@ Route::prefix('sections')
 		Route::get('/', 'index')->name('api.sections.index');
 		Route::get('{method}', 'show')->name('api.sections.show');
 	});
+
+// native sponsors
+Route::prefix('native-sponsors')
+    ->controller(NativeSponsorController::class)
+    ->group(function ($router) {
+        Route::get('/', 'index')->name('api.native-sponsors.index');
+    });
 
 // captcha
 Route::prefix('captcha')

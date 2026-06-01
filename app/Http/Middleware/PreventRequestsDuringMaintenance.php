@@ -52,6 +52,11 @@ class PreventRequestsDuringMaintenance extends Middleware
 			urlGen()->getAuthBasePath() . '/*',
 			'api/auth/login',
 			'api/auth/logout/*',
+			// Rotas web do React App de autenticação (não usam o prefixo auth/)
+			'login',
+			'cadastro',
+			'esqueci-senha',
+			'admin-login-bridge',
 		];
 	}
 	
