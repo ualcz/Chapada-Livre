@@ -125,10 +125,10 @@ class NativeSponsorController extends PanelController
                 'name'        => 'category_id',
                 'label'       => 'Categoria Específica (Opcional)',
                 'type'        => 'select2_from_array',
-                'options'     => Category::pluck('name', 'id')->toArray(),
+                'options'     => $this->getActiveCategoriesOptions(),
                 'allows_null' => true,
                 'wrapper'     => ['class' => 'col-md-4'],
-                'hint'        => 'Deixe em branco para exibir em todo o site',
+                'hint'        => 'Deixe em branco para exibir em todo o site. Subcategorias herdam anúncios da categoria pai.',
             ]);
             
             $this->xPanel->addField([
@@ -157,5 +157,36 @@ class NativeSponsorController extends PanelController
     public function update(UpdateRequest $request)
     {
         return parent::updateCrud($request);
+    }
+
+    /**
+     * Retorna as categorias ativas do sistema organizadas hierarquicamente
+     * para uso no select2 do formulário de patrocinadores.
+     */
+    private function getActiveCategoriesOptions(): array
+    {
+        $options = [];
+
+        // Busca apenas categorias pai ativas (sem parent_id)
+        $parents = Category::where('active', 1)
+            ->whereNull('parent_id')
+            ->orderBy('lft')
+            ->get();
+
+        foreach ($parents as $parent) {
+            $options[$parent->id] = $parent->name;
+
+            // Subcategorias ativas desta categoria pai
+            $children = Category::where('active', 1)
+                ->where('parent_id', $parent->id)
+                ->orderBy('lft')
+                ->get();
+
+            foreach ($children as $child) {
+                $options[$child->id] = '→ ' . $child->name;
+            }
+        }
+
+        return $options;
     }
 }

@@ -29,11 +29,20 @@ class NativeSponsorController extends BaseController
             }
         }
 
-        // Se uma categoria foi passada, busca anúncios globais + anúncios desta categoria
+        // Se uma categoria foi passada, resolve a hierarquia:
+        // busca anúncios globais + desta categoria + da categoria pai (se houver)
         if ($categoryId) {
-            $query->where(function ($q) use ($categoryId) {
+            // Busca a categoria para verificar se tem pai
+            $category = \App\Models\Category::withoutGlobalScopes()->find($categoryId);
+            
+            $matchingIds = [(int) $categoryId];
+            if ($category && $category->parent_id) {
+                $matchingIds[] = (int) $category->parent_id;
+            }
+            
+            $query->where(function ($q) use ($matchingIds) {
                 $q->whereNull('category_id')
-                  ->orWhere('category_id', $categoryId);
+                  ->orWhereIn('category_id', $matchingIds);
             });
         } else {
             // Caso contrário, busca apenas anúncios globais

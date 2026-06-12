@@ -60,10 +60,23 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 
-  <!-- Google Fonts carregadas diretamente para evitar flash de fontes não estilizadas (FOUT) -->
+  <!-- Preload da imagem LCP do Banner (mobile e desktop) -->
+  <link rel="preload" href="/react/banner-mobile.webp" as="image" media="(max-width: 768px)" type="image/webp" />
+  <link rel="preload" href="/react/banner.webp" as="image" media="(min-width: 769px)" type="image/webp" />
+
+  <!-- Google Fonts carregadas de forma assíncrona para não bloquear a renderização inicial (melhora FCP/LCP) -->
   <link
+    rel="preload"
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&display=swap"
-    rel="stylesheet" />
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&display=swap"
+      rel="stylesheet"
+    />
+  </noscript>
 
   <!-- Preload assíncrono para fontes de ícones secundárias -->
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style"
@@ -98,8 +111,8 @@
       }, 2000); // 2 segundos de delay
     });
   </script>
-  <script type="module" crossorigin src="/react/assets/index-ZbZiEesH.js"></script>
-  <link rel="stylesheet" crossorigin href="/react/assets/index-BNwC0r7Z.css">
+  <script type="module" crossorigin src="/react/assets/index-D-k7Yeg2.js"></script>
+  <link rel="stylesheet" crossorigin href="/react/assets/index-CnNda6pX.css">
 </head>
 
 <body>
