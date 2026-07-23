@@ -6,6 +6,7 @@
 .phpunit.result.cache
 /react-app
 /public/react
+/App-CPD
 
 # Environment
 .env

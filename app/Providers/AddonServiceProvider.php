@@ -57,7 +57,21 @@ class AddonServiceProvider extends ServiceProvider
 			foreach ($addonsDirs as $addonDir) {
 				$addon = load_addon(basename($addonDir));
 				if (!empty($addon)) {
-					$this->app->register($addon->provider);
+					// Fallback if class isn't loaded by composer autoloader (e.g. casing difference on Linux)
+					if (!class_exists($addon->provider)) {
+						$addonFiles = glob($addonDir . '/*.php');
+						$targetFilename = strtolower(class_basename($addon->provider) . '.php');
+						foreach ($addonFiles as $file) {
+							if (strtolower(basename($file)) === $targetFilename) {
+								require_once $file;
+								break;
+							}
+						}
+					}
+					
+					if (class_exists($addon->provider)) {
+						$this->app->register($addon->provider);
+					}
 				}
 			}
 		}

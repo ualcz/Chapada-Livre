@@ -11,106 +11,167 @@ use App\Http\Controllers\Controller;
 class ReactAppController extends Controller
 {
     /**
-     * Serve o index.html do bundle React para qualquer rota de usuário.
-     * O React Router gerencia o roteamento do lado do cliente.
-     */
-    /**
-     * Serve o index.html do bundle React com Meta Tags Dinâmicas para SEO.
+     * Serve o index.html do bundle React com Meta Tags Dinâmicas para SEO e redes sociais.
      */
     public function serve(\Illuminate\Http\Request $request)
     {
-        $path = $request->path();
-        $fullUrl = $request->fullUrl();
-        
+        $path    = $request->path();
+        $fullUrl = $request->url(); // URL sem query string para canonical limpa
+
         $indexPath = public_path('react/index.html');
-        $mtime = file_exists($indexPath) ? filemtime($indexPath) : 0;
-        $cacheKey = 'react_app_html_' . md5($fullUrl) . '_' . $mtime;
+
+        if (!file_exists($indexPath)) {
+            abort(503, 'React app não encontrado. Execute: cd react-app && npm run build');
+        }
+
+        $mtime    = filemtime($indexPath);
+        $cacheKey = 'react_seo_html_v3_' . md5($fullUrl) . '_' . $mtime;
 
         // Cacheia o HTML completo por 10 minutos (600 segundos)
-        $html = \Illuminate\Support\Facades\Cache::remember($cacheKey, 600, function() use ($request, $path, $indexPath) {
-            if (!file_exists($indexPath)) {
-                abort(503, 'React app não encontrado. Execute: cd react-app && npm run build');
-            }
-
+        $html = \Illuminate\Support\Facades\Cache::remember($cacheKey, 600, function () use ($request, $path, $fullUrl, $indexPath) {
             $htmlContent = file_get_contents($indexPath);
 
-            // SEO Default - Tunado para busca regional
+            // Se o build não tiver placeholders, devolve o HTML direto
+            if (strpos($htmlContent, '__OG_TITLE__') === false && strpos($htmlContent, '__META_TITLE__') === false) {
+                return $htmlContent;
+            }
+
+            // ---------------------------------------------------------------
+            // Meta padrão (usado para a home e páginas genéricas)
+            // ---------------------------------------------------------------
+            $siteUrl  = rtrim(config('app.url', 'https://chapadalivre.com.br'), '/');
+            $fallbackImage = $siteUrl . '/react/logo.webp';
+
             $meta = [
-                'title' => 'Chapada Livre | Classificados da Chapada Diamantina: Compra e Venda em Seabra e Região',
-                'description' => 'Encontre tudo na Chapada Diamantina: Carros, Imóveis, Serviços e muito mais em Seabra, Lençóis, Palmeiras e região. O melhor lugar para comprar e vender localmente.',
-                'og_image' => url('/og-image.png'),
-                'canonical' => $request->fullUrl(),
+                'title'       => 'Chapada Livre | Classificados da Chapada Diamantina',
+                'description' => 'Encontre tudo na Chapada Diamantina: Carros, Imóveis, Serviços e muito mais em Seabra, Lençóis, Palmeiras e região.',
+                'og_image'    => $fallbackImage,
+                'og_url'      => $siteUrl . '/' . ltrim($path, '/'),
+                'canonical'   => $siteUrl . '/' . ltrim($path, '/'),
             ];
 
             $post = null;
-            // Lógica para Anúncio Específico - Título e Descrição mais "vendedores"
-            if (preg_match('/\/(\d+)$/', $path, $matches)) {
-                $postId = $matches[1];
-                
-                // Usamos Cache para o objeto do post
-                $post = \Illuminate\Support\Facades\Cache::remember("seo_post_{$postId}", 600, function() use ($postId) {
-                    return \App\Models\Post::with(['category', 'city', 'pictures'])->find($postId);
-                });
-                
+
+            // ---------------------------------------------------------------
+            // Detecta ID numérico no final da URL:
+            //   /pasta-de-dente-do-sherek/76  → ID = 76
+            //   /anuncio/nome/76              → ID = 76
+            // ---------------------------------------------------------------
+            if (preg_match('#(?:^|/)(\d+)/?$#', $path, $matches)) {
+                $postId = (int) $matches[1];
+
+                try {
+                    $post = \Illuminate\Support\Facades\Cache::remember("seo_post_{$postId}", 600, function () use ($postId) {
+                        return \App\Models\Post::with(['category', 'city', 'pictures', 'picture'])->find($postId);
+                    });
+                } catch (\Throwable $e) {
+                    $post = null;
+                }
+
                 if ($post) {
                     $cityName = $post->city->name ?? 'Chapada Diamantina';
-                    $catName = $post->category->name ?? 'Classificados';
-                    
-                    $meta['title'] = $post->title . ' em ' . $cityName . ' - Chapada Diamantina | Chapada Livre';
-                    $meta['description'] = 'Confira ' . $post->title . ' em ' . $cityName . ' na categoria ' . $catName . '. Preço: ' . $post->price_formatted . '. ' . $post->excerpt . '. Veja detalhes no Chapada Livre.';
-                    
-                    if ($post->picture) {
+                    $catName  = $post->category->name ?? 'Classificados';
+                    $price    = $post->price_formatted ?? null;
+
+                    $titleParts = [$post->title, 'em', $cityName, '— Chapada Livre'];
+                    $meta['title'] = implode(' ', $titleParts);
+
+                    $descParts = ['Confira', $post->title, 'em', $cityName, 'na categoria', $catName . '.'];
+                    if ($price) {
+                        $descParts[] = 'Preço:';
+                        $descParts[] = $price . '.';
+                    }
+                    if (!empty($post->excerpt)) {
+                        $descParts[] = $post->excerpt;
+                    }
+                    $meta['description'] = implode(' ', $descParts);
+
+                    // Imagem do anúncio (prioridade: primeira foto grande)
+                    if (!empty($post->picture?->file_url_large)) {
                         $meta['og_image'] = $post->picture->file_url_large;
+                    } elseif ($post->pictures && $post->pictures->isNotEmpty()) {
+                        $firstPic = $post->pictures->first();
+                        if (!empty($firstPic->file_url_large)) {
+                            $meta['og_image'] = $firstPic->file_url_large;
+                        }
                     }
 
-                    $meta['canonical'] = url($path);
+                    // Canonical limpo (sem query string)
+                    $slug = \Illuminate\Support\Str::slug($post->title);
+                    $meta['canonical'] = $siteUrl . '/' . $slug . '/' . $postId;
+                    $meta['og_url']    = $meta['canonical'];
                 }
             }
-            // Lógica para Busca / Categorias / Cidades
-            else if (str_starts_with($path, 'buscar') || str_starts_with($path, 'category') || str_starts_with($path, 'location')) {
-                $q = $request->query('q');
+            // ---------------------------------------------------------------
+            // Busca / Categorias / Cidades
+            // ---------------------------------------------------------------
+            elseif (str_starts_with($path, 'buscar') || str_starts_with($path, 'category') || str_starts_with($path, 'location')) {
+                $q       = $request->query('q');
                 $catSlug = null;
                 $cityName = null;
 
-                // Detectar categoria na URL
-                if (preg_match('/^category\/[^\/]+\/([^\/]+)$/', $path, $matches)) {
-                    $catSlug = $matches[1];
-                } else if (preg_match('/^category\/([^\/]+)$/', $path, $matches)) {
-                    $catSlug = $matches[1];
-                } 
-                // Detectar cidade na URL
-                else if (preg_match('/^location\/([^\/]+)/', $path, $matches)) {
-                    $cityName = str_replace('-', ' ', $matches[1]);
+                if (preg_match('#^category/[^/]+/([^/]+)$#', $path, $m)) {
+                    $catSlug = $m[1];
+                } elseif (preg_match('#^category/([^/]+)$#', $path, $m)) {
+                    $catSlug = $m[1];
+                } elseif (preg_match('#^location/([^/]+)#', $path, $m)) {
+                    $cityName = str_replace('-', ' ', $m[1]);
                 }
 
                 $titleParts = [];
                 if ($q) $titleParts[] = "Anúncios de \"$q\"";
-                
+
                 if ($catSlug) {
-                    $category = \App\Models\Category::where('slug', $catSlug)->first();
-                    if ($category) $titleParts[] = $category->name;
+                    try {
+                        $category = \App\Models\Category::where('slug', $catSlug)->first();
+                        if ($category) $titleParts[] = $category->name;
+                    } catch (\Throwable $e) {}
                 }
 
-                if ($cityName) {
-                    $titleParts[] = "em " . ucwords($cityName);
-                }
+                if ($cityName) $titleParts[] = 'em ' . ucwords($cityName);
 
                 if (!empty($titleParts)) {
-                    $meta['title'] = implode(' ', $titleParts) . ' - Chapada Diamantina | Chapada Livre';
-                    $meta['description'] = 'Confira os melhores anúncios de ' . implode(' ', $titleParts) . ' na Chapada Diamantina. Veja fotos, preços e contatos de vendedores locais.';
-                } else if (str_starts_with($path, 'category')) {
-                    $meta['title'] = 'Categorias de Anúncios - Chapada Diamantina | Chapada Livre';
+                    $meta['title']       = implode(' ', $titleParts) . ' — Chapada Livre';
+                    $meta['description'] = 'Confira os melhores anúncios de ' . implode(' ', $titleParts) . ' na Chapada Diamantina.';
+                } elseif (str_starts_with($path, 'category')) {
+                    $meta['title'] = 'Categorias de Anúncios — Chapada Diamantina | Chapada Livre';
                 }
             }
 
+            // ---------------------------------------------------------------
+            // Substitui TODOS os placeholders no HTML
+            // ---------------------------------------------------------------
             $htmlContent = str_replace(
-                ['__META_TITLE__', '__META_DESCRIPTION__', '__OG_TITLE__', '__OG_DESCRIPTION__', '__OG_IMAGE__', '__CANONICAL_URL__'],
-                [e($meta['title']), e($meta['description']), e($meta['title']), e($meta['description']), e($meta['og_image']), e($meta['canonical'])],
+                [
+                    '__META_TITLE__',
+                    '__META_DESCRIPTION__',
+                    '__OG_TITLE__',
+                    '__OG_DESCRIPTION__',
+                    '__OG_IMAGE__',
+                    '__CANONICAL_URL__',
+                ],
+                [
+                    e($meta['title']),
+                    e($meta['description']),
+                    e($meta['title']),
+                    e($meta['description']),
+                    e($meta['og_image']),
+                    e($meta['canonical']),
+                ],
                 $htmlContent
             );
 
-            // Injeção de Conteúdo Estático para SEO (Robôs)
-            $seoContent = $this->generateSeoContent($meta, $post);
+            // Injeta og:url e og:site_name explícitos (relevante para o WhatsApp)
+            $ogUrlTag  = '<meta property="og:url" content="' . e($meta['og_url']) . '" />';
+            $ogSiteTag = '<meta property="og:site_name" content="Chapada Livre" />';
+            $htmlContent = str_replace(
+                '<meta property="og:type" content="website" />',
+                '<meta property="og:type" content="website" />' . "\n  " . $ogUrlTag . "\n  " . $ogSiteTag,
+                $htmlContent
+            );
+
+            // Injeção de conteúdo estático para SEO (robôs)
+            $seoContent  = $this->generateSeoContent($meta, $post);
             $htmlContent = str_replace('<div id="root">', $seoContent . "\n" . '<div id="root">', $htmlContent);
 
             return $htmlContent;
@@ -121,30 +182,26 @@ class ReactAppController extends Controller
             ->header('Cache-Control', 'public, max-age=600, s-maxage=600');
     }
 
-
-      /**
+    /**
      * Gera o HTML estático otimizado para robôs de busca (SEO) antes do carregamento do React.
-     * Injetar este retorno obrigatoriamente logo após a abertura da tag <body>.
      */
     private function generateSeoContent($meta, $post = null)
     {
         $title = e($meta['title'] ?? 'Chapada Livre | Classificados da Chapada Diamantina');
-        $desc = e($meta['description'] ?? 'Encontre carros, imóveis, empregos e serviços em Seabra e região.');
-        
-        // Garante correspondência exata caso o título vindo do banco omita o termo principal
+        $desc  = e($meta['description'] ?? 'Encontre carros, imóveis, empregos e serviços em Seabra e região.');
+
         if (strpos(strtolower($title), 'chapada livre') === false) {
             $title = 'Chapada Livre | ' . $title;
         }
 
         $html = "\n\t<!-- INÍCIO DO CONTEÚDO DE INDEXAÇÃO DE SEO -->\n";
-        // Ocultação visual limpa recomendada pelo Google (sem display:none)
         $html .= "\t<section style=\"position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;\">\n";
-        
+
         if ($post) {
             $postTitle = e($post->title);
-            $city = e($post->city->name ?? 'Seabra e Região');
-            $price = e($post->price_formatted ?? 'A combinar');
-            $postDesc = e($post->description);
+            $city      = e($post->city->name ?? 'Seabra e Região');
+            $price     = e($post->price_formatted ?? 'A combinar');
+            $postDesc  = e($post->description);
 
             $html .= "\t\t<article>\n";
             $html .= "\t\t\t<h1>{$postTitle}</h1>\n";
@@ -153,7 +210,6 @@ class ReactAppController extends Controller
             $html .= "\t\t\t<div>{$postDesc}</div>\n";
             $html .= "\t\t</article>\n";
 
-            // Rich Snippets JSON-LD para indexar preços e categorias no Google
             $html .= "\t\t<script type=\"application/ld+json\">\n";
             $html .= "\t\t{\n";
             $html .= "\t\t\t\"@context\": \"https://schema.org\",\n";
@@ -164,10 +220,8 @@ class ReactAppController extends Controller
             $html .= "\t\t}\n";
             $html .= "\t\t</script>\n";
         } else {
-            // Estrutura limpa para a Página Inicial focada em Chapada Livre
             $html .= "\t\t<h1>{$title}</h1>\n";
             $html .= "\t\t<p>{$desc}</p>\n";
-            
             $html .= "\t\t<nav>\n";
             $html .= "\t\t\t<h2>Categorias de Classificados - Chapada Livre</h2>\n";
             $html .= "\t\t\t<ul>\n";
@@ -178,9 +232,9 @@ class ReactAppController extends Controller
             $html .= "\t\t\t</ul>\n";
             $html .= "\t\t</nav>\n";
         }
-        
+
         $html .= "\t</section>\n\t<!-- FIM DO CONTEÚDO DE INDEXAÇÃO DE SEO -->\n";
-        
+
         return $html;
     }
 }

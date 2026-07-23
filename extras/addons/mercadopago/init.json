@@ -1,0 +1,10 @@
+{
+    "name": "mercadopago",
+    "version": "1.0.0",
+    "display_name": "Mercado Pago",
+    "description": "Pagamento com Mercado Pago (Cartão de Crédito e PIX)",
+    "author": "Chapada Livre",
+    "category": "payment",
+    "has_installer": true,
+    "item_id": ""
+}
