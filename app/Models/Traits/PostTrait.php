@@ -94,11 +94,10 @@ trait PostTrait
 	
 	public function crudFeaturedColumn(?Panel $xPanel = null, array $column = []): string
 	{
-		$out = '-';
 		if (config('addons.offlinepayment.installed')) {
 			$opTool = '\extras\addons\offlinepayment\app\Helpers\OpTools';
 			if (class_exists($opTool)) {
-				$out = $opTool::featuredCheckboxDisplay(
+				return $opTool::featuredCheckboxDisplay(
 					$this->{$this->primaryKey},
 					$this->getTable(),
 					'featured',
@@ -107,7 +106,9 @@ trait PostTrait
 			}
 		}
 		
-		return $out;
+		return empty($this->featured) 
+			? '<i class="fa-regular fa-square" aria-hidden="true" style="font-size: 16px; color: #ccc;"></i>' 
+			: '<i class="fa-solid fa-check-square" aria-hidden="true" style="font-size: 16px; color: #28a745;"></i>';
 	}
 	
 	// ===| OTHER METHODS |===

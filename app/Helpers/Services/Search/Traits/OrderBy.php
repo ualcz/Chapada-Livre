@@ -133,6 +133,7 @@ trait OrderBy
 	{
 		// Default Priorities
 		$orderByPriorities = [
+			'featured'                => 95,
 			'lft'                     => 90,
 			config('distance.rename') => 89,
 			'created_at'              => 88,

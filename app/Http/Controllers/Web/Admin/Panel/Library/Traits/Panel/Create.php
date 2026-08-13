@@ -205,10 +205,21 @@ trait Create
 			
 			if ($relation instanceof BelongsTo) {
 				$modelInstance = $model::find($relationData['values'])->first();
+				
+				$wasManuallyChanged = null;
+				if (isset($item->was_manually_changed)) {
+					$wasManuallyChanged = $item->was_manually_changed;
+					unset($item->was_manually_changed);
+				}
+				
 				if ($modelInstance != null) {
 					$relation->associate($modelInstance)->save();
 				} else {
 					$relation->dissociate()->save();
+				}
+				
+				if (!is_null($wasManuallyChanged)) {
+					$item->setAttribute('was_manually_changed', $wasManuallyChanged);
 				}
 			} else if ($relation instanceof HasOne) {
 				if ($item->{$relationMethod} != null) {

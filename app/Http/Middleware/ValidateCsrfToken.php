@@ -35,6 +35,7 @@ class ValidateCsrfToken extends Middleware
 	 */
 	protected $except = [
 		'api/*',
+		'mercadopago/*',
 	];
 	
 	/**

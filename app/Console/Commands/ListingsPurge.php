@@ -24,6 +24,7 @@ if (file_exists($iniConfigFile)) {
 
 use App\Models\Country;
 use App\Models\Post;
+use App\Models\User;
 use App\Models\Scopes\ActiveScope;
 use App\Models\Scopes\ReviewedScope;
 use App\Models\Scopes\VerifiedScope;
@@ -77,6 +78,9 @@ class ListingsPurge extends Command
 			$this->cmdLogger($msg);
 			exit();
 		}
+		
+		// Purge expired featured status for all posts and users (including permanent listings)
+		$this->purgeExpiredFeatured();
 		
 		// Get all countries
 		$countries = Country::query()->withoutAppends()->withoutGlobalScope(ActiveScope::class);
@@ -385,6 +389,37 @@ class ListingsPurge extends Command
 		}
 	}
 	
+	/**
+	 * Purge expired featured status for all posts and users (including permanent listings)
+	 *
+	 * @return void
+	 */
+	private function purgeExpiredFeatured(): void
+	{
+		try {
+			// Un-feature all posts whose premium/featured payment has expired or does not exist
+			$countPosts = Post::query()
+				->withoutAppends()
+				->withoutGlobalScopes([VerifiedScope::class, ReviewedScope::class])
+				->where('featured', 1)
+				->whereDoesntHave('payment')
+				->update(['featured' => 0]);
+				
+			// Un-feature all users whose subscription payment has expired or does not exist
+			$countUsers = User::query()
+				->withoutAppends()
+				->where('featured', 1)
+				->whereDoesntHave('payment')
+				->update(['featured' => 0]);
+				
+			if ($countPosts > 0 || $countUsers > 0) {
+				$this->cmdLogger("Purged expired featured status: {$countPosts} listing(s), {$countUsers} user(s).");
+			}
+		} catch (Throwable $e) {
+			$this->cmdLogger('Error purging expired featured items: ' . $e->getMessage());
+		}
+	}
+
 	/**
 	 * @param $var
 	 */

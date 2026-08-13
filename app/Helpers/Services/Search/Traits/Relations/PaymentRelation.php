@@ -66,18 +66,9 @@ trait PaymentRelation
 		} else if ($op == 'premiumFirst') {
 			$this->setRelationForPremiumFirst($paymentsTable, $packagesTable, $paymentBuilder);
 		} else {
-			// For op == 'search' and others
-			$displayPremiumFirst = (
-				(config('settings.listings_list.premium_first') == '1' && empty($this->cat) && empty($this->city))
-				|| (config('settings.listings_list.premium_first_category') == '1' && !empty($this->cat))
-				|| (config('settings.listings_list.premium_first_location') == '1' && !empty($this->city))
-			);
-			
-			if ($displayPremiumFirst) {
-				$this->setRelationForPremiumFirst($paymentsTable, $packagesTable, $paymentBuilder);
-			} else {
-				$this->setRelationForLatest($paymentsTable, $packagesTable, $paymentBuilder);
-			}
+			// Always display premium/featured listings first in search queries
+			$this->setRelationForPremiumFirst($paymentsTable, $packagesTable, $paymentBuilder);
+			$this->orderBy = Arr::prepend($this->orderBy, $this->postsTable . '.featured DESC');
 		}
 	}
 	

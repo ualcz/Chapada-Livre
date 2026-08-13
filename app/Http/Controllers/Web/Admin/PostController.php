@@ -304,14 +304,12 @@ class PostController extends PanelController
 				'function_name' => 'crudCityColumn',
 			]);
 			
-			if (config('addons.offlinepayment.installed')) {
-				$this->xPanel->addColumn([
-					'name'          => 'featured',
-					'label'         => mb_ucfirst(trans('offlinepayment::messages.featured')),
-					'type'          => 'model_function',
-					'function_name' => 'crudFeaturedColumn',
-				]);
-			}
+			$this->xPanel->addColumn([
+				'name'          => 'featured',
+				'label'         => mb_ucfirst(trans('offlinepayment::messages.featured') ?? 'Destaque'),
+				'type'          => 'model_function',
+				'function_name' => 'crudFeaturedColumn',
+			]);
 			
 			$this->xPanel->addColumn([
 				'name'          => 'email_verified_at',

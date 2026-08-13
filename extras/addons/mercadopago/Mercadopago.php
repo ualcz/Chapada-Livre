@@ -18,6 +18,8 @@ class Mercadopago extends Payment
 
 	/**
 	 * Send Payment to Mercado Pago (Creates Preference for Checkout Pro)
+	 * The user is redirected to Mercado Pago's hosted page where they can pay
+	 * with PIX, credit card, or boleto.
 	 *
 	 * @param Request $request
 	 * @param Post|User $payable
@@ -42,24 +44,24 @@ class Mercadopago extends Payment
 			return redirect()->to(parent::$uri['previousUrl'] . '?error=packageType')->withInput();
 		}
 
-		$amount = Num::toFloat($package->price);
+		$amount       = Num::toFloat($package->price);
 		$currencyCode = !empty($package->currency_code) ? strtoupper($package->currency_code) : 'BRL';
 
 		// Session & Callbacks
 		$sessionId = session()->getId();
 
-		$paymentReturnUrl = parent::$uri['paymentReturnUrl'];
+		$paymentReturnUrl  = parent::$uri['paymentReturnUrl'];
 		$paymentReturnUrl .= str_contains($paymentReturnUrl, '?') ? '&' : '?';
 		$paymentReturnUrl .= 'sessionId=' . $sessionId;
 
-		$paymentCancelUrl = parent::$uri['paymentCancelUrl'];
+		$paymentCancelUrl  = parent::$uri['paymentCancelUrl'];
 		$paymentCancelUrl .= str_contains($paymentCancelUrl, '?') ? '&' : '?';
 		$paymentCancelUrl .= 'sessionId=' . $sessionId;
 
 		// Notification URL for Webhooks
 		$notificationUrl = route('mercadopago.webhook');
 
-		// External Reference payload
+		// External Reference — carries all context needed when the webhook fires
 		$externalReference = json_encode([
 			'payable_id'        => $payable->id,
 			'payable_type'      => get_class($payable),
@@ -69,8 +71,7 @@ class Mercadopago extends Payment
 			'token'             => uniqid('mp_', true),
 		]);
 
-		// Build Mercado Pago Preference Request Payload
-		// Restricting payment methods to Credit Card & PIX for MVP (excluding ticket/boleto & atm)
+		// Build Checkout Pro preference — all payment methods enabled (PIX, card, boleto)
 		$preferenceData = [
 			'items' => [
 				[
@@ -83,23 +84,16 @@ class Mercadopago extends Payment
 				],
 			],
 			'payer' => [
-				'name'  => $payable->contact_name ?? $payable->name ?? 'Cliente',
-				'email' => $payable->email ?? auth()->user()?->email ?? 'cliente@chapadalivre.com.br',
-			],
-			'payment_methods' => [
-				'excluded_payment_types' => [
-					['id' => 'ticket'], // Excludes Boleto
-					['id' => 'atm'],    // Excludes ATM/Cash
-				],
+				'name' => $payable->contact_name ?? $payable->name ?? 'Cliente',
 			],
 			'back_urls' => [
 				'success' => $paymentReturnUrl,
 				'failure' => $paymentCancelUrl,
 				'pending' => $paymentReturnUrl,
 			],
-			'auto_return'          => 'approved',
-			'notification_url'     => $notificationUrl,
-			'external_reference'   => $externalReference,
+			'auto_return'        => 'approved',
+			'notification_url'   => $notificationUrl,
+			'external_reference' => $externalReference,
 		];
 
 		// Local Parameters for LaraClassifier session
@@ -111,7 +105,7 @@ class Mercadopago extends Payment
 				return parent::paymentFailureActions($payable, 'Mercado Pago Access Token missing in configuration.');
 			}
 
-			// Call Mercado Pago Preferences API
+			// Create preference via Mercado Pago API
 			$response = Http::withToken($accessToken)
 				->post('https://api.mercadopago.com/checkout/preferences', $preferenceData);
 
@@ -121,43 +115,47 @@ class Mercadopago extends Payment
 			}
 
 			$responseData = $response->json();
-			$mode = config('payment.mercadopago.mode', 'sandbox');
+			$mode         = config('payment.mercadopago.mode', 'sandbox');
+
+			// In sandbox mode use sandbox_init_point; in production use init_point
 			$paymentUrl = ($mode === 'sandbox' && !empty($responseData['sandbox_init_point']))
 				? $responseData['sandbox_init_point']
 				: ($responseData['init_point'] ?? null);
 
 			if (empty($paymentUrl)) {
-				$errorMessage = trans('mercadopago::messages.payment_page_url_not_found');
-				return parent::paymentFailureActions($payable, $errorMessage);
+				return parent::paymentFailureActions($payable, trans('mercadopago::messages.payment_page_url_not_found'));
 			}
 
-			// Save preference ID in transaction_id for session tracking
+			// Store preference ID as transaction_id for later lookup
 			if (isset($responseData['id'])) {
 				$localParams['transaction_id'] = $responseData['id'];
 			}
 
-			// Save parameters into session
+			// Persist session params so paymentConfirmation can retrieve them on return
 			session()->put('params', $localParams);
 			session()->save();
 
+			// For API/React requests: return the Checkout Pro URL so the frontend can redirect the user
 			if (isApiRoute()) {
-				$resData['extra']['paymentUrl'] = $paymentUrl;
 				$resData['extra']['payment']['success'] = true;
-				$resData['extra']['payment']['result'] = [
+				$resData['extra']['paymentUrl']         = $paymentUrl;
+				$resData['extra']['payment']['result']  = [
 					'preference_id' => $responseData['id'] ?? null,
 					'redirect_url'  => $paymentUrl,
 				];
 				return apiResponse()->json($resData);
-			} else {
-				redirectUrl($paymentUrl);
 			}
+
+			// For standard web requests: redirect directly to Mercado Pago Checkout Pro
+			return redirect()->away($paymentUrl);
+
 		} catch (Throwable $e) {
 			return parent::paymentApiErrorActions($payable, $e);
 		}
 	}
 
 	/**
-	 * Confirm payment after user returns from Mercado Pago back_url
+	 * Confirm payment after user returns from Mercado Pago via back_url
 	 *
 	 * @param Post|User $payable
 	 * @param array $params
@@ -167,15 +165,15 @@ class Mercadopago extends Payment
 	{
 		parent::$uri = parent::replacePatternsInUrls($payable, parent::$uri);
 
-		$request = request();
+		$request   = request();
 		$paymentId = $request->input('payment_id') ?? $request->input('collection_id');
-		$status = $request->input('status') ?? $request->input('collection_status');
+		$status    = $request->input('status') ?? $request->input('collection_status');
 
 		if (!empty($paymentId)) {
 			$params['transaction_id'] = $paymentId;
 		}
 
-		// Verify payment status with Mercado Pago API if paymentId is available
+		// Verify payment status directly with Mercado Pago API
 		if (!empty($paymentId)) {
 			try {
 				$accessToken = config('payment.mercadopago.accessToken');
@@ -198,7 +196,6 @@ class Mercadopago extends Payment
 		if (in_array($status, ['approved', 'authorized'])) {
 			return parent::paymentConfirmationActions($payable, $params);
 		} elseif (in_array($status, ['pending', 'in_process'])) {
-			// Register payment and notify pending status
 			flash(trans('mercadopago::messages.payment_pending'))->warning();
 			return parent::paymentConfirmationActions($payable, $params);
 		} else {
@@ -209,5 +206,5 @@ class Mercadopago extends Payment
 
 // Alias so any code referencing PascalCase MercadoPago still works
 if (!class_exists('extras\\addons\\mercadopago\\MercadoPago', false)) {
-    class_alias(Mercadopago::class, 'extras\\addons\\mercadopago\\MercadoPago');
+	class_alias(Mercadopago::class, 'extras\\addons\\mercadopago\\MercadoPago');
 }

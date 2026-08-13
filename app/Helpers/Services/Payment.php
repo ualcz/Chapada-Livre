@@ -234,6 +234,7 @@ class Payment extends Addon
 			'amount'            => data_get($params, 'package.price', 0),
 			'period_start'      => data_get($params, 'package.period_start', now()->startOfDay()),
 			'period_end'        => data_get($params, 'package.period_end'),
+			'active'            => 1,
 		];
 		
 		// Check if the 'currency_code' column is available in the Payment model
@@ -263,8 +264,13 @@ class Payment extends Addon
 			->first();
 		
 		if (!empty($payment)) {
+			if ((int)($payment->active ?? 0) !== 1) {
+				$payment->active = 1;
+				$payment->save();
+			}
+			
 			$resData['extra']['payment']['success'] = true;
-			$resData['extra']['payment']['message'] = self::$msg['checkout']['success'];
+			$resData['extra']['payment']['message'] = data_get(self::$msg, 'checkout.success') ?? 'Pagamento realizado com sucesso.';
 			$resData['extra']['payment']['result'] = $payment = (new PaymentResource($payment))->toArray($request);
 			
 			return $resData;
@@ -275,7 +281,7 @@ class Payment extends Addon
 		$payment->save();
 		
 		$resData['extra']['payment']['success'] = true;
-		$resData['extra']['payment']['message'] = self::$msg['checkout']['success'];
+		$resData['extra']['payment']['message'] = data_get(self::$msg, 'checkout.success') ?? 'Pagamento realizado com sucesso.';
 		$resData['extra']['payment']['result'] = (new PaymentResource($payment))->toArray($request);
 		
 		// SEND EMAILS

@@ -481,7 +481,15 @@ class CacheManager
 	 */
 	private function isLoggingEnabled(): bool
 	{
-		$enableLogging = config('cache-manager.enable_logging', false);
+		$fallback = true;
+		$environment = app()->environment();
+		$envSetting = config("cache-manager.environments.{$environment}.enable_logging");
+		
+		if ($envSetting !== null) {
+			return castToBool($envSetting);
+		}
+		
+		$enableLogging = config('cache-manager.enable_logging', $fallback);
 		
 		return castToBool($enableLogging);
 	}
