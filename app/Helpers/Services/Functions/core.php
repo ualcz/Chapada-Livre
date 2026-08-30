@@ -835,7 +835,9 @@ function htmlPurifierCleaner(?string $string): string
 {
 	if (empty($string)) return '';
 	
-	if (isWysiwygEnabled()) {
+	$hasHtmlTags = (bool)preg_match('/<[a-z][\s\S]*>/i', $string);
+	
+	if (isWysiwygEnabled() || $hasHtmlTags) {
 		try {
 			$string = Purifier::clean($string);
 		} catch (Throwable $e) {
@@ -852,10 +854,6 @@ function htmlPurifierCleaner(?string $string): string
 	if (request()->isMethod('get')) {
 		$string = urlsToLinks($string);
 	}
-	
-	$string = (isApiRoute() && !doesRequestIsFromWebClient())
-		? singleLineStringCleaner($string)
-		: $string;
 	
 	return castToString($string);
 }
