@@ -92,7 +92,7 @@ class UserResource extends BaseResource
 			if ($isAuthUserData) {
 				// Usar a checagem de permissão de staff em vez de apenas o campo is_admin da tabela
 				// para ser mais robusto e evitar conflitos de sessão. Passamos o $authUser ou $this->resource
-				$entity['is_admin'] = doesUserHaveStaffPermission($authUser) ? 1 : 0;
+				$entity['is_admin'] = ((isset($this->is_admin) && (int)$this->is_admin === 1) || doesUserHaveStaffPermission($authUser) || doesUserHaveStaffPermission($this->resource)) ? 1 : 0;
 				$entity['time_zone'] = $this->time_zone ?? null;
 				
 				if (in_array('payment', $this->embed)) {

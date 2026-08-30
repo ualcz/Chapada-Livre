@@ -59,6 +59,14 @@ function doesUserHavePermission($authUser, array|string $permission, bool $force
  */
 function doesUserHaveSuperAdminPermission($authUser, bool $forceToFallbackOnErrorOccurred = false): bool
 {
+	if (!empty($authUser) && method_exists($authUser, 'hasRole') && ($authUser->hasRole('bot') || $authUser->hasRole('Bot'))) {
+		return false;
+	}
+
+	if (!empty($authUser) && isset($authUser->is_admin) && (int)$authUser->is_admin === 1) {
+		return true;
+	}
+
 	$permissions = Permission::getSuperAdminPermissions();
 	$hasPermissions = doesUserHavePermission($authUser, $permissions, $forceToFallbackOnErrorOccurred);
 	if ($hasPermissions) {
@@ -79,6 +87,14 @@ function doesUserHaveSuperAdminPermission($authUser, bool $forceToFallbackOnErro
  */
 function doesUserHaveStaffPermission($authUser, bool $forceToFallbackOnErrorOccurred = false): bool
 {
+	if (!empty($authUser) && method_exists($authUser, 'hasRole') && ($authUser->hasRole('bot') || $authUser->hasRole('Bot'))) {
+		return false;
+	}
+
+	if (!empty($authUser) && isset($authUser->is_admin) && (int)$authUser->is_admin === 1) {
+		return true;
+	}
+
 	$permissions = Permission::getStaffPermissions();
 	$hasPermissions = doesUserHavePermission($authUser, $permissions, $forceToFallbackOnErrorOccurred);
 	if ($hasPermissions) {

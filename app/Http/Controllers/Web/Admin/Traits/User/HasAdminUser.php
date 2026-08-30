@@ -33,24 +33,64 @@ trait HasAdminUser
 		$isFilled = false;
 		
 		if ($request->filled('roles')) {
-			$rolesIds = $request->input('roles');
+			$rolesIds = (array)$request->input('roles');
+			$hasSuperAdminOrStaffRole = false;
+			$hasBotRole = false;
+
 			foreach ($rolesIds as $roleId) {
-				$role = Role::find($roleId);
+				$role = is_numeric($roleId) ? Role::find($roleId) : Role::where('name', $roleId)->first();
+				$roleName = !empty($role) ? strtolower(trim($role->name)) : strtolower(trim($roleId));
+
+				if ($roleName === strtolower(Role::getSuperAdminRole())) {
+					$hasSuperAdminOrStaffRole = true;
+				}
+				if ($roleName === 'bot') {
+					$hasBotRole = true;
+				}
+
 				if (!empty($role)) {
 					$permissions = $role->permissions;
 					if ($permissions->count() > 0) {
 						foreach ($permissions as $permission) {
 							if (in_array($permission->name, Permission::getStaffPermissions())) {
-								$isFilled = true;
+								$hasSuperAdminOrStaffRole = true;
 							}
 						}
 					}
 				}
 			}
+
+			// Se a role 'bot' for selecionada sem super-admin, desativa is_admin
+			if ($hasBotRole && !$hasSuperAdminOrStaffRole) {
+				$request->request->set('is_admin', 0);
+				return $request;
+			}
+
+			if ($hasSuperAdminOrStaffRole) {
+				$isFilled = true;
+			}
 		}
 		
+		if ($request->has('is_admin') && ((int)$request->input('is_admin') === 1 || $request->input('is_admin') === '1' || $request->input('is_admin') === true)) {
+			$isFilled = true;
+		}
+
 		if ($isFilled) {
 			$request->request->set('is_admin', 1);
+			
+			// Se o formulário enviou a lista de roles (pivot sync do Backpack), garante que a role super-admin esteja inclusa
+			if ($request->has('roles')) {
+				$superAdminRole = Role::ensureSuperAdminRoleExists();
+				if (!empty($superAdminRole)) {
+					$roles = (array)$request->input('roles', []);
+					if (!in_array($superAdminRole->id, $roles) && !in_array((string)$superAdminRole->id, $roles) && !in_array($superAdminRole->name, $roles)) {
+						$roles[] = $superAdminRole->id;
+						$request->request->set('roles', $roles);
+					}
+				}
+			}
+		} else {
+			$request->request->set('is_admin', 0);
 		}
 		
 		return $request;
@@ -66,11 +106,15 @@ trait HasAdminUser
 	{
 		$isFilled = false;
 		
+		if ($request->has('is_admin') && ((int)$request->input('is_admin') === 1 || $request->input('is_admin') === '1' || $request->input('is_admin') === true)) {
+			$isFilled = true;
+		}
+		
 		if ($request->filled('permissions')) {
-			$permissionIds = $request->input('permissions');
+			$permissionIds = (array)$request->input('permissions');
 			foreach ($permissionIds as $permissionId) {
 				$permission = Permission::find($permissionId);
-				if (in_array($permission->name, Permission::getStaffPermissions())) {
+				if (!empty($permission) && in_array($permission->name, Permission::getStaffPermissions())) {
 					$isFilled = true;
 				}
 			}
@@ -78,6 +122,8 @@ trait HasAdminUser
 		
 		if ($isFilled) {
 			$request->request->set('is_admin', 1);
+		} else if ($request->has('is_admin') && (int)$request->input('is_admin') === 0) {
+			$request->request->set('is_admin', 0);
 		}
 		
 		return $request;

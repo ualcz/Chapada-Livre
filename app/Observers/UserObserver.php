@@ -265,6 +265,54 @@ class UserObserver extends BaseObserver
 	{
 		$this->sendNotification($user);
 		
+		// Sincroniza a role de super-admin e bot com a coluna is_admin
+		try {
+			$superAdminRole = \App\Models\Role::getSuperAdminRoleFromDb();
+
+			// Verifica se a role 'bot' veio na requisição atual
+			$hasBotInRequest = false;
+			$botRoleName = null;
+			if (request()->filled('roles')) {
+				$rolesInput = (array)request()->input('roles', []);
+				foreach ($rolesInput as $rId) {
+					$r = is_numeric($rId) ? \App\Models\Role::find($rId) : \App\Models\Role::where('name', $rId)->first();
+					$rName = !empty($r) ? strtolower(trim($r->name)) : strtolower(trim($rId));
+					if ($rName === 'bot') {
+						$hasBotInRequest = true;
+						$botRoleName = !empty($r) ? $r->name : $rId;
+						break;
+					}
+				}
+			}
+
+			$isBot = $hasBotInRequest || $user->hasRole('bot') || $user->hasRole('Bot') || (isset($user->is_bot) && (int)$user->is_bot === 1);
+
+			if ($isBot) {
+				// Garante a atribuição da role bot se veio na requisição
+				if ($botRoleName && !$user->hasRole($botRoleName)) {
+					$user->assignRole($botRoleName);
+				}
+				// Se for Bot, garante que não tem role de super-admin e is_admin é 0
+				if ($superAdminRole && $user->hasRole($superAdminRole->name)) {
+					$user->removeRole($superAdminRole->name);
+				}
+				if ((int)$user->is_admin !== 0) {
+					$user->is_admin = 0;
+					$user->saveQuietly();
+				}
+			} else if ((int)$user->is_admin === 1) {
+				$superAdminRole = \App\Models\Role::ensureSuperAdminRoleExists();
+				if ($superAdminRole && !$user->hasRole($superAdminRole->name)) {
+					$user->assignRole($superAdminRole->name);
+				}
+			} else if ((int)$user->is_admin === 0) {
+				if ($superAdminRole && $user->hasRole($superAdminRole->name)) {
+					$user->removeRole($superAdminRole->name);
+				}
+			}
+		} catch (\Throwable $e) {
+		}
+		
 		// Create a new email token if the user's email is marked as unverified
 		if (empty($user->email_verified_at)) {
 			if (empty($user->email_token)) {

@@ -294,12 +294,14 @@ class PostController extends BaseController
 		}
 		
 		$currentUserId = auth(getAuthGuard())->id();
+		$currentUser = auth(getAuthGuard())->user();
 		
 		// Fallback por email se o token falhar
 		if (empty($currentUserId) && request()->filled('email')) {
 			$user = \App\Models\User::where('email', request()->input('email'))->first();
 			if ($user) {
 				$currentUserId = $user->id;
+				$currentUser = $user;
 			}
 		}
 		
@@ -308,10 +310,38 @@ class PostController extends BaseController
 			$postToUpdate = \App\Models\Post::find($excludePostId);
 			if ($postToUpdate) {
 				$currentUserId = $postToUpdate->user_id;
+				$currentUser = $postToUpdate->user;
 			}
 		}
 
+		$isExemptUser = function (?\App\Models\User $user): bool {
+			if (!$user) return false;
+			// Admin
+			if ((isset($user->is_admin) && (int)$user->is_admin === 1) || doesUserHaveStaffPermission($user)) {
+				return true;
+			}
+			// Bot
+			if (isset($user->is_bot) && (int)$user->is_bot === 1) {
+				return true;
+			}
+			if (method_exists($user, 'hasRole')) {
+				if ($user->hasRole('bot') || $user->hasRole('Bot') || $user->hasRole('super-admin')) {
+					return true;
+				}
+			}
+			return false;
+		};
+
+		// Se o usuário que está fazendo a requisição for admin ou bot, ignora a checagem (permite usar qualquer telefone)
+		if ($isExemptUser($currentUser)) {
+			return apiResponse()->json([
+				'success' => true,
+				'result'  => ['exists' => false],
+			]);
+		}
+
 		$posts = \App\Models\Post::query()
+			->with('user')
 			->where('phone', $phone)
 			->whereNull('archived_at')
 			->get();
@@ -326,8 +356,12 @@ class PostController extends BaseController
 			if (!empty($currentUserId) && $post->user_id == $currentUserId) {
 				continue;
 			}
+			// Ignora se o post pertencer a um usuário admin ou bot
+			if ($post->user && $isExemptUser($post->user)) {
+				continue;
+			}
 			
-			// Se encontrou um post que não é o atual e não pertence ao usuário, ele já existe para outro
+			// Se encontrou um post que não é o atual, não é do usuário atual e não é de admin/bot, ele já existe para outro
 			$exists = true;
 			break;
 		}
@@ -336,9 +370,11 @@ class PostController extends BaseController
 		if (!$exists) {
 			$userWithPhone = \App\Models\User::query()->where('phone', $phone)->first();
 			if ($userWithPhone) {
-				// Só existe como "outra pessoa" se o ID do usuário for diferente do atual
+				// Só existe como "outra pessoa" se o ID do usuário for diferente do atual E não for admin/bot
 				if (empty($currentUserId) || $userWithPhone->id != $currentUserId) {
-					$exists = true;
+					if (!$isExemptUser($userWithPhone)) {
+						$exists = true;
+					}
 				}
 			}
 		}

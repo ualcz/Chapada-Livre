@@ -264,8 +264,42 @@ class PostRequest extends Request
 				$phone = phoneE164($value, getPhoneCountry());
 				if (empty($phone)) return;
 
-				// 1. Verifica na tabela de posts (exceto o próprio post e posts do próprio usuário)
+				$isExemptUser = function (?\App\Models\User $user): bool {
+					if (!$user) return false;
+					// Admin
+					if ((isset($user->is_admin) && (int)$user->is_admin === 1) || doesUserHaveStaffPermission($user)) {
+						return true;
+					}
+					// Bot
+					if (isset($user->is_bot) && (int)$user->is_bot === 1) {
+						return true;
+					}
+					if (method_exists($user, 'hasRole')) {
+						if ($user->hasRole('bot') || $user->hasRole('Bot') || $user->hasRole('super-admin')) {
+							return true;
+						}
+					}
+					return false;
+				};
+
+				// Identifica se o usuário que está criando/editando o anúncio é Admin ou Bot
+				$currentUser = auth()->user()
+					?? auth('sanctum')->user()
+					?? auth('web')->user()
+					?? request()->user();
+				
+				if (empty($currentUser) && !empty($currentUserId)) {
+					$currentUser = \App\Models\User::find($currentUserId);
+				}
+
+				// Admins e Bots estão isentos da regra de unicidade de telefone
+				if ($isExemptUser($currentUser)) {
+					return;
+				}
+
+				// 1. Verifica na tabela de posts (exceto o próprio post, posts do próprio usuário e posts de admins/bots)
 				$postsWithPhone = \App\Models\Post::query()
+					->with('user')
 					->where('phone', $phone)
 					->whereNull('archived_at')
 					->get();
@@ -275,16 +309,20 @@ class PostRequest extends Request
 					if ($this->route('id') && $p->id == $this->route('id')) continue;
 					// Ignora se o post pertencer ao usuário atual
 					if (!empty($currentUserId) && $p->user_id == $currentUserId) continue;
+					// Ignora se o post pertencer a um usuário admin ou bot
+					if ($p->user && $isExemptUser($p->user)) continue;
 					
 					$fail("Este número de telefone já está sendo utilizado por outro usuário.");
 					return;
 				}
 
-				// 2. Verifica na tabela de usuários (exceto o próprio usuário)
+				// 2. Verifica na tabela de usuários (exceto o próprio usuário e usuários admins/bots)
 				$userWithPhone = \App\Models\User::query()->where('phone', $phone)->first();
 				if ($userWithPhone) {
 					if (empty($currentUserId) || $userWithPhone->id != $currentUserId) {
-						$fail("Este número de telefone já está sendo utilizado por outro usuário.");
+						if (!$isExemptUser($userWithPhone)) {
+							$fail("Este número de telefone já está sendo utilizado por outro usuário.");
+						}
 					}
 				}
 			}
