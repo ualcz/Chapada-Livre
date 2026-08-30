@@ -59,16 +59,27 @@ class CityService extends BaseService
 		$cities = caching()->remember(City::class, $cacheParams, function () use (
 			$perPage, $embed, $countryCode, $admin1Code, $admin2Code, $keyword, $autocomplete, $firstOrderByPopulation, $sort
 		) {
-			$cities = City::query();
+			$cityColumns = [
+				'id', 'country_code', 'name', 'latitude', 'longitude',
+				'subadmin1_code', 'subadmin2_code', 'population', 'time_zone', 'active',
+				'created_at', 'updated_at'
+			];
+			$cities = City::query()->select($cityColumns);
 			
 			if (in_array('country', $embed)) {
-				$cities->with('country');
+				$cities->with(['country' => function ($query) {
+					$query->select(['id', 'name', 'code', 'phone_code', 'currency', 'time_zone', 'active']);
+				}]);
 			}
 			if (in_array('subAdmin1', $embed)) {
-				$cities->with('subAdmin1');
+				$cities->with(['subAdmin1' => function ($query) {
+					$query->select(['id', 'country_code', 'name', 'code', 'active']);
+				}]);
 			}
 			if (in_array('subAdmin2', $embed)) {
-				$cities->with('subAdmin2');
+				$cities->with(['subAdmin2' => function ($query) {
+					$query->select(['id', 'country_code', 'name', 'code', 'active']);
+				}]);
 			}
 			if (in_array('countPosts', $embed)) {
 				$cities->withCount(['posts' => function (Builder $query) {

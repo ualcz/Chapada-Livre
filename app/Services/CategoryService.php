@@ -54,7 +54,12 @@ class CategoryService extends BaseService
 		$categories = caching()->remember(Category::class, $cacheParams, function () use (
 			$perPage, $parentId, $embed, $areNestedEntriesIncluded, $sort
 		) {
-			$categories = Category::query();
+			$categoryColumns = [
+				'id', 'parent_id', 'name', 'slug', 'description', 'hide_description',
+				'image_path', 'icon_class', 'seo_title', 'seo_description', 'seo_keywords',
+				'lft', 'rgt', 'depth', 'type', 'is_for_permanent', 'active'
+			];
+			$categories = Category::query()->select($categoryColumns);
 			
 			if (!empty($parentId)) {
 				$categories->childrenOf($parentId);
@@ -65,12 +70,18 @@ class CategoryService extends BaseService
 			}
 			
 			if (in_array('parent', $embed)) {
-				$categories->with('parent');
+				$categories->with(['parent' => function ($query) use ($categoryColumns) {
+					$query->select($categoryColumns);
+				}]);
 			} else {
-				$categories->with('parentClosure');
+				$categories->with(['parentClosure' => function ($query) use ($categoryColumns) {
+					$query->select($categoryColumns);
+				}]);
 			}
 			if (in_array('children', $embed)) {
-				$categories->with('children');
+				$categories->with(['children' => function ($query) use ($categoryColumns) {
+					$query->select($categoryColumns);
+				}]);
 			}
 			
 			// Sorting
