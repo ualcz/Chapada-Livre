@@ -151,16 +151,27 @@ class CityService extends BaseService
 		
 		// Cached Query
 		$city = caching()->remember(City::class, $cacheParams, function () use ($id, $embed) {
-			$city = City::query()->where('id', $id);
+			$cityColumns = [
+				'id', 'country_code', 'name', 'latitude', 'longitude',
+				'subadmin1_code', 'subadmin2_code', 'population', 'time_zone', 'active',
+				'created_at', 'updated_at'
+			];
+			$city = City::query()->select($cityColumns)->where('id', $id);
 			
 			if (in_array('country', $embed)) {
-				$city->with('country');
+				$city->with(['country' => function ($query) {
+					$query->select(['id', 'name', 'code', 'phone_code', 'currency', 'time_zone', 'active']);
+				}]);
 			}
 			if (in_array('subAdmin1', $embed)) {
-				$city->with('subAdmin1');
+				$city->with(['subAdmin1' => function ($query) {
+					$query->select(['id', 'country_code', 'name', 'code', 'active']);
+				}]);
 			}
 			if (in_array('subAdmin2', $embed)) {
-				$city->with('subAdmin2');
+				$city->with(['subAdmin2' => function ($query) {
+					$query->select(['id', 'country_code', 'name', 'code', 'active']);
+				}]);
 			}
 			
 			return $city->first();

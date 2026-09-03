@@ -83,11 +83,15 @@ class PostController extends BaseController
 		
 		// Cache public listings for 5 minutes to save CPU
 		$publicOps = ['search', 'premium', 'latest', 'free', 'premiumFirst', 'similar'];
-		if (in_array($params['op'], $publicOps) && !auth(getAuthGuard())->check()) {
-			$cacheKey = 'api_posts_list_' . md5(serialize($params) . config('app.locale'));
-			return cache()->remember($cacheKey, 300, function () use ($params) {
+		if (in_array($params['op'], $publicOps) && empty($params['belongLoggedUser']) && empty($params['pendingApproval']) && empty($params['archived'])) {
+			$userId = auth(getAuthGuard())->check() ? (string)auth(getAuthGuard())->user()->getAuthIdentifier() : 'guest';
+			$cacheKey = 'api_posts_list_' . md5(serialize($params) . config('app.locale') . '_' . $userId);
+			$response = cache()->remember($cacheKey, 600, function () use ($params) {
 				return $this->postService->getEntries($params);
 			});
+			// similar posts: cache mais longo pois mudam pouco
+			$maxAge = ($params['op'] === 'similar') ? 300 : 120;
+			return $response->header('Cache-Control', "public, max-age={$maxAge}, stale-while-revalidate=600");
 		}
 		
 		return $this->postService->getEntries($params);
@@ -119,15 +123,13 @@ class PostController extends BaseController
 			'detailed' => (request()->input('detailed') == 1),
 		];
 		
-		// Cache single ad details for 5 minutes for guests to save CPU
-		if (!auth(getAuthGuard())->check()) {
-			$cacheKey = 'api_post_show_' . $id . '_' . md5(serialize($params) . config('app.locale'));
-			return cache()->remember($cacheKey, 300, function () use ($id, $params) {
-				return $this->postService->getEntry($id, $params);
-			});
-		}
-		
-		return $this->postService->getEntry($id, $params);
+		// Cache public ad details for 5 minutes
+		$userId = auth(getAuthGuard())->check() ? (string)auth(getAuthGuard())->user()->getAuthIdentifier() : 'guest';
+		$cacheKey = 'api_post_show_' . $id . '_' . md5(serialize($params) . config('app.locale') . '_' . $userId);
+		$response = cache()->remember($cacheKey, 300, function () use ($id, $params) {
+			return $this->postService->getEntry($id, $params);
+		});
+		return $response->header('Cache-Control', 'public, max-age=120, stale-while-revalidate=300');
 	}
 	
 	/**

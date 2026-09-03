@@ -63,7 +63,7 @@ trait ShowTrait
 			$embed,
 			$isBelongLoggedUser
 		) {
-			$post = Post::query()->with('picture');
+			$post = Post::query()->with(['picture']);
 			
 			if ($isUnactivatedIncluded) {
 				$post->withoutGlobalScopes([VerifiedScope::class, ReviewedScope::class]);
@@ -73,46 +73,18 @@ trait ShowTrait
 				$post->with('country');
 			}
 			if (in_array('user', $embed)) {
-				if (in_array('possiblePayment', $embed)) {
-					// For the pictures limit
-					if (in_array('package', $embed)) {
-						$post->with(['user' => function ($query) {
-							$query->with(['possiblePayment', 'possiblePayment.package']);
-						}]);
-					} else {
-						$post->with(['user' => function ($query) {
-							$query->with(['possiblePayment']);
-						}]);
-					}
-				} else {
-					$post->with('user');
-				}
+				$post->with('user');
 			}
 			if (in_array('category', $embed) || in_array('fieldsValues', $embed)) {
 				$post->with('category');
 			}
 			if (in_array('city', $embed)) {
 				$post->with('city');
-				if (in_array('subAdmin1', $embed)) {
-					$post->with('city.subAdmin1');
-				}
-				if (in_array('subAdmin2', $embed)) {
-					$post->with('city.subAdmin2');
-				}
 			}
 			if (in_array('payment', $embed)) {
 				$post->with(['payment' => function ($query) {
 					$query->withoutGlobalScope(StrictActiveScope::class);
 				}]);
-				if (in_array('package', $embed)) {
-					$post->with('payment.package');
-				}
-			}
-			if (in_array('possiblePayment', $embed)) {
-				$post->with(['possiblePayment']);
-				if (in_array('package', $embed)) {
-					$post->with('possiblePayment.package');
-				}
 			}
 			if (in_array('savedByLoggedUser', $embed)) {
 				$post->with('savedByLoggedUser');

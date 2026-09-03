@@ -48,14 +48,23 @@ trait CategoryBy
 		return caching()->remember(Category::class, $cacheParams, function () use (
 			$embed, $parentCatSlug, $catSlug, $locale, $limit
 		) {
-			$cat = Category::query();
+			$categoryColumns = [
+				'id', 'parent_id', 'name', 'slug', 'description', 'hide_description',
+				'image_path', 'icon_class', 'seo_title', 'seo_description', 'seo_keywords',
+				'lft', 'rgt', 'depth', 'type', 'is_for_permanent', 'active'
+			];
+			$cat = Category::query()->select($categoryColumns);
 			
 			if (!empty($embed)) {
 				if (in_array('children', $embed)) {
-					$cat->with(['children' => fn (Builder $query) => $query->limit($limit)]);
+					$cat->with(['children' => function ($query) use ($categoryColumns, $limit) {
+						$query->select($categoryColumns)->limit($limit);
+					}]);
 				}
 				if (in_array('parent', $embed)) {
-					$cat->with('parent');
+					$cat->with(['parent' => function ($query) use ($categoryColumns) {
+						$query->select($categoryColumns);
+					}]);
 				}
 			} else {
 				$cat->with($this->getRelations());
@@ -96,14 +105,23 @@ trait CategoryBy
 		]);
 		
 		return caching()->remember(Category::class, $cacheParams, function () use ($embed, $catId, $locale, $limit) {
-			$cat = Category::query();
+			$categoryColumns = [
+				'id', 'parent_id', 'name', 'slug', 'description', 'hide_description',
+				'image_path', 'icon_class', 'seo_title', 'seo_description', 'seo_keywords',
+				'lft', 'rgt', 'depth', 'type', 'is_for_permanent', 'active'
+			];
+			$cat = Category::query()->select($categoryColumns);
 			
 			if (!empty($embed)) {
 				if (in_array('children', $embed)) {
-					$cat->with(['children' => fn (Builder $query) => $query->limit($limit)]);
+					$cat->with(['children' => function ($query) use ($categoryColumns, $limit) {
+						$query->select($categoryColumns)->limit($limit);
+					}]);
 				}
 				if (in_array('parent', $embed)) {
-					$cat->with('parent');
+					$cat->with(['parent' => function ($query) use ($categoryColumns) {
+						$query->select($categoryColumns);
+					}]);
 				}
 			} else {
 				$cat->with($this->getRelations());

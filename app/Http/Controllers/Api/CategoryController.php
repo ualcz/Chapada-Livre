@@ -68,9 +68,10 @@ class CategoryController extends BaseController
 		// Categories change very rarely — cache at the response level for 24 hours
 		$cacheKey = 'api_categories_index_' . md5(serialize($params) . '_pid' . $parentId . '_' . config('app.locale'));
 		
-		return cache()->remember($cacheKey, 86400, function () use ($parentId, $params) {
+		$response = cache()->remember($cacheKey, 86400, function () use ($parentId, $params) {
 			return $this->categoryService->getEntries($parentId, $params);
 		});
+		return $response->header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
 	}
 	
 	/**

@@ -43,12 +43,14 @@ trait Select
 			'phone_verified_at',
 			'reviewed_at',
 		];
-		if (isApiRoute() && !doesRequestIsFromWebClient()) {
+		if (isApiRoute()) {
 			$select[] = $this->postsTable . '.description';
 			$select[] = 'contact_name';
 			$select[] = $this->postsTable . '.auth_field';
 			$select[] = $this->postsTable . '.phone';
+			$select[] = $this->postsTable . '.phone_hidden';
 			$select[] = $this->postsTable . '.email';
+			$select[] = $this->postsTable . '.tags';
 		}
 		if (config('settings.listings_list.show_listings_tags')) {
 			$select[] = 'tags';

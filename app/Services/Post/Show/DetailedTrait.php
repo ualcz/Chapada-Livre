@@ -39,14 +39,10 @@ trait DetailedTrait
 		// Lazy Loading Array
 		$lazyLoadingArray = [
 			'category',
-			'category.parent',
 			'city',
-			'city.subAdmin1',
 			'picture',
 			'pictures',
 			'user',
-			'payment',
-			'payment.package',
 			'savedByLoggedUser',
 		];
 		
@@ -122,8 +118,9 @@ trait DetailedTrait
 		// Increment the listing's visit counter
 		// PostWasVisited::dispatch($post);
 		
-		// Generate the listing's images thumbnails
-		GeneratePostImageThumbsJob::dispatch($post);
+		// Avoid generating thumbnails during a read request. Thumbnails are already created
+		// at upload time and this background job adds avoidable latency to the detail page.
+		// GeneratePostImageThumbsJob::dispatch($post);
 		
 		// Get packages features
 		$picturesLimit = (int)config('settings.listing_form.pictures_limit');

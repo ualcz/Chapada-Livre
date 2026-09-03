@@ -43,7 +43,11 @@ class SettingController extends BaseController
 	 */
 	public function index(): JsonResponse
 	{
-		return $this->settingService->getEntries();
+		$cacheKey = 'api_settings_index_' . config('app.locale');
+		$response = cache()->remember($cacheKey, 86400, function () {
+			return $this->settingService->getEntries();
+		});
+		return $response->header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
 	}
 	
 	/**

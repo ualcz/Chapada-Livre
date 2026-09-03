@@ -76,6 +76,10 @@
     RewriteCond %{REQUEST_URI} !^/(mensagens|editar-anuncio|redefinir-senha|password|p|location|buscar|category|anuncio|api|admin|perfil|meus-anuncios|planos|contato|cidades|cadastro|login|verificar-email|social-login-callback|esqueci-senha|termos|privacidade|faq|anti-golpe|anunciar)(/|$) [NC]
     RewriteRule ^ index.php [L]
 
+    # Homepage servida diretamente como estática (0ms, sem boot do PHP)
+    DirectoryIndex react/index.html index.php
+    RewriteRule ^$ react/index.html [L,E=REACT_INDEX:1]
+
     # Para todo o resto (que não é arquivo nem pasta), serve a SPA estática
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f

@@ -170,6 +170,16 @@ class ReactAppController extends Controller
                 $htmlContent
             );
 
+            // Injeção de dados iniciais do anúncio para o React renderizar em 0ms
+            if ($post) {
+                try {
+                    $resource = new \App\Http\Resources\PostResource($post, ['embed' => 'picture,pictures,city,category,user']);
+                    $jsonPost = json_encode($resource->resolve());
+                    $initialScript = "<script>window.__INITIAL_POST_DATA__ = {$jsonPost};</script>\n";
+                    $htmlContent = str_replace('</head>', "  {$initialScript}</head>", $htmlContent);
+                } catch (\Throwable $e) {}
+            }
+
             // Injeção de conteúdo estático para SEO (robôs)
             $seoContent  = $this->generateSeoContent($meta, $post);
             $htmlContent = str_replace('<div id="root">', $seoContent . "\n" . '<div id="root">', $htmlContent);
